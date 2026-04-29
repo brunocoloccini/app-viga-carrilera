@@ -28,3 +28,5 @@ Planned modules:
 - V1-009: Transform2D and rotation-capable rectangle/plate geometry foundation (gross inertias for rotated components deferred).
 
 - V1-010: Rotation-capable line-to-line assembly with alignment/overlap positioning controls (`LineToLineJoin`) in `section_core.assembly`.
+
+- V1-011: Component interface models (weld/contact/shared-boundary/construction-joint/bolt-group) with Section and line-to-line integration.
