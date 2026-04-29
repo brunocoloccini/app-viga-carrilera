@@ -39,6 +39,15 @@ class Section:
     def component_ids(self) -> list[str]:
         return [component.element_id for component in self.components]
 
+    def has_component(self, component_id: str) -> bool:
+        return component_id in self.component_ids()
+
+    def get_component(self, component_id: str) -> SectionElement:
+        for component in self.components:
+            if component.element_id == component_id:
+                return component
+        raise EmptySectionError(f"Component '{component_id}' not found in section '{self.section_id}'.")
+
     def nodes(self) -> list[Node]:
         return [node for component in self.components for node in component.nodes()]
 
