@@ -118,3 +118,9 @@ Planned modules:
 - Add golden baseline files for demo case summary JSON and markdown report under `examples/golden/`.
 - Add regression tests that compare key summary demands/check flags and report output against the golden baselines.
 - Add update script + documentation for intentional golden refresh workflow and limitations.
+
+## V1-039 - Crane Runway Scenario Matrix Demo Cases and Regression
+- Add a compact matrix of demo JSON cases under `examples/cases/` covering baseline, no-cover-plate, no-rail-eccentricity, intentional deflection fail, and intentional stress fail variants.
+- Add scenario matrix tests that strictly validate each case schema and execute each case through `run_crane_runway_case_json` with deterministic expected status checks.
+- Add scenario matrix documentation describing scope, intent, relation to V1-038 golden regression, and engineering limitations.
+
