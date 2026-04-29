@@ -1,7 +1,7 @@
 import pytest
 
 from section_core.components import PlateElement, RectangularElement
-from section_core.components.errors import InvalidComponentGeometryError, UnsupportedComponentOperationError
+from section_core.components.errors import InvalidComponentGeometryError
 from section_core.units.errors import UnitCompatibilityError
 
 
@@ -62,11 +62,6 @@ def test_translated_preserves_dimensions_and_shifts():
     assert rt.width_internal_mm == pytest.approx(r.width_internal_mm)
     assert rt.height_internal_mm == pytest.approx(r.height_internal_mm)
     assert rt.get_reference_point("bottom_left").as_tuple() == pytest.approx((-5, -8))
-
-
-def test_unsupported_rotation_raises_clear_error():
-    with pytest.raises(UnsupportedComponentOperationError):
-        RectangularElement.from_center(element_id="R1", width=1, width_unit="mm", height=1, height_unit="mm", center_y=0, center_y_unit="mm", center_z=0, center_z_unit="mm", rotation_deg=10)
 
 
 def test_plate_horizontal_vertical_and_ids():

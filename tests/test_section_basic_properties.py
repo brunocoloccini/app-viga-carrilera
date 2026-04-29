@@ -18,6 +18,9 @@ class DummyElement(SectionElement):
     def bounding_box(self):
         return (0.0, 0.0, 0.0, 0.0)
 
+    def transformed(self, transform):
+        return self
+
     def translated(self, dy_mm: float, dz_mm: float):
         return self
 

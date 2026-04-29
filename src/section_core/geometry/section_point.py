@@ -10,6 +10,9 @@ from .node import Node
 from .point import Point2D
 from .tolerance import GeometryTolerance
 
+if False:
+    from .transform import Transform2D
+
 
 @dataclass(frozen=True)
 class SectionPoint(Point2D):
@@ -116,6 +119,16 @@ class SectionPoint(Point2D):
             source_element_id=self.source_element_id,
             metadata=dict(self.metadata) if self.metadata is not None else None,
         )
+
+
+    def transformed(self, transform: "Transform2D") -> "SectionPoint":
+        from .transform import Transform2D
+
+        if not isinstance(transform, Transform2D):
+            raise TypeError("transform must be a Transform2D instance.")
+        transformed_point = transform.apply_to_point(self)
+        assert isinstance(transformed_point, SectionPoint)
+        return transformed_point
 
     def as_tuple(self) -> tuple[float, float]:
         return (self.y_internal_mm, self.z_internal_mm)

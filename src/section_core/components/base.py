@@ -5,7 +5,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from section_core.geometry import Node, SectionLine, SectionPoint
+from section_core.geometry import Node, SectionLine, SectionPoint, Transform2D
 
 
 @dataclass(frozen=True)
@@ -32,6 +32,10 @@ class SectionElement(ABC):
     @abstractmethod
     def bounding_box(self) -> tuple[float, float, float, float]:
         """Return (min_y, min_z, max_y, max_z) in internal mm."""
+
+    @abstractmethod
+    def transformed(self, transform: Transform2D) -> "SectionElement":
+        raise NotImplementedError
 
     @abstractmethod
     def translated(self, dy_mm: float, dz_mm: float) -> "SectionElement":

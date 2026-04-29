@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from section_core.geometry import Node, SectionLine, SectionPoint
+from section_core.geometry import Node, SectionLine, SectionPoint, Transform2D
 from section_core.units import Dimension, UnitRegistry
 
 from .base import SectionElement
-from .errors import InvalidComponentGeometryError, UnknownReferenceError, UnsupportedComponentOperationError
+from .errors import InvalidComponentGeometryError, UnknownReferenceError
 
 
 @dataclass(frozen=True)
@@ -17,6 +17,7 @@ class RectangularElement(SectionElement):
     height_internal_mm: float = 0.0
     center_y_internal_mm: float = 0.0
     center_z_internal_mm: float = 0.0
+    rotation_deg: float = 0.0
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "element_type", "rectangle")
@@ -26,63 +27,30 @@ class RectangularElement(SectionElement):
             raise InvalidComponentGeometryError("Rectangle height must be greater than zero.")
 
     @classmethod
-    def from_center(
-        cls,
-        *,
-        element_id: str,
-        width: float,
-        width_unit: str,
-        height: float,
-        height_unit: str,
-        center_y: float,
-        center_y_unit: str,
-        center_z: float,
-        center_z_unit: str,
-        rotation_deg: float = 0.0,
-        name: str | None = None,
-        material_id: str | None = None,
-        metadata: dict[str, object] | None = None,
-    ) -> "RectangularElement":
-        if float(rotation_deg) != 0.0:
-            raise UnsupportedComponentOperationError("RectangularElement rotation is not supported in V1-004; use rotation_deg=0.")
+    def from_center(cls, **kwargs):
         registry = UnitRegistry()
         return cls(
-            element_id=element_id,
-            name=name,
+            element_id=kwargs["element_id"],
+            name=kwargs.get("name"),
             element_type="rectangle",
-            material_id=material_id,
-            metadata=dict(metadata) if metadata is not None else None,
-            width_internal_mm=registry.to_internal(float(width), width_unit, Dimension.LENGTH),
-            height_internal_mm=registry.to_internal(float(height), height_unit, Dimension.LENGTH),
-            center_y_internal_mm=registry.to_internal(float(center_y), center_y_unit, Dimension.LENGTH),
-            center_z_internal_mm=registry.to_internal(float(center_z), center_z_unit, Dimension.LENGTH),
+            material_id=kwargs.get("material_id"),
+            metadata=dict(kwargs["metadata"]) if kwargs.get("metadata") is not None else None,
+            width_internal_mm=registry.to_internal(float(kwargs["width"]), kwargs["width_unit"], Dimension.LENGTH),
+            height_internal_mm=registry.to_internal(float(kwargs["height"]), kwargs["height_unit"], Dimension.LENGTH),
+            center_y_internal_mm=registry.to_internal(float(kwargs["center_y"]), kwargs["center_y_unit"], Dimension.LENGTH),
+            center_z_internal_mm=registry.to_internal(float(kwargs["center_z"]), kwargs["center_z_unit"], Dimension.LENGTH),
+            rotation_deg=float(kwargs.get("rotation_deg", 0.0)),
         )
 
     @classmethod
-    def from_bottom_left(
-        cls,
-        *,
-        element_id: str,
-        width: float,
-        width_unit: str,
-        height: float,
-        height_unit: str,
-        bottom_left_y: float,
-        bottom_left_y_unit: str,
-        bottom_left_z: float,
-        bottom_left_z_unit: str,
-        rotation_deg: float = 0.0,
-        name: str | None = None,
-        material_id: str | None = None,
-        metadata: dict[str, object] | None = None,
-    ) -> "RectangularElement":
+    def from_bottom_left(cls, **kwargs):
         registry = UnitRegistry()
-        width_mm = registry.to_internal(float(width), width_unit, Dimension.LENGTH)
-        height_mm = registry.to_internal(float(height), height_unit, Dimension.LENGTH)
-        bl_y = registry.to_internal(float(bottom_left_y), bottom_left_y_unit, Dimension.LENGTH)
-        bl_z = registry.to_internal(float(bottom_left_z), bottom_left_z_unit, Dimension.LENGTH)
+        width_mm = registry.to_internal(float(kwargs["width"]), kwargs["width_unit"], Dimension.LENGTH)
+        height_mm = registry.to_internal(float(kwargs["height"]), kwargs["height_unit"], Dimension.LENGTH)
+        bl_y = registry.to_internal(float(kwargs["bottom_left_y"]), kwargs["bottom_left_y_unit"], Dimension.LENGTH)
+        bl_z = registry.to_internal(float(kwargs["bottom_left_z"]), kwargs["bottom_left_z_unit"], Dimension.LENGTH)
         return cls.from_center(
-            element_id=element_id,
+            element_id=kwargs["element_id"],
             width=width_mm,
             width_unit="mm",
             height=height_mm,
@@ -91,31 +59,34 @@ class RectangularElement(SectionElement):
             center_y_unit="mm",
             center_z=bl_z + height_mm / 2.0,
             center_z_unit="mm",
-            rotation_deg=rotation_deg,
-            name=name,
-            material_id=material_id,
-            metadata=metadata,
+            rotation_deg=float(kwargs.get("rotation_deg", 0.0)),
+            name=kwargs.get("name"),
+            material_id=kwargs.get("material_id"),
+            metadata=kwargs.get("metadata"),
         )
 
     def _corners(self) -> dict[str, SectionPoint]:
-        half_w = self.width_internal_mm / 2.0
-        half_h = self.height_internal_mm / 2.0
-        y0 = self.center_y_internal_mm - half_w
-        y1 = self.center_y_internal_mm + half_w
-        z0 = self.center_z_internal_mm - half_h
-        z1 = self.center_z_internal_mm + half_h
+        hw = self.width_internal_mm / 2.0
+        hh = self.height_internal_mm / 2.0
+        local = {
+            "bottom_left": (self.center_y_internal_mm - hw, self.center_z_internal_mm - hh),
+            "bottom_right": (self.center_y_internal_mm + hw, self.center_z_internal_mm - hh),
+            "top_right": (self.center_y_internal_mm + hw, self.center_z_internal_mm + hh),
+            "top_left": (self.center_y_internal_mm - hw, self.center_z_internal_mm + hh),
+        }
+        transform = Transform2D.rotation(self.rotation_deg, self.center_y_internal_mm, self.center_z_internal_mm)
         return {
-            "bottom_left": SectionPoint.from_values(f"{self.element_id}_bottom_left", y0, z0, source_element_id=self.element_id, name="bottom_left"),
-            "bottom_right": SectionPoint.from_values(f"{self.element_id}_bottom_right", y1, z0, source_element_id=self.element_id, name="bottom_right"),
-            "top_right": SectionPoint.from_values(f"{self.element_id}_top_right", y1, z1, source_element_id=self.element_id, name="top_right"),
-            "top_left": SectionPoint.from_values(f"{self.element_id}_top_left", y0, z1, source_element_id=self.element_id, name="top_left"),
+            name: SectionPoint.from_values(
+                f"{self.element_id}_{name}",
+                *transform.apply_to_coordinates(y, z),
+                source_element_id=self.element_id,
+                name=name,
+            )
+            for name, (y, z) in local.items()
         }
 
     def nodes(self) -> list[Node]:
-        return [
-            Node(node_id=f"{self.element_id}_{name}", name=name, y_internal_mm=point.y_internal_mm, z_internal_mm=point.z_internal_mm, element_id=self.element_id, node_type="vertex")
-            for name, point in self._corners().items()
-        ]
+        return [Node(node_id=f"{self.element_id}_{n}", name=n, y_internal_mm=p.y_internal_mm, z_internal_mm=p.z_internal_mm, element_id=self.element_id, node_type="vertex") for n, p in self._corners().items()]
 
     def lines(self) -> list[SectionLine]:
         c = self._corners()
@@ -129,14 +100,11 @@ class RectangularElement(SectionElement):
     def reference_points(self) -> dict[str, SectionPoint]:
         c = self._corners()
         center = self.centroid_point()
-        return {
-            "center": center,
-            **c,
-            "mid_top": SectionPoint.from_values(f"{self.element_id}_mid_top", self.center_y_internal_mm, c["top_left"].z_internal_mm, source_element_id=self.element_id, name="mid_top"),
-            "mid_bottom": SectionPoint.from_values(f"{self.element_id}_mid_bottom", self.center_y_internal_mm, c["bottom_left"].z_internal_mm, source_element_id=self.element_id, name="mid_bottom"),
-            "mid_left": SectionPoint.from_values(f"{self.element_id}_mid_left", c["bottom_left"].y_internal_mm, self.center_z_internal_mm, source_element_id=self.element_id, name="mid_left"),
-            "mid_right": SectionPoint.from_values(f"{self.element_id}_mid_right", c["bottom_right"].y_internal_mm, self.center_z_internal_mm, source_element_id=self.element_id, name="mid_right"),
-        }
+        mid_bottom = SectionPoint.from_values(f"{self.element_id}_mid_bottom", (c["bottom_left"].y_internal_mm + c["bottom_right"].y_internal_mm)/2.0, (c["bottom_left"].z_internal_mm + c["bottom_right"].z_internal_mm)/2.0, source_element_id=self.element_id, name="mid_bottom")
+        mid_top = SectionPoint.from_values(f"{self.element_id}_mid_top", (c["top_left"].y_internal_mm + c["top_right"].y_internal_mm)/2.0, (c["top_left"].z_internal_mm + c["top_right"].z_internal_mm)/2.0, source_element_id=self.element_id, name="mid_top")
+        mid_left = SectionPoint.from_values(f"{self.element_id}_mid_left", (c["bottom_left"].y_internal_mm + c["top_left"].y_internal_mm)/2.0, (c["bottom_left"].z_internal_mm + c["top_left"].z_internal_mm)/2.0, source_element_id=self.element_id, name="mid_left")
+        mid_right = SectionPoint.from_values(f"{self.element_id}_mid_right", (c["bottom_right"].y_internal_mm + c["top_right"].y_internal_mm)/2.0, (c["bottom_right"].z_internal_mm + c["top_right"].z_internal_mm)/2.0, source_element_id=self.element_id, name="mid_right")
+        return {"center": center, **c, "mid_top": mid_top, "mid_bottom": mid_bottom, "mid_left": mid_left, "mid_right": mid_right}
 
     def reference_lines(self) -> dict[str, SectionLine]:
         lines = self.lines()
@@ -149,22 +117,37 @@ class RectangularElement(SectionElement):
         return SectionPoint.from_values(f"{self.element_id}_center", self.center_y_internal_mm, self.center_z_internal_mm, source_element_id=self.element_id, name="center")
 
     def bounding_box(self) -> tuple[float, float, float, float]:
-        c = self._corners()
-        return (c["bottom_left"].y_internal_mm, c["bottom_left"].z_internal_mm, c["top_right"].y_internal_mm, c["top_right"].z_internal_mm)
+        pts = list(self._corners().values())
+        ys = [p.y_internal_mm for p in pts]
+        zs = [p.z_internal_mm for p in pts]
+        return (min(ys), min(zs), max(ys), max(zs))
 
-    def translated(self, dy_mm: float, dz_mm: float) -> "RectangularElement":
+    def transformed(self, transform: Transform2D) -> "RectangularElement":
+        y, z = transform.apply_to_coordinates(self.center_y_internal_mm, self.center_z_internal_mm)
+        metadata = dict(self.metadata) if self.metadata is not None else {}
+        metadata.setdefault("transform_trace", []).append({
+            "translation_dy_mm": transform.translation_dy_mm,
+            "translation_dz_mm": transform.translation_dz_mm,
+            "rotation_deg": transform.rotation_deg,
+            "rotation_center_y_mm": transform.rotation_center_y_mm,
+            "rotation_center_z_mm": transform.rotation_center_z_mm,
+        })
         return RectangularElement(
             element_id=self.element_id,
             name=self.name,
             element_type=self.element_type,
             source=self.source,
             material_id=self.material_id,
-            metadata=dict(self.metadata) if self.metadata is not None else None,
+            metadata=metadata,
             width_internal_mm=self.width_internal_mm,
             height_internal_mm=self.height_internal_mm,
-            center_y_internal_mm=self.center_y_internal_mm + float(dy_mm),
-            center_z_internal_mm=self.center_z_internal_mm + float(dz_mm),
+            center_y_internal_mm=y,
+            center_z_internal_mm=z,
+            rotation_deg=self.rotation_deg + transform.rotation_deg,
         )
+
+    def translated(self, dy_mm: float, dz_mm: float) -> "RectangularElement":
+        return self.transformed(Transform2D.translation(dy_mm, dz_mm))
 
     def local_reference(self) -> SectionPoint:
         return self.centroid_point()
