@@ -37,6 +37,16 @@ from .serviceability import (
     ServiceabilityError,
 )
 from .loads import CraneLoadCase, CraneLoadModel, CraneWheelGroup, WheelLoad
+from .lateral_analysis import (
+    CraneRunwayLateralAnalysisError,
+    ElasticLateralBendingStressAnalyzer,
+    ElasticLateralBendingStressResult,
+    InvalidLateralMomentError,
+    InvalidLateralStressPropertiesError,
+    LateralAnalysisPoint,
+    SimpleSpanLateralAnalysisResult,
+    SimpleSpanRunwayBeamLateralAnalyzer,
+)
 from .stress import (
     CraneRunwayStressError,
     ElasticBendingStressResult,
@@ -93,4 +103,12 @@ __all__ = [
     "CraneRunwayStressError",
     "InvalidSectionStressPropertiesError",
     "InvalidMomentForStressError",
+    "LateralAnalysisPoint",
+    "SimpleSpanLateralAnalysisResult",
+    "SimpleSpanRunwayBeamLateralAnalyzer",
+    "ElasticLateralBendingStressResult",
+    "ElasticLateralBendingStressAnalyzer",
+    "CraneRunwayLateralAnalysisError",
+    "InvalidLateralMomentError",
+    "InvalidLateralStressPropertiesError",
 ]
