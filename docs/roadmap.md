@@ -129,3 +129,6 @@ Planned modules:
 
 
 - V1-041: Add CLI-style crane runway JSON case validator script with strict/non-strict and JSON/text outputs, plus tests and documentation.
+
+
+- V1-042: Add CLI-style crane runway JSON case execution script with text/markdown/both/summary-json outputs, optional file output, tests, and documentation.
