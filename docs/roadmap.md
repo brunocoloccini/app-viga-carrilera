@@ -53,3 +53,5 @@ Planned modules:
 
 
 - V1-021: Simple-span crane runway beam analysis for fixed wheel positions (reactions, shear, moment) in `section_core.crane_runway.analysis`.
+
+- V1-022: Moving wheel-load envelope for simple-span crane runway beams (vertical wheel loads only, step-based position scan).
