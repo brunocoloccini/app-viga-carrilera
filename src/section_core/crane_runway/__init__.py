@@ -27,6 +27,15 @@ from .deflection_envelope import (
     MovingDeflectionPositionResult,
     SimpleSpanMovingDeflectionEnvelopeAnalyzer,
 )
+from .serviceability import (
+    DeflectionCriteriaSet,
+    DeflectionLimit,
+    DeflectionServiceabilityChecker,
+    DuplicateServiceabilityLimitError,
+    InvalidDeflectionLimitError,
+    ServiceabilityCheckResult,
+    ServiceabilityError,
+)
 from .loads import CraneLoadCase, CraneLoadModel, CraneWheelGroup, WheelLoad
 
 __all__ = [
@@ -61,4 +70,11 @@ __all__ = [
     "DeflectionEnvelopeError",
     "InvalidDeflectionEnvelopeStepError",
     "InvalidDeflectionEnvelopeStationError",
+    "DeflectionLimit",
+    "ServiceabilityCheckResult",
+    "DeflectionServiceabilityChecker",
+    "DeflectionCriteriaSet",
+    "ServiceabilityError",
+    "InvalidDeflectionLimitError",
+    "DuplicateServiceabilityLimitError",
 ]
