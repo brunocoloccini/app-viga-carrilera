@@ -26,3 +26,5 @@ Planned modules:
 - V1-008: Assembly line-to-line join/alignment (`LineToLineJoin`) in `section_core.assembly`.
 
 - V1-009: Transform2D and rotation-capable rectangle/plate geometry foundation (gross inertias for rotated components deferred).
+
+- V1-010: Rotation-capable line-to-line assembly with alignment/overlap positioning controls (`LineToLineJoin`) in `section_core.assembly`.

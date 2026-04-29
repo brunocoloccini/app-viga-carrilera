@@ -1,38 +1,70 @@
-# Assembly: line-to-line join/alignment (V1-008)
+# Assembly: line-to-line join/alignment (V1-010)
 
 ## Purpose
-`LineToLineJoin` performs geometric alignment by translating a source component so one of its reference lines aligns to a reference line in a target component already in the section.
+`LineToLineJoin` performs geometric placement by rotating (optional) and translating a source component so one selected source reference line aligns with one target reference line.
 
 This is geometric placement only:
 - no boolean union,
 - no overlap subtraction,
-- no material-region merge,
+- no topological merge,
 - no implied weld/bolt/contact/composite action.
 
-## V1-008 behavior
-- Supported mode: `midpoint_to_midpoint`.
-- Translation only (rigid-body shift in Y-Z).
-- Rotation is **not** implemented. Non-parallel/anti-parallel line pairs raise an `AssemblyGeometryError`.
+## V1-010 behavior
+Required options:
+- `allow_rotation` (default `False`)
+- `rotation_mode` (default `"align_direction"`)
+- `alignment_mode` (default `"midpoint_to_midpoint"`)
+- `overlap_mode` (default `"none"`)
+- `normal_offset_mm`, `tangential_offset_mm`
+- `reverse_source_direction`
+
+If lines are non-parallel and `allow_rotation=False`, an `AssemblyGeometryError` is raised.
+If `allow_rotation=True`, source is rotated to align its selected line direction with target line direction.
+
+## Rotation convention
+- Source angle = angle of source line direction.
+- Target angle = angle of target line direction.
+- Rotation = `target_angle - source_angle`.
+- If `reverse_source_direction=True`, target angle is shifted by `+180°`.
+- Rotation center is source line midpoint.
+
+After rotation, source line is recomputed and translated to final aligned position.
+
+## Alignment modes
+- `midpoint_to_midpoint`
+- `start_to_start`
+- `end_to_end`
+- `start_to_end`
+- `end_to_start`
+
+Unknown modes raise a clear error.
+
+## Overlap modes (positioning only)
+- `none`: use `alignment_mode`.
+- `centered`: midpoint-to-midpoint.
+- `from_target_start`: start-to-start.
+- `from_target_end`: end-to-end.
+
+For V1-010 these are line-positioning controls only (no geometric merge/cut).
 
 ## Offset convention in section Y-Z plane
 Given target line unit tangent `t = (ty, tz)` and normal `n = (-tz, ty)`:
 
-- target alignment point = `target_midpoint + tangential_offset_mm * t + normal_offset_mm * n`
-- source alignment point = `source_midpoint`
-- translation:
-  - `dy = target_alignment_y - source_midpoint_y`
-  - `dz = target_alignment_z - source_midpoint_z`
+`final_target_point = base_alignment_point + tangential_offset_mm * t + normal_offset_mm * n`
 
-Positive tangential offset moves along the target line direction (`start -> end`).
-Positive normal offset moves using the left-hand normal `(-tz, ty)`.
+Positive tangential offset moves along target `start -> end` direction.
+Positive normal offset moves in left normal direction.
 
-## Typical uses
-- cover plate positioning,
-- flange/web/stiffener positioning,
-- assembling box-like built-up sections while keeping components separate.
+## Traceability metadata
+Join result metadata stores assembly trace fields including:
+- rotation angle and rotation center,
+- alignment/overlap modes,
+- offsets,
+- translation components,
+- source/target line lengths,
+- note: `"No boolean merge or structural connection implied."`
 
-## Future extensions
-- rotation-capable alignment,
-- partial-overlap positioning controls,
-- true topological merge/boolean operations,
-- explicit weld/interface modeling.
+## Future extension
+- true topological/boolean merge,
+- explicit weld/contact/interfacial modeling,
+- overlap trimming/subtraction controls.
