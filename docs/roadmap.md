@@ -91,3 +91,8 @@ Planned modules:
 - Add deterministic engineering-unit conversions and fixed-precision presentation formatting.
 - Add summary validation and reporting-specific errors for invalid formatting inputs.
 - Add tests and documentation for report formatting behavior and limitations.
+
+## V1-034 - End-to-End Crane Runway Demo and Integration Validation
+- Add `examples/end_to_end_crane_runway_demo.py` as the first full workflow demo from section assembly through reporting.
+- Add integration tests validating summary outputs, report content, and script execution.
+- Add dedicated documentation describing assumptions, analysis scope, and limitations.
