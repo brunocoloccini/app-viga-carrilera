@@ -41,3 +41,5 @@ Planned modules:
 
 - V1-016: Basic ShapeLibraryRegistry and ShapeRecord for tabulated profiles, including a tiny fake sample dataset and registry-to-component conversion.
 
+
+- V1-017: JSON import/export for tabulated shape libraries with explicit quantity units, validation, and roundtrip file/dict support.

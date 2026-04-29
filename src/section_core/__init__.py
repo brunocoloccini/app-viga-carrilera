@@ -5,7 +5,14 @@ from .components import LibraryShapeComponent, PlateElement, RectangularElement,
 from .geometry import GeometryTolerance, SectionLine, SectionPoint, Transform2D
 from .interfaces import ComponentInterface, ContactInterface, WeldInterface
 from .section import GrossElasticProperties, Section
-from .shapes import ShapeLibraryRegistry, ShapeRecord
+from .shapes import (
+    ShapeLibraryRegistry,
+    ShapeRecord,
+    dump_shape_library_json,
+    load_shape_library_json,
+    registry_from_json_dict,
+    registry_to_json_dict,
+)
 from .units.quantity import Quantity
 
 __all__ = [
@@ -29,4 +36,8 @@ __all__ = [
     "GrossElasticProperties",
     "ShapeRecord",
     "ShapeLibraryRegistry",
+    "load_shape_library_json",
+    "dump_shape_library_json",
+    "registry_from_json_dict",
+    "registry_to_json_dict",
 ]
