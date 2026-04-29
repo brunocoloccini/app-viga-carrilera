@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from section_core.components import PlateElement, RectangularElement, SectionElement
+from section_core.components import LibraryShapeComponent, PlateElement, RectangularElement, SectionElement
 from section_core.geometry import Node, SectionLine, SectionPoint
 from section_core.interfaces import ComponentInterface, DuplicateInterfaceError, InterfaceReferenceError
 
@@ -26,10 +26,10 @@ class Section:
     metadata: dict[str, object] | None = None
 
     def _validate_supported(self, component: SectionElement) -> None:
-        if not isinstance(component, (RectangularElement, PlateElement)):
+        if not isinstance(component, (RectangularElement, PlateElement, LibraryShapeComponent)):
             raise UnsupportedComponentTypeError(
-                f"Unsupported component type for V1-005: {type(component).__name__}. "
-                "Only RectangularElement and PlateElement are supported."
+                f"Unsupported component type for V1-014: {type(component).__name__}. "
+                "Only RectangularElement, PlateElement, and LibraryShapeComponent are supported."
             )
 
     def add_component(self, component: SectionElement) -> None:
@@ -140,9 +140,14 @@ class Section:
             comp_center = component.centroid_point()
             dy = comp_center.y_internal_mm - yc
             dz = comp_center.z_internal_mm - zc
-            iyy_local = component.width_internal_mm * (component.height_internal_mm ** 3) / 12.0
-            izz_local = component.height_internal_mm * (component.width_internal_mm ** 3) / 12.0
-            iyz_local = 0.0
+            if isinstance(component, LibraryShapeComponent):
+                iyy_local = component.Iyy_tabulated_mm4
+                izz_local = component.Izz_tabulated_mm4
+                iyz_local = component.Iyz_tabulated_mm4
+            else:
+                iyy_local = component.width_internal_mm * (component.height_internal_mm ** 3) / 12.0
+                izz_local = component.height_internal_mm * (component.width_internal_mm ** 3) / 12.0
+                iyz_local = 0.0
             iyy_contrib = iyy_local + comp_area * (dz ** 2)
             izz_contrib = izz_local + comp_area * (dy ** 2)
             iyz_contrib = iyz_local + comp_area * dy * dz
