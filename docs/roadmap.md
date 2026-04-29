@@ -107,3 +107,9 @@ Planned modules:
 - Add `case_io.py` to load/dump crane runway case JSON files, validate required fields, and parse explicit quantity payloads.
 - Add conversion/build/run helpers that map case dictionaries into `CraneRunwayWorkflowInput` and execute `CraneRunwayCalculationWorkflow`.
 - Add case input/result dataclasses, user-facing error types, example case + script, documentation, and tests.
+
+## V1-037 - Versioned Crane Runway Case Schema and Validation
+- Add `case_schema.py` with versioned schema constants, validation issue/result dataclasses, and strict/non-strict validators.
+- Integrate schema validation into `case_io.py` run paths before workflow execution.
+- Export a JSON-schema-like V1 document and add schema-focused tests + documentation.
+
