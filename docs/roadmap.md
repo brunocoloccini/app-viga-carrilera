@@ -43,3 +43,6 @@ Planned modules:
 
 
 - V1-017: JSON import/export for tabulated shape libraries with explicit quantity units, validation, and roundtrip file/dict support.
+
+
+- V1-018: Manually curated CIRSOC sample shape library JSON (IPN 200 and IPB 200) with explicit unit conversion tests, metadata traceability, and section integration checks.
