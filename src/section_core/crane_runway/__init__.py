@@ -88,6 +88,13 @@ from .reporting import (
     ReportingError,
 )
 
+from .html_reporting import (
+    CraneRunwayDemandSummaryHtmlFormatter,
+    CraneRunwayHtmlReport,
+    HtmlReportingError,
+    InvalidHtmlReportSummaryError,
+)
+
 from .workflow import (
     CraneRunwayCalculationWorkflow,
     CraneRunwayWorkflowError,
@@ -181,6 +188,10 @@ __all__ = [
     "DemandSummaryError",
     "InvalidDemandSummaryError",
     "CraneRunwayDemandSummaryFormatter",
+    "CraneRunwayDemandSummaryHtmlFormatter",
+    "CraneRunwayHtmlReport",
+    "HtmlReportingError",
+    "InvalidHtmlReportSummaryError",
     "CraneRunwaySummaryReport",
     "ReportValue",
     "ReportingError",

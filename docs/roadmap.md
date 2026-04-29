@@ -132,3 +132,6 @@ Planned modules:
 
 
 - V1-042: Add CLI-style crane runway JSON case execution script with text/markdown/both/summary-json outputs, optional file output, tests, and documentation.
+
+
+- V1-043: Add static HTML export for crane runway demand summaries, integrate `--html` mode in case execution CLI, and add tests/documentation for deterministic escaped report output.
