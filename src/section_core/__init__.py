@@ -50,6 +50,13 @@ from .crane_runway import (
     DeflectionServiceabilityChecker,
     DeflectionCriteriaSet,
     WheelLoad,
+    ElasticBendingStressResult,
+    ElasticStressEnvelopePoint,
+    ElasticStressEnvelopeResult,
+    ElasticVerticalBendingStressAnalyzer,
+    CraneRunwayStressError,
+    InvalidSectionStressPropertiesError,
+    InvalidMomentForStressError,
 )
 
 __all__ = [
@@ -90,6 +97,13 @@ __all__ = [
     "ServiceabilityCheckResult",
     "DeflectionServiceabilityChecker",
     "DeflectionCriteriaSet",
+    "ElasticBendingStressResult",
+    "ElasticStressEnvelopePoint",
+    "ElasticStressEnvelopeResult",
+    "ElasticVerticalBendingStressAnalyzer",
+    "CraneRunwayStressError",
+    "InvalidSectionStressPropertiesError",
+    "InvalidMomentForStressError",
     "AssemblyOperation",
     "NodeToNodeJoin",
     "NodeToPointJoin",

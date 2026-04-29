@@ -66,3 +66,6 @@ Planned modules:
 
 
 - V1-026: Configurable serviceability criteria/checking model for vertical crane runway deflection (span/N, absolute, and minimum-combined limits).
+
+
+- V1-027: Elastic vertical bending stress calculation for crane runway beams from max moments and gross section properties (fixed, moving-envelope, and station-envelope workflows).
