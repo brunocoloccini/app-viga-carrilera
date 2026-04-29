@@ -10,6 +10,7 @@ from section_core.geometry import Transform2D
 
 from section_core.components import SectionElement
 from section_core.geometry import GeometryTolerance, SectionLine
+from section_core.interfaces import ComponentInterface, WeldInterface
 from section_core.section import Section
 from section_core.section.errors import DuplicateComponentError, UnsupportedComponentTypeError
 
@@ -32,6 +33,9 @@ class LineToLineJoin(AssemblyOperation):
     reverse_source_direction: bool = False
     create_connection: bool = False
     metadata: dict[str, Any] | None = None
+    interface_type: str = "shared_boundary"
+    weld_size_mm: float | None = None
+    weld_type: str = "fillet"
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "operation_type", "line_to_line_join")
@@ -165,11 +169,44 @@ class LineToLineJoin(AssemblyOperation):
         merged_metadata["assembly"] = trace
         transformed = transformed.__class__(**{**transformed.__dict__, "metadata": merged_metadata})
 
-        new_section = Section(section_id=section.section_id, name=section.name, components=list(section.components), metadata=dict(section.metadata) if section.metadata is not None else None)
+        new_section = Section(section_id=section.section_id, name=section.name, components=list(section.components), interfaces=list(section.interfaces), metadata=dict(section.metadata) if section.metadata is not None else None)
         try:
             new_section.add_component(transformed)
         except DuplicateComponentError as exc:
             raise AssemblyReferenceError(f"Duplicate component id '{transformed.element_id}' when adding transformed component.") from exc
         except UnsupportedComponentTypeError as exc:
             raise AssemblyGeometryError(str(exc)) from exc
+
+        if self.create_connection:
+            iface_metadata = {
+                "created_by_operation_id": self.operation_id,
+                "source_line_name": self.source_line_name,
+                "target_line_name": self.target_line_name,
+                "note": "Interface is recorded but not structurally verified.",
+            }
+            interface_id = f"IF_{self.operation_id}_{self.target_component_id}_{transformed.element_id}"
+            if self.interface_type == "weld":
+                interface = WeldInterface(
+                    interface_id=interface_id,
+                    component_a_id=self.target_component_id,
+                    component_b_id=transformed.element_id,
+                    line_a_name=self.target_line_name,
+                    line_b_name=self.source_line_name,
+                    length_mm=overlap_len,
+                    metadata=iface_metadata,
+                    weld_size_mm=self.weld_size_mm,
+                    weld_type=self.weld_type,
+                )
+            else:
+                interface = ComponentInterface(
+                    interface_id=interface_id,
+                    interface_type=self.interface_type,
+                    component_a_id=self.target_component_id,
+                    component_b_id=transformed.element_id,
+                    line_a_name=self.target_line_name,
+                    line_b_name=self.source_line_name,
+                    length_mm=overlap_len,
+                    metadata=iface_metadata,
+                )
+            new_section.add_interface(interface)
         return new_section

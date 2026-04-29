@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 from section_core.components import PlateElement, RectangularElement, SectionElement
 from section_core.geometry import Node, SectionLine, SectionPoint
+from section_core.interfaces import ComponentInterface, DuplicateInterfaceError, InterfaceReferenceError
 
 from .errors import (
     DuplicateComponentError,
@@ -21,6 +22,7 @@ class Section:
     section_id: str
     name: str | None = None
     components: list[SectionElement] = field(default_factory=list)
+    interfaces: list[ComponentInterface] = field(default_factory=list)
     metadata: dict[str, object] | None = None
 
     def _validate_supported(self, component: SectionElement) -> None:
@@ -38,6 +40,32 @@ class Section:
 
     def component_ids(self) -> list[str]:
         return [component.element_id for component in self.components]
+
+    def add_interface(self, interface: ComponentInterface) -> None:
+        if interface.interface_id in self.interface_ids():
+            raise DuplicateInterfaceError(
+                f"Duplicate interface_id '{interface.interface_id}' in section '{self.section_id}'."
+            )
+        if interface.component_a_id == interface.component_b_id:
+            raise InterfaceReferenceError("Interface cannot connect a component to itself.")
+        if not self.has_component(interface.component_a_id):
+            raise InterfaceReferenceError(
+                f"Interface '{interface.interface_id}' references missing component_a_id '{interface.component_a_id}'."
+            )
+        if not self.has_component(interface.component_b_id):
+            raise InterfaceReferenceError(
+                f"Interface '{interface.interface_id}' references missing component_b_id '{interface.component_b_id}'."
+            )
+        self.interfaces.append(interface)
+
+    def interface_ids(self) -> list[str]:
+        return [interface.interface_id for interface in self.interfaces]
+
+    def get_interface(self, interface_id: str) -> ComponentInterface:
+        for interface in self.interfaces:
+            if interface.interface_id == interface_id:
+                return interface
+        raise InterfaceReferenceError(f"Interface '{interface_id}' not found in section '{self.section_id}'.")
 
     def has_component(self, component_id: str) -> bool:
         return component_id in self.component_ids()
