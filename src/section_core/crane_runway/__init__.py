@@ -45,6 +45,15 @@ from .serviceability import (
     ServiceabilityError,
 )
 from .loads import CraneLoadCase, CraneLoadModel, CraneWheelGroup, WheelLoad
+from .rail_eccentricity import (
+    DuplicateTorsionalWheelError,
+    InvalidRailEccentricityError,
+    InvalidTorsionalLoadError,
+    RailEccentricityError,
+    RailEccentricityModel,
+    WheelTorsionalLoad,
+    WheelTorsionalLoadGroup,
+)
 from .lateral_analysis import (
     CraneRunwayLateralAnalysisError,
     ElasticLateralBendingStressAnalyzer,
@@ -79,6 +88,13 @@ __all__ = [
     "CraneWheelGroup",
     "CraneLoadModel",
     "CraneLoadCase",
+    "WheelTorsionalLoad",
+    "WheelTorsionalLoadGroup",
+    "RailEccentricityModel",
+    "RailEccentricityError",
+    "InvalidRailEccentricityError",
+    "InvalidTorsionalLoadError",
+    "DuplicateTorsionalWheelError",
     "BeamAnalysisPoint",
     "SimpleSpanAnalysisResult",
     "SimpleSpanRunwayBeamAnalyzer",
