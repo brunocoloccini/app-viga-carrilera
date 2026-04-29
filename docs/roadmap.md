@@ -101,3 +101,9 @@ Planned modules:
 - Add `workflow.py` orchestrator to execute full crane runway analysis sequence and produce demand summary + text/markdown reports.
 - Add workflow input/output data models with unit-aware factory and validation.
 - Add dedicated workflow tests and documentation for assumptions and limitations.
+
+
+## V1-036 - Crane Runway Case JSON I/O
+- Add `case_io.py` to load/dump crane runway case JSON files, validate required fields, and parse explicit quantity payloads.
+- Add conversion/build/run helpers that map case dictionaries into `CraneRunwayWorkflowInput` and execute `CraneRunwayCalculationWorkflow`.
+- Add case input/result dataclasses, user-facing error types, example case + script, documentation, and tests.
