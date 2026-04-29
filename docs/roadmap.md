@@ -126,3 +126,6 @@ Planned modules:
 
 
 - V1-040: Add user-facing validation error formatting for crane runway case files.
+
+
+- V1-041: Add CLI-style crane runway JSON case validator script with strict/non-strict and JSON/text outputs, plus tests and documentation.
