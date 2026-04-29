@@ -51,3 +51,5 @@ Planned modules:
 
 - V1-020: Basic crane runway load modeling package (`section_core.crane_runway`) with wheel loads, wheel groups, generated impact/lateral/longitudinal cases, and validation.
 
+
+- V1-021: Simple-span crane runway beam analysis for fixed wheel positions (reactions, shear, moment) in `section_core.crane_runway.analysis`.

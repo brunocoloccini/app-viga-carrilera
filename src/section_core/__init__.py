@@ -14,7 +14,15 @@ from .shapes import (
     registry_to_json_dict,
 )
 from .units.quantity import Quantity
-from .crane_runway import CraneLoadCase, CraneLoadModel, CraneWheelGroup, WheelLoad
+from .crane_runway import (
+    BeamAnalysisPoint,
+    CraneLoadCase,
+    CraneLoadModel,
+    CraneWheelGroup,
+    SimpleSpanAnalysisResult,
+    SimpleSpanRunwayBeamAnalyzer,
+    WheelLoad,
+)
 
 __all__ = [
     "GeometryTolerance",
@@ -23,6 +31,9 @@ __all__ = [
     "CraneWheelGroup",
     "CraneLoadModel",
     "CraneLoadCase",
+    "BeamAnalysisPoint",
+    "SimpleSpanAnalysisResult",
+    "SimpleSpanRunwayBeamAnalyzer",
     "AssemblyOperation",
     "NodeToNodeJoin",
     "NodeToPointJoin",
