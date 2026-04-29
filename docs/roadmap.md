@@ -38,3 +38,6 @@ Planned modules:
 - V1-014: LibraryShapeComponent (tabulated structural shape properties + bounding-box reference geometry) with gross elastic property integration in `section_core.section`.
 
 - V1-015: Integrated validation case for a tabulated library I/W-like shape plus a top cover plate assembled with `LineToLineJoin`, with one weld interface recorded and gross elastic properties verified against hand calculations.
+
+- V1-016: Basic ShapeLibraryRegistry and ShapeRecord for tabulated profiles, including a tiny fake sample dataset and registry-to-component conversion.
+
