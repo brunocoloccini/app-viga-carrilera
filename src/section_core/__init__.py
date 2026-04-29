@@ -2,6 +2,7 @@
 
 from .components import PlateElement, RectangularElement, SectionElement
 from .geometry import GeometryTolerance, SectionLine, SectionPoint
+from .section import GrossElasticProperties, Section
 from .units.quantity import Quantity
 
 __all__ = [
@@ -12,4 +13,6 @@ __all__ = [
     "SectionElement",
     "RectangularElement",
     "PlateElement",
+    "Section",
+    "GrossElasticProperties",
 ]

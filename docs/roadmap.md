@@ -15,3 +15,5 @@ Planned modules:
 
 ## Milestones
 - V1-004: Component primitives (`SectionElement`, `RectangularElement`, `PlateElement`) in `section_core.components`.
+
+- V1-005: Section container and gross elastic properties for rectangular/plate components in `section_core.section`.
