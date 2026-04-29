@@ -79,3 +79,9 @@ Planned modules:
 
 
 - V1-031: Rail/load eccentricity torsional input model for crane runway beams (signed wheel torsional moments from vertical eccentricity and lateral load height).
+
+
+## V1-032 - Crane Runway Demand Summary
+- Add `CraneRunwayDemandSummary` as a reporting/aggregation object for key crane runway analysis outputs.
+- Add pass/fail aggregation helpers and a basic JSON-serializable `to_dict()` export.
+- Add `CraneRunwayDemandSummaryBuilder.build_basic_summary(...)` convenience constructor.
