@@ -57,6 +57,21 @@ def test_output_file_markdown(tmp_path: Path) -> None:
     assert "# Crane Runway Demand Summary" in out_path.read_text(encoding="utf-8")
 
 
+
+def test_html_output() -> None:
+    result = _run("--html", "examples/crane_runway_case_demo.json")
+    assert result.returncode == 0
+    assert "<!doctype html>" in result.stdout
+    assert "Crane Runway Demand Summary" in result.stdout
+
+
+def test_output_file_html(tmp_path: Path) -> None:
+    out_path = tmp_path / "report.html"
+    result = _run("--html", "--output", str(out_path), "examples/crane_runway_case_demo.json")
+    assert result.returncode == 0
+    assert out_path.exists()
+    assert "<!doctype html>" in out_path.read_text(encoding="utf-8")
+
 def test_invalid_case_missing_schema_version(tmp_path: Path) -> None:
     data = json.loads(Path("examples/crane_runway_case_demo.json").read_text(encoding="utf-8"))
     data.pop("schema_version", None)
@@ -84,4 +99,9 @@ def test_no_arguments() -> None:
 
 def test_mutually_exclusive_output_modes() -> None:
     result = _run("--text", "--markdown", "examples/crane_runway_case_demo.json")
+    assert result.returncode == 2
+
+
+def test_mutually_exclusive_html_and_markdown() -> None:
+    result = _run("--html", "--markdown", "examples/crane_runway_case_demo.json")
     assert result.returncode == 2

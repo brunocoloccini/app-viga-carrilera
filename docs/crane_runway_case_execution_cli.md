@@ -33,6 +33,11 @@ PYTHONPATH=src python scripts/run_crane_runway_case.py --both examples/crane_run
 ```
 Prints text report, a separator (`---`), then markdown report.
 
+### HTML
+```bash
+PYTHONPATH=src python scripts/run_crane_runway_case.py --html examples/crane_runway_case_demo.json
+```
+
 ### Summary JSON
 ```bash
 PYTHONPATH=src python scripts/run_crane_runway_case.py --summary-json examples/crane_runway_case_demo.json
@@ -45,13 +50,13 @@ Modes are mutually exclusive.
 Use `--output PATH` to write selected output mode content to a file instead of stdout:
 
 ```bash
-PYTHONPATH=src python scripts/run_crane_runway_case.py --markdown --output tmp/report.md examples/crane_runway_case_demo.json
+PYTHONPATH=src python scripts/run_crane_runway_case.py --html --output tmp/report.html examples/crane_runway_case_demo.json
 ```
 
 On success, stdout prints:
 
 ```text
-WROTE: tmp/report.md
+WROTE: tmp/report.html
 ```
 
 ## Exit codes
