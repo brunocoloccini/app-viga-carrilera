@@ -5,6 +5,7 @@ from .components import LibraryShapeComponent, PlateElement, RectangularElement,
 from .geometry import GeometryTolerance, SectionLine, SectionPoint, Transform2D
 from .interfaces import ComponentInterface, ContactInterface, WeldInterface
 from .section import GrossElasticProperties, Section
+from .shapes import ShapeLibraryRegistry, ShapeRecord
 from .units.quantity import Quantity
 
 __all__ = [
@@ -26,4 +27,6 @@ __all__ = [
     "ContactInterface",
     "Section",
     "GrossElasticProperties",
+    "ShapeRecord",
+    "ShapeLibraryRegistry",
 ]
