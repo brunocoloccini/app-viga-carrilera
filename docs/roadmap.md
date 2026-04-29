@@ -19,3 +19,6 @@ Planned modules:
 - V1-005: Section container and gross elastic properties for rectangular/plate components in `section_core.section`.
 
 - V1-006: Assembly node-to-node join (`AssemblyOperation`, `NodeToNodeJoin`) in `section_core.assembly`.
+
+- V1-007: Assembly node-to-point join (`NodeToPointJoin`) in `section_core.assembly`.
+
