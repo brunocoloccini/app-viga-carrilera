@@ -69,3 +69,6 @@ Planned modules:
 
 
 - V1-027: Elastic vertical bending stress calculation for crane runway beams from max moments and gross section properties (fixed, moving-envelope, and station-envelope workflows).
+
+
+- V1-028: Simple-span lateral wheel-load analysis and elastic lateral bending stress using weak-axis section moduli (`S_z_left_mm3`, `S_z_right_mm3`) in `section_core.crane_runway.lateral_analysis`.
