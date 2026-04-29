@@ -105,3 +105,39 @@ def test_without_cover_plate_variant_runs_with_expected_demands():
     assert summary.section_id
     assert summary.max_vertical_moment_Nmm() > 0
     assert summary.max_biaxial_stress_MPa() > 0
+
+
+def test_case_matrix_script_default_text_mode():
+    import subprocess
+    import sys
+
+    script = REPO_ROOT / "scripts" / "run_crane_runway_case_matrix.py"
+    env = {**__import__("os").environ, "PYTHONPATH": str(REPO_ROOT / "src")}
+    proc = subprocess.run([sys.executable, str(script)], cwd=str(REPO_ROOT), capture_output=True, text=True, check=False, env=env)
+    assert proc.returncode == 0
+    assert "deflection_fail" in proc.stdout
+
+
+def test_case_matrix_script_html_mode(tmp_path):
+    import subprocess
+    import sys
+
+    script = REPO_ROOT / "scripts" / "run_crane_runway_case_matrix.py"
+    env = {**__import__("os").environ, "PYTHONPATH": str(REPO_ROOT / "src")}
+    proc = subprocess.run([sys.executable, str(script), "--html"], cwd=str(REPO_ROOT), capture_output=True, text=True, check=False, env=env)
+    assert proc.returncode == 0
+    assert "<!doctype html>" in proc.stdout
+    assert "Crane Runway Scenario Matrix" in proc.stdout
+
+    out = tmp_path / "matrix.html"
+    proc2 = subprocess.run(
+        [sys.executable, str(script), "--html", "--output", str(out)],
+        cwd=str(REPO_ROOT),
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
+    assert proc2.returncode == 0
+    assert "WROTE:" in proc2.stdout
+    assert "<!doctype html>" in out.read_text(encoding="utf-8")
