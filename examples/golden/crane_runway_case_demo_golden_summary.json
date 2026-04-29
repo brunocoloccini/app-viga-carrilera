@@ -1,0 +1,31 @@
+{
+  "load_model_id": "demo_crane",
+  "max_biaxial_stress_MPa": 1182.8560787999936,
+  "max_lateral_moment_Nmm": 16666666.666666664,
+  "max_torsional_input_Nmm": 3300000.0,
+  "max_vertical_deflection_mm": 118.72387192719489,
+  "max_vertical_moment_Nmm": 208333333.33333337,
+  "max_vertical_shear_abs_N": 166666.66666666666,
+  "metadata": {
+    "generated_by": "V1-038 golden regression baseline",
+    "is_demo": true,
+    "lateral_position_assumption": "representative vertical max-moment offset used for lateral wheel group",
+    "notes": [
+      "This is a regression baseline, not an independent engineering verification.",
+      "Update only when intentional calculation changes are reviewed."
+    ]
+  },
+  "overall_passed": false,
+  "schema_version": "1.0",
+  "section_id": "ipn_200_with_cover_plate",
+  "serviceability_passed": false,
+  "source_case_path": "examples/crane_runway_case_demo.json",
+  "span_internal_mm": 6000.0,
+  "stress_criteria_passed": false,
+  "summary_id": "demo_case",
+  "warnings": [
+    "CIRSOC sample profile data is manually curated and must be independently verified before production use.",
+    "No CIRSOC design-code checks are performed.",
+    "Lateral wheel group translated to representative vertical critical offset for lateral analysis."
+  ]
+}

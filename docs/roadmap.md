@@ -113,3 +113,8 @@ Planned modules:
 - Integrate schema validation into `case_io.py` run paths before workflow execution.
 - Export a JSON-schema-like V1 document and add schema-focused tests + documentation.
 
+
+## V1-038 - Crane Runway Demo Golden Regression Outputs
+- Add golden baseline files for demo case summary JSON and markdown report under `examples/golden/`.
+- Add regression tests that compare key summary demands/check flags and report output against the golden baselines.
+- Add update script + documentation for intentional golden refresh workflow and limitations.
