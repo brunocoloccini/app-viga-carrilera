@@ -143,3 +143,6 @@ Planned modules:
 - V1-046: Add generic criteria preset architecture for crane runway checks, including preset dataclasses, registry operations, built-in generic presets, conversion helpers, tests, and documentation.
 
 - V1-047: Add reusable steel material data modeling package (`section_core.materials`) with `SteelMaterial`, validated unit-aware factory conversion for stress/modulus values, and sample steel grades (F24/F36) for non-code-compliance demo use.
+
+
+- V1-048: Extend crane runway case schema/case I/O with optional JSON `material` blocks and `criteria_presets` references, including preset-to-limit conversion, material-aware Fy resolution, example case, and tests/documentation updates.

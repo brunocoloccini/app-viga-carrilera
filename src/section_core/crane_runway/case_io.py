@@ -11,11 +11,13 @@ from section_core import LineToLineJoin
 from section_core.components import PlateElement
 from section_core.section import Section
 from section_core.shapes import load_shape_library_json
+from section_core.materials import SteelMaterial
 from section_core.units.dimensions import Dimension
 from section_core.units.quantity import Quantity
 
 from .loads import CraneLoadModel, CraneWheelGroup, WheelLoad
 from .rail_eccentricity import RailEccentricityModel
+from .criteria_presets import CriteriaPresetError, CriteriaPresetNotFoundError, build_generic_criteria_preset_registry
 from .serviceability import DeflectionLimit
 from .stress_criteria import StressLimit
 from .workflow import CraneRunwayCalculationWorkflow, CraneRunwayWorkflowInput, CraneRunwayWorkflowResult
@@ -179,6 +181,27 @@ def _build_section(data: dict[str, Any]):
     return section
 
 
+def _build_material(data: dict[str, Any]) -> SteelMaterial | None:
+    material = data.get("material")
+    if material is None:
+        return None
+    row = _require_dict(material, "material")
+    kwargs = {
+        "material_id": str(_require_field(row, "material_id")),
+        "Fy": _quantity_value(row, "Fy", Dimension.STRESS),
+        "Fy_unit": "MPa",
+        "source": row.get("source"),
+        "metadata": dict(row.get("metadata") or {}),
+    }
+    if "Fu" in row:
+        kwargs["Fu"] = _quantity_value(row, "Fu", Dimension.STRESS)
+        kwargs["Fu_unit"] = "MPa"
+    if "E" in row:
+        kwargs["E"] = _quantity_value(row, "E", Dimension.STRESS)
+        kwargs["E_unit"] = "MPa"
+    return SteelMaterial.from_values(**kwargs)
+
+
 def _build_serviceability_limits(data: dict[str, Any]) -> list[DeflectionLimit]:
     limits = []
     for item in data.get("serviceability_limits", []):
@@ -188,10 +211,24 @@ def _build_serviceability_limits(data: dict[str, Any]) -> list[DeflectionLimit]:
             limits.append(DeflectionLimit.span_over(row["limit_id"], row["divisor"]))
         else:
             raise InvalidCraneRunwayCaseError(f"Unsupported serviceability limit type: {limit_type}")
+    presets = _require_dict(data.get("criteria_presets") or {}, "criteria_presets")
+    registry = build_generic_criteria_preset_registry()
+    for item in presets.get("deflection", []):
+        if isinstance(item, str):
+            preset_id = item
+            limit_id = item
+        else:
+            row = _require_dict(item, "criteria_presets.deflection item")
+            preset_id = str(_require_field(row, "preset_id"))
+            limit_id = str(row.get("limit_id") or preset_id)
+        try:
+            limits.append(registry.to_deflection_limit(preset_id=preset_id, limit_id=limit_id))
+        except CriteriaPresetNotFoundError as exc:
+            raise InvalidCraneRunwayCaseError(f"Unknown deflection preset_id '{preset_id}'.") from exc
     return limits
 
 
-def _build_stress_limits(data: dict[str, Any]) -> list[StressLimit]:
+def _build_stress_limits(data: dict[str, Any], material: SteelMaterial | None = None) -> list[StressLimit]:
     limits = []
     for item in data.get("stress_limits", []):
         row = _require_dict(item, "stress limit")
@@ -204,6 +241,34 @@ def _build_stress_limits(data: dict[str, Any]) -> list[StressLimit]:
             limits.append(StressLimit.absolute(row["limit_id"], value=allowable, unit="MPa"))
         else:
             raise InvalidCraneRunwayCaseError(f"Unsupported stress limit type: {limit_type}")
+    presets = _require_dict(data.get("criteria_presets") or {}, "criteria_presets")
+    registry = build_generic_criteria_preset_registry()
+    for item in presets.get("stress", []):
+        fy = None
+        if isinstance(item, str):
+            preset_id = item
+            limit_id = item
+        else:
+            row = _require_dict(item, "criteria_presets.stress item")
+            preset_id = str(_require_field(row, "preset_id"))
+            limit_id = str(row.get("limit_id") or preset_id)
+            if "Fy" in row:
+                fy = _quantity_value(row, "Fy", Dimension.STRESS)
+        try:
+            preset = registry.get_stress_preset(preset_id)
+        except CriteriaPresetNotFoundError as exc:
+            raise InvalidCraneRunwayCaseError(f"Unknown stress preset_id '{preset_id}'.") from exc
+        if preset.limit_type == "fraction_of_Fy" and fy is None:
+            if material is not None:
+                fy = material.Fy_internal_MPa
+            else:
+                raise InvalidCraneRunwayCaseError(
+                    f"Stress preset '{preset_id}' requires Fy. Provide criteria_presets.stress item Fy or top-level material.Fy."
+                )
+        try:
+            limits.append(registry.to_stress_limit(preset_id=preset_id, limit_id=limit_id, Fy=fy, Fy_unit="MPa"))
+        except CriteriaPresetError as exc:
+            raise InvalidCraneRunwayCaseError(f"Invalid stress preset conversion for '{preset_id}': {exc}") from exc
     return limits
 
 
@@ -259,6 +324,14 @@ def build_workflow_input_from_case_dict(data: dict[str, Any], *, validate: bool 
         )
 
     analysis = _require_dict(top["analysis"], "'analysis'")
+    material = _build_material(top)
+    e_internal_mpa = _quantity_value(analysis, "E", Dimension.STRESS) if "E" in analysis else (material.E_internal_MPa if material else None)
+    if e_internal_mpa is None:
+        raise InvalidCraneRunwayCaseError("Missing required modulus E. Provide analysis.E or material.E.")
+    metadata = dict(top.get("metadata") or {})
+    if material is not None:
+        metadata["material"] = material.to_dict()
+
     return CraneRunwayWorkflowInput(
         workflow_id=str(top["case_id"]),
         span_internal_mm=_quantity_value(top, "span", Dimension.LENGTH),
@@ -266,12 +339,12 @@ def build_workflow_input_from_case_dict(data: dict[str, Any], *, validate: bool 
         crane_load_model=model,
         movement_step_internal_mm=_quantity_value(analysis, "movement_step", Dimension.LENGTH),
         station_step_internal_mm=_quantity_value(analysis, "station_step", Dimension.LENGTH),
-        E_internal_MPa=_quantity_value(analysis, "E", Dimension.STRESS),
+        E_internal_MPa=e_internal_mpa,
         serviceability_limits=_build_serviceability_limits(top),
-        stress_limits=_build_stress_limits(top),
+        stress_limits=_build_stress_limits(top, material=material),
         rail_eccentricity_model=rail_model,
         warnings=list(top.get("warnings") or []),
-        metadata=dict(top.get("metadata") or {}),
+        metadata=metadata,
     )
 
 
