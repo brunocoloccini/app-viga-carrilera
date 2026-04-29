@@ -35,6 +35,18 @@ from .deflection_envelope import (
     MovingDeflectionPositionResult,
     SimpleSpanMovingDeflectionEnvelopeAnalyzer,
 )
+from .criteria_presets import (
+    CriteriaPresetError,
+    CriteriaPresetNotFoundError,
+    CriteriaPresetRegistry,
+    DeflectionLimitPreset,
+    DuplicateCriteriaPresetError,
+    GenericCriteriaPreset,
+    InvalidCriteriaPresetError,
+    StressLimitPreset,
+    build_generic_criteria_preset_registry,
+)
+
 from .serviceability import (
     DeflectionCriteriaSet,
     DeflectionLimit,
@@ -155,6 +167,15 @@ from .stress import (
 )
 
 __all__ = [
+    "CriteriaPresetNotFoundError",
+    "DuplicateCriteriaPresetError",
+    "InvalidCriteriaPresetError",
+    "CriteriaPresetError",
+    "build_generic_criteria_preset_registry",
+    "CriteriaPresetRegistry",
+    "StressLimitPreset",
+    "DeflectionLimitPreset",
+    "GenericCriteriaPreset",
     "UserFacingValidationReport",
     "UserFacingValidationMessage",
     "CraneRunwayCaseErrorFormatter",

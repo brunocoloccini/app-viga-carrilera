@@ -139,3 +139,5 @@ Planned modules:
 - V1-044: Add deterministic HTML golden baseline for the crane runway demo case, extend golden update script, and add CLI/formatter regression tests plus documentation updates.
 
 - V1-045: Add static HTML scenario-matrix index reporting (`matrix_reporting.py`), expose matrix reporting models/formatter, add CLI `--html`/`--output` support in case matrix runner, and add tests/documentation.
+
+- V1-046: Add generic criteria preset architecture for crane runway checks, including preset dataclasses, registry operations, built-in generic presets, conversion helpers, tests, and documentation.
