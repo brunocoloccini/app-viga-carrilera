@@ -14,6 +14,7 @@ from .shapes import (
     registry_to_json_dict,
 )
 from .units.quantity import Quantity
+from .materials import SteelMaterial, build_sample_steel_materials
 from .crane_runway import (
     GenericCriteriaPreset,
     DeflectionLimitPreset,
@@ -152,6 +153,8 @@ __all__ = [
     "CraneRunwayCaseInput",
     "GeometryTolerance",
     "Quantity",
+    "SteelMaterial",
+    "build_sample_steel_materials",
     "WheelLoad",
     "CraneWheelGroup",
     "CraneLoadModel",
