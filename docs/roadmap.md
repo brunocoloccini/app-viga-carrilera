@@ -141,3 +141,5 @@ Planned modules:
 - V1-045: Add static HTML scenario-matrix index reporting (`matrix_reporting.py`), expose matrix reporting models/formatter, add CLI `--html`/`--output` support in case matrix runner, and add tests/documentation.
 
 - V1-046: Add generic criteria preset architecture for crane runway checks, including preset dataclasses, registry operations, built-in generic presets, conversion helpers, tests, and documentation.
+
+- V1-047: Add reusable steel material data modeling package (`section_core.materials`) with `SteelMaterial`, validated unit-aware factory conversion for stress/modulus values, and sample steel grades (F24/F36) for non-code-compliance demo use.
