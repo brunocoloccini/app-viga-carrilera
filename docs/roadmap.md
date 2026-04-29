@@ -96,3 +96,8 @@ Planned modules:
 - Add `examples/end_to_end_crane_runway_demo.py` as the first full workflow demo from section assembly through reporting.
 - Add integration tests validating summary outputs, report content, and script execution.
 - Add dedicated documentation describing assumptions, analysis scope, and limitations.
+
+## V1-035 - Crane Runway High-Level Calculation Workflow
+- Add `workflow.py` orchestrator to execute full crane runway analysis sequence and produce demand summary + text/markdown reports.
+- Add workflow input/output data models with unit-aware factory and validation.
+- Add dedicated workflow tests and documentation for assumptions and limitations.
