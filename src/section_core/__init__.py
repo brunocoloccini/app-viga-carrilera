@@ -1,6 +1,6 @@
 """section_core package."""
 
-from .assembly import AssemblyOperation, NodeToNodeJoin, NodeToPointJoin
+from .assembly import AssemblyOperation, LineToLineJoin, NodeToNodeJoin, NodeToPointJoin
 from .components import PlateElement, RectangularElement, SectionElement
 from .geometry import GeometryTolerance, SectionLine, SectionPoint
 from .section import GrossElasticProperties, Section
@@ -12,6 +12,7 @@ __all__ = [
     "AssemblyOperation",
     "NodeToNodeJoin",
     "NodeToPointJoin",
+    "LineToLineJoin",
     "SectionLine",
     "SectionPoint",
     "SectionElement",

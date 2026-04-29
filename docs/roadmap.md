@@ -22,3 +22,5 @@ Planned modules:
 
 - V1-007: Assembly node-to-point join (`NodeToPointJoin`) in `section_core.assembly`.
 
+
+- V1-008: Assembly line-to-line join/alignment (`LineToLineJoin`) in `section_core.assembly`.
