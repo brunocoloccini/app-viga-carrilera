@@ -1,7 +1,7 @@
 """section_core package."""
 
 from .assembly import AssemblyOperation, LineToLineJoin, NodeToNodeJoin, NodeToPointJoin
-from .components import PlateElement, RectangularElement, SectionElement
+from .components import LibraryShapeComponent, PlateElement, RectangularElement, SectionElement
 from .geometry import GeometryTolerance, SectionLine, SectionPoint, Transform2D
 from .interfaces import ComponentInterface, ContactInterface, WeldInterface
 from .section import GrossElasticProperties, Section
@@ -20,6 +20,7 @@ __all__ = [
     "SectionElement",
     "RectangularElement",
     "PlateElement",
+    "LibraryShapeComponent",
     "ComponentInterface",
     "WeldInterface",
     "ContactInterface",
