@@ -14,6 +14,7 @@ from .point import Point2D
 from .section_line import SectionLine
 from .section_point import SectionPoint
 from .tolerance import GeometryTolerance
+from .transform import Transform2D
 
 __all__ = [
     "CoordinateFrame",
@@ -28,4 +29,5 @@ __all__ = [
     "SectionLine",
     "SectionPoint",
     "UnsupportedCoordinateFrameError",
+    "Transform2D",
 ]

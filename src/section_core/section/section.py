@@ -104,6 +104,10 @@ class Section:
 
         for component in self.components:
             self._validate_supported(component)
+            if component.rotation_deg != 0.0:
+                raise InvalidSectionPropertiesError(
+                    f"Gross elastic properties for rotated components are not implemented yet (component_id={component.element_id}, rotation_deg={component.rotation_deg})."
+                )
             comp_area = component.area_mm2()
             comp_center = component.centroid_point()
             dy = comp_center.y_internal_mm - yc
