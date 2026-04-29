@@ -112,6 +112,18 @@ from .case_io import (
     run_crane_runway_case_json,
 )
 
+from .case_schema import (
+    CASE_SCHEMA_VERSION,
+    CaseSchemaValidationIssue,
+    CaseSchemaValidationResult,
+    CraneRunwayCaseSchemaError,
+    InvalidCraneRunwayCaseSchemaError,
+    assert_valid_crane_runway_case_dict,
+    get_crane_runway_case_schema_v1,
+    validate_crane_runway_case_dict,
+    write_crane_runway_case_schema_v1,
+)
+
 from .stress import (
     CraneRunwayStressError,
     ElasticBendingStressResult,
@@ -123,6 +135,15 @@ from .stress import (
 )
 
 __all__ = [
+    "write_crane_runway_case_schema_v1",
+    "validate_crane_runway_case_dict",
+    "get_crane_runway_case_schema_v1",
+    "assert_valid_crane_runway_case_dict",
+    "InvalidCraneRunwayCaseSchemaError",
+    "CraneRunwayCaseSchemaError",
+    "CaseSchemaValidationResult",
+    "CaseSchemaValidationIssue",
+    "CASE_SCHEMA_VERSION",
     "run_crane_runway_case_json",
     "run_crane_runway_case_dict",
     "build_workflow_input_from_case_dict",

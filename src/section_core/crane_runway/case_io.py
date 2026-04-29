@@ -19,6 +19,7 @@ from .rail_eccentricity import RailEccentricityModel
 from .serviceability import DeflectionLimit
 from .stress_criteria import StressLimit
 from .workflow import CraneRunwayCalculationWorkflow, CraneRunwayWorkflowInput, CraneRunwayWorkflowResult
+from .case_schema import InvalidCraneRunwayCaseSchemaError, assert_valid_crane_runway_case_dict
 
 
 class CraneRunwayCaseIOError(ValueError):
@@ -206,7 +207,12 @@ def _build_stress_limits(data: dict[str, Any]) -> list[StressLimit]:
     return limits
 
 
-def build_workflow_input_from_case_dict(data: dict[str, Any]) -> CraneRunwayWorkflowInput:
+def build_workflow_input_from_case_dict(data: dict[str, Any], *, validate: bool = True, strict: bool = True) -> CraneRunwayWorkflowInput:
+    if validate:
+        try:
+            assert_valid_crane_runway_case_dict(data, strict=strict)
+        except InvalidCraneRunwayCaseSchemaError as exc:
+            raise InvalidCraneRunwayCaseError(str(exc)) from exc
     top = _require_dict(data, "Top-level case")
     for req in ["case_id", "shape_library_path", "base_shape_id", "span", "analysis", "crane"]:
         _require_field(top, req)
@@ -272,7 +278,8 @@ def build_workflow_input_from_case_dict(data: dict[str, Any]) -> CraneRunwayWork
 def run_crane_runway_case_dict(data: dict[str, Any]) -> CraneRunwayCaseResult:
     try:
         case_input = crane_runway_case_from_json_dict(data)
-        wi = build_workflow_input_from_case_dict(data)
+        assert_valid_crane_runway_case_dict(data, strict=True)
+        wi = build_workflow_input_from_case_dict(data, validate=False)
         wr = CraneRunwayCalculationWorkflow(wi).run()
         return CraneRunwayCaseResult(
             case_id=case_input.case_id,
@@ -282,8 +289,8 @@ def run_crane_runway_case_dict(data: dict[str, Any]) -> CraneRunwayCaseResult:
             markdown_report=wr.markdown_report,
             metadata=case_input.metadata or {},
         )
-    except CraneRunwayCaseIOError:
-        raise
+    except (CraneRunwayCaseIOError, InvalidCraneRunwayCaseSchemaError) as exc:
+        raise InvalidCraneRunwayCaseError(str(exc)) from exc
     except Exception as exc:
         raise CraneRunwayCaseExecutionError(f"Failed to run case '{data.get('case_id', '<unknown>')}': {exc}") from exc
 
