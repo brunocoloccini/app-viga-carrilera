@@ -75,6 +75,8 @@ def get_crane_runway_case_schema_v1() -> dict[str, Any]:
             "crane": {"type": "object"},
             "serviceability_limits": {"type": "array"},
             "stress_limits": {"type": "array"},
+            "material": {"type": "object"},
+            "criteria_presets": {"type": "object"},
             "rail_eccentricity": {"type": "object"},
             "warnings": {"type": "array", "items": {"type": "string"}},
             "metadata": {"type": "object"},
@@ -168,7 +170,8 @@ def validate_crane_runway_case_dict(data: Any, strict: bool = True) -> CaseSchem
         analysis = data["analysis"]
         validate_quantity(analysis, "movement_step", "$.analysis.movement_step")
         validate_quantity(analysis, "station_step", "$.analysis.station_step")
-        validate_quantity(analysis, "E", "$.analysis.E")
+        if "E" in analysis:
+            validate_quantity(analysis, "E", "$.analysis.E")
 
     if not isinstance(data.get("crane"), dict):
         add("$.crane", "Required field must be an object.")
@@ -237,6 +240,65 @@ def validate_crane_runway_case_dict(data: Any, strict: bool = True) -> CaseSchem
             validate_quantity(lim, "Fy", f"{p}.Fy")
             if not isinstance(lim.get("factor"), (int, float)) or lim["factor"] <= 0:
                 add(f"{p}.factor", "Must be numeric > 0 for fraction_of_Fy.")
+
+
+    material = data.get("material")
+    if material is not None:
+        if not isinstance(material, dict):
+            add("$.material", "Must be an object.")
+        else:
+            if not is_non_empty_string(material.get("material_id")):
+                add("$.material.material_id", "Missing required non-empty material_id.")
+            validate_quantity(material, "Fy", "$.material.Fy")
+            if "Fu" in material:
+                validate_quantity(material, "Fu", "$.material.Fu")
+            if "E" in material:
+                validate_quantity(material, "E", "$.material.E")
+            if "source" in material and not is_non_empty_string(material.get("source")):
+                add("$.material.source", "Must be a non-empty string when provided.")
+            if "metadata" in material and not isinstance(material.get("metadata"), dict):
+                add("$.material.metadata", "Must be an object when provided.")
+
+    criteria_presets = data.get("criteria_presets")
+    if criteria_presets is not None:
+        if not isinstance(criteria_presets, dict):
+            add("$.criteria_presets", "Must be an object.")
+        else:
+            deflection_items = criteria_presets.get("deflection", [])
+            if not isinstance(deflection_items, list):
+                add("$.criteria_presets.deflection", "Must be a list when provided.")
+            else:
+                for idx, item in enumerate(deflection_items):
+                    p = f"$.criteria_presets.deflection[{idx}]"
+                    if isinstance(item, str):
+                        if not item.strip():
+                            add(p, "Preset id string must be non-empty.")
+                    elif isinstance(item, dict):
+                        if not is_non_empty_string(item.get("preset_id")):
+                            add(f"{p}.preset_id", "Missing required non-empty preset_id.")
+                        if "limit_id" in item and not is_non_empty_string(item.get("limit_id")):
+                            add(f"{p}.limit_id", "Must be a non-empty string when provided.")
+                    else:
+                        add(p, "Must be a string preset_id or an object with preset_id.")
+
+            stress_items = criteria_presets.get("stress", [])
+            if not isinstance(stress_items, list):
+                add("$.criteria_presets.stress", "Must be a list when provided.")
+            else:
+                for idx, item in enumerate(stress_items):
+                    p = f"$.criteria_presets.stress[{idx}]"
+                    if isinstance(item, str):
+                        if not item.strip():
+                            add(p, "Preset id string must be non-empty.")
+                    elif isinstance(item, dict):
+                        if not is_non_empty_string(item.get("preset_id")):
+                            add(f"{p}.preset_id", "Missing required non-empty preset_id.")
+                        if "limit_id" in item and not is_non_empty_string(item.get("limit_id")):
+                            add(f"{p}.limit_id", "Must be a non-empty string when provided.")
+                        if "Fy" in item:
+                            validate_quantity(item, "Fy", f"{p}.Fy")
+                    else:
+                        add(p, "Must be a string preset_id or an object with preset_id.")
 
     rail = data.get("rail_eccentricity")
     if rail is not None:

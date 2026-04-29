@@ -52,6 +52,12 @@
     "stress_limits": {
       "type": "array"
     },
+    "material": {
+      "type": "object"
+    },
+    "criteria_presets": {
+      "type": "object"
+    },
     "rail_eccentricity": {
       "type": "object"
     },
