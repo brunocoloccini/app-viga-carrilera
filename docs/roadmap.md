@@ -85,3 +85,9 @@ Planned modules:
 - Add `CraneRunwayDemandSummary` as a reporting/aggregation object for key crane runway analysis outputs.
 - Add pass/fail aggregation helpers and a basic JSON-serializable `to_dict()` export.
 - Add `CraneRunwayDemandSummaryBuilder.build_basic_summary(...)` convenience constructor.
+
+## V1-033 - Crane Runway Demand Summary Reporting
+- Add a lightweight formatting layer (`reporting.py`) for converting `CraneRunwayDemandSummary` into text and Markdown outputs.
+- Add deterministic engineering-unit conversions and fixed-precision presentation formatting.
+- Add summary validation and reporting-specific errors for invalid formatting inputs.
+- Add tests and documentation for report formatting behavior and limitations.
