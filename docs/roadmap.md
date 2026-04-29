@@ -46,3 +46,5 @@ Planned modules:
 
 
 - V1-018: Manually curated CIRSOC sample shape library JSON (IPN 200 and IPB 200) with explicit unit conversion tests, metadata traceability, and section integration checks.
+
+- V1-019: Integrated validation case for a manually curated CIRSOC sample IPN 200 profile plus a top cover plate assembled with `LineToLineJoin`, with weld interface recording and gross elastic properties verified against hand calculations.
