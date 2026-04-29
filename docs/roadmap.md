@@ -60,3 +60,6 @@ Planned modules:
 
 
 - V1-024: Simple-span fixed-position elastic vertical deflection analysis for crane runway beams (vertical wheel loads only).
+
+
+- V1-025: Moving-load vertical deflection envelope for simple-span crane runway beams (grid-based moving offsets and station envelope sampling).
