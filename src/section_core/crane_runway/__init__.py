@@ -124,6 +124,12 @@ from .case_schema import (
     write_crane_runway_case_schema_v1,
 )
 
+from .error_formatting import (
+    CraneRunwayCaseErrorFormatter,
+    UserFacingValidationMessage,
+    UserFacingValidationReport,
+)
+
 from .stress import (
     CraneRunwayStressError,
     ElasticBendingStressResult,
@@ -135,6 +141,9 @@ from .stress import (
 )
 
 __all__ = [
+    "UserFacingValidationReport",
+    "UserFacingValidationMessage",
+    "CraneRunwayCaseErrorFormatter",
     "write_crane_runway_case_schema_v1",
     "validate_crane_runway_case_dict",
     "get_crane_runway_case_schema_v1",
