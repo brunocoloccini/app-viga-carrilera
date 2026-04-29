@@ -30,6 +30,10 @@ Demand values follow existing reporting behavior:
 - fixed precision with deterministic formatting;
 - missing values render `N/A`.
 
+
+## Regression coverage
+The demo HTML output for `examples/crane_runway_case_demo.json` is covered by golden regression in `tests/test_crane_runway_html_golden_regression.py` against `examples/golden/crane_runway_case_demo_golden_report.html`.
+
 ## Limitations
 - Static HTML only.
 - No PDF export.
