@@ -55,6 +55,15 @@ from .lateral_analysis import (
     SimpleSpanLateralAnalysisResult,
     SimpleSpanRunwayBeamLateralAnalyzer,
 )
+from .stress_criteria import (
+    DuplicateStressLimitError,
+    ElasticStressCriteriaChecker,
+    InvalidStressLimitError,
+    StressCriteriaError,
+    StressCriteriaSet,
+    StressLimit,
+    StressUtilizationResult,
+)
 from .stress import (
     CraneRunwayStressError,
     ElasticBendingStressResult,
@@ -119,6 +128,13 @@ __all__ = [
     "CraneRunwayLateralAnalysisError",
     "InvalidLateralMomentError",
     "InvalidLateralStressPropertiesError",
+    "StressLimit",
+    "StressUtilizationResult",
+    "ElasticStressCriteriaChecker",
+    "StressCriteriaSet",
+    "StressCriteriaError",
+    "InvalidStressLimitError",
+    "DuplicateStressLimitError",
     "BiaxialStressAtPoint",
     "ElasticBiaxialStressResult",
     "ElasticBiaxialStressAnalyzer",
