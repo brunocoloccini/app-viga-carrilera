@@ -6,13 +6,15 @@ Golden regression tests snapshot expected outputs for the demo crane runway JSON
 - sign conventions and offsets;
 - unit conversions/presentation;
 - summary flags and warnings;
-- markdown report formatting.
+- markdown report formatting;
+- HTML report formatting.
 
 This is a **regression baseline**, not an independent engineering verification.
 
 ## Golden Files
 - `examples/golden/crane_runway_case_demo_golden_summary.json`
 - `examples/golden/crane_runway_case_demo_golden_report.md`
+- `examples/golden/crane_runway_case_demo_golden_report.html`
 
 They are generated from:
 - `run_crane_runway_case_json("examples/crane_runway_case_demo.json")`
@@ -36,7 +38,10 @@ They are generated from:
 5. Markdown report match after deterministic normalization:
    - newline normalization;
    - trailing whitespace trim.
-6. Golden metadata fields exist and match expected values:
+6. HTML report match after deterministic normalization:
+   - newline normalization;
+   - trailing whitespace trim.
+7. Golden metadata fields exist and match expected values:
    - `schema_version`
    - `source_case_path`
    - `metadata.generated_by`
@@ -59,6 +64,8 @@ pytest -q
 ```
 
 Only update golden files after intentional calculation/reporting changes are reviewed.
+
+Markdown and HTML goldens are formatting baselines and should be reviewed carefully before refresh to avoid accepting accidental output drift.
 
 ## Validation Scope and Limitations
 - Not a design-code verification.

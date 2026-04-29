@@ -135,3 +135,5 @@ Planned modules:
 
 
 - V1-043: Add static HTML export for crane runway demand summaries, integrate `--html` mode in case execution CLI, and add tests/documentation for deterministic escaped report output.
+
+- V1-044: Add deterministic HTML golden baseline for the crane runway demo case, extend golden update script, and add CLI/formatter regression tests plus documentation updates.
