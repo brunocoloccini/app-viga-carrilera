@@ -107,9 +107,13 @@ from .crane_runway import (
     run_crane_runway_case_json,
     CraneRunwayWorkflowInput,
     CraneRunwayWorkflowResult,
+    CraneRunwayCaseErrorFormatter,
 )
 
 __all__ = [
+    "UserFacingValidationReport",
+    "UserFacingValidationMessage",
+    "CraneRunwayCaseErrorFormatter",
     "write_crane_runway_case_schema_v1",
     "validate_crane_runway_case_dict",
     "get_crane_runway_case_schema_v1",
