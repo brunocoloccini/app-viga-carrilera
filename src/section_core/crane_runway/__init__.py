@@ -18,6 +18,15 @@ from .envelope import (
     WheelGroupLongerThanSpanError,
 )
 from .envelope_curves import EnvelopeCurveError, EnvelopeCurvePoint, EnvelopeCurveResult, InvalidEnvelopeStationError, SimpleSpanEnvelopeCurveAnalyzer
+from .deflection_envelope import (
+    DeflectionEnvelopeError,
+    DeflectionEnvelopeStationPoint,
+    InvalidDeflectionEnvelopeStationError,
+    InvalidDeflectionEnvelopeStepError,
+    MovingDeflectionEnvelopeResult,
+    MovingDeflectionPositionResult,
+    SimpleSpanMovingDeflectionEnvelopeAnalyzer,
+)
 from .loads import CraneLoadCase, CraneLoadModel, CraneWheelGroup, WheelLoad
 
 __all__ = [
@@ -45,4 +54,11 @@ __all__ = [
     "CraneRunwayDeflectionError",
     "InvalidFlexuralRigidityError",
     "DeflectionSamplePointError",
+    "MovingDeflectionPositionResult",
+    "DeflectionEnvelopeStationPoint",
+    "MovingDeflectionEnvelopeResult",
+    "SimpleSpanMovingDeflectionEnvelopeAnalyzer",
+    "DeflectionEnvelopeError",
+    "InvalidDeflectionEnvelopeStepError",
+    "InvalidDeflectionEnvelopeStationError",
 ]
