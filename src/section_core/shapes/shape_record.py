@@ -62,17 +62,6 @@ class ShapeRecord:
             except (UnitError, UnitCompatibilityError) as exc:
                 raise InvalidShapeRecordError(f"Invalid unit for {field_name}: {exc}") from exc
 
-        def _convert_mm6(value: float | None, unit: str | None, field_name: str) -> float | None:
-            if value is None:
-                return None
-            used_unit = unit or "mm6"
-            factors = {"mm6": 1.0, "cm6": 1_000_000.0, "m6": 1_000_000_000_000_000_000.0, "in6": 25.4**6, "ft6": 304.8**6}
-            if used_unit not in factors:
-                raise InvalidShapeRecordError(
-                    f"Invalid unit for {field_name}: '{used_unit}'. Expected one of {sorted(factors)}."
-                )
-            return float(value) * factors[used_unit]
-
         return cls(
             shape_id=kwargs["shape_id"],
             shape_family=kwargs["shape_family"],
@@ -88,7 +77,7 @@ class ShapeRecord:
                 kwargs.get("weight_per_length"), kwargs.get("weight_per_length_unit"), Dimension.MASS_PER_LENGTH, "weight_per_length"
             ),
             J_mm4=_convert(kwargs.get("J"), kwargs.get("J_unit"), Dimension.INERTIA, "J"),
-            Cw_mm6=_convert_mm6(kwargs.get("Cw"), kwargs.get("Cw_unit"), "Cw"),
+            Cw_mm6=_convert(kwargs.get("Cw"), kwargs.get("Cw_unit"), Dimension.WARPING_CONSTANT, "Cw"),
             S_y_top_mm3=_convert(kwargs.get("S_y_top"), kwargs.get("S_y_top_unit"), Dimension.SECTION_MODULUS, "S_y_top"),
             S_y_bottom_mm3=_convert(kwargs.get("S_y_bottom"), kwargs.get("S_y_bottom_unit"), Dimension.SECTION_MODULUS, "S_y_bottom"),
             S_z_left_mm3=_convert(kwargs.get("S_z_left"), kwargs.get("S_z_left_unit"), Dimension.SECTION_MODULUS, "S_z_left"),

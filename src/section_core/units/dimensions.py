@@ -12,6 +12,7 @@ class Dimension:
     LENGTH = "length"
     AREA = "area"
     INERTIA = "inertia"
+    WARPING_CONSTANT = "warping_constant"
     SECTION_MODULUS = "section_modulus"
     FORCE = "force"
     MOMENT = "moment"

@@ -33,9 +33,11 @@ These are **FAKE SAMPLE DATA ONLY** for tests/examples and are not real catalog 
 - inertia / J -> mm4
 - section modulus -> mm3
 - weight per length -> kg/m
-- warping constant Cw -> mm6 (supported via explicit mm6/cm6/m6/in6/ft6 mapping)
+- warping constant Cw -> mm6 (native `warping_constant` dimension in UnitRegistry, including mm6/cm6/m6/in6/ft6)
 
 Incompatible units are rejected with clear `InvalidShapeRecordError` messages.
+
+CIRSOC-style tabulated `Cw` values in `cm6` can be entered directly and are converted to internal `mm6`.
 
 ## Why keep profile databases separate from section instances
 
