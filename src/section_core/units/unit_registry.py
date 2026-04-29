@@ -21,6 +21,7 @@ class UnitRegistry:
         Dimension.LENGTH: "mm",
         Dimension.AREA: "mm2",
         Dimension.INERTIA: "mm4",
+        Dimension.WARPING_CONSTANT: "mm6",
         Dimension.SECTION_MODULUS: "mm3",
         Dimension.FORCE: "N",
         Dimension.MOMENT: "Nmm",
@@ -61,6 +62,12 @@ class UnitRegistry:
             "m4": UnitDef(Dimension.INERTIA, 1_000_000_000_000.0),
             "in4": UnitDef(Dimension.INERTIA, in_to_mm**4),
             "ft4": UnitDef(Dimension.INERTIA, ft_to_mm**4),
+            # warping constant
+            "mm6": UnitDef(Dimension.WARPING_CONSTANT, 1.0),
+            "cm6": UnitDef(Dimension.WARPING_CONSTANT, 1_000_000.0),
+            "m6": UnitDef(Dimension.WARPING_CONSTANT, 1_000_000_000_000_000_000.0),
+            "in6": UnitDef(Dimension.WARPING_CONSTANT, in_to_mm**6),
+            "ft6": UnitDef(Dimension.WARPING_CONSTANT, ft_to_mm**6),
             # section modulus
             "mm3": UnitDef(Dimension.SECTION_MODULUS, 1.0),
             "cm3": UnitDef(Dimension.SECTION_MODULUS, 1000.0),

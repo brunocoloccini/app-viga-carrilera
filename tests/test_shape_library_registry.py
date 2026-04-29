@@ -65,6 +65,40 @@ def test_shape_record_from_values_unit_aware_conversion():
     assert rec.Izz_mm4 == pytest.approx(12 * 10000.0)
 
 
+def test_shape_record_from_values_converts_cw_cm6_to_mm6():
+    rec = ShapeRecord.from_values(
+        shape_id="A",
+        shape_family="W",
+        shape_name="W_A",
+        source="tests_fake_data",
+        depth=300,
+        width=150,
+        area=5000,
+        Iyy=9e7,
+        Izz=7e6,
+        Cw=2.5,
+        Cw_unit="cm6",
+    )
+    assert rec.Cw_mm6 == pytest.approx(2.5e6)
+
+
+def test_shape_record_from_values_rejects_cw_with_inertia_units():
+    with pytest.raises(InvalidShapeRecordError):
+        ShapeRecord.from_values(
+            shape_id="A",
+            shape_family="W",
+            shape_name="W_A",
+            source="tests_fake_data",
+            depth=300,
+            width=150,
+            area=5000,
+            Iyy=9e7,
+            Izz=7e6,
+            Cw=2.5,
+            Cw_unit="cm4",
+        )
+
+
 def test_registry_add_get_duplicate_missing():
     reg = ShapeLibraryRegistry()
     reg.add(_record())

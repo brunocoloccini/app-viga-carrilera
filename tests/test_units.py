@@ -58,3 +58,15 @@ def test_original_unit_preserved():
     q = Quantity(250, "kN", Dimension.FORCE)
     assert q.unit == "kN"
     assert q.original_text == "250 kN"
+
+
+def test_warping_constant_cm6_to_mm6():
+    q = Quantity(1, "cm6", Dimension.WARPING_CONSTANT)
+    assert q.internal_unit == "mm6"
+    assert q.internal_value == pytest.approx(1_000_000.0)
+
+
+def test_warping_constant_in6_to_mm6():
+    q = Quantity(1, "in6", Dimension.WARPING_CONSTANT)
+    assert q.internal_unit == "mm6"
+    assert q.internal_value == pytest.approx(25.4**6)
