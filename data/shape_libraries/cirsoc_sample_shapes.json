@@ -1,0 +1,62 @@
+{
+  "library_id": "cirsoc_sample_shapes",
+  "name": "CIRSOC Sample Shapes",
+  "source": "CIRSOC 301-EL / 302-EL Tablas de Perfiles",
+  "version": "0.1.0",
+  "unit_system": "mixed_explicit",
+  "description": "Small manually curated CIRSOC sample shape dataset for validation only.",
+  "records": [
+    {
+      "shape_id": "CIRSOC_IPN_200",
+      "shape_family": "IPN",
+      "shape_name": "IPN 200",
+      "source": "CIRSOC 301-EL / 302-EL Tablas de Perfiles",
+      "depth": {"value": 200, "unit": "mm"},
+      "width": {"value": 90, "unit": "mm"},
+      "area": {"value": 33.4, "unit": "cm2"},
+      "weight_per_length": {"value": 26.2, "unit": "kg/m"},
+      "Iyy": {"value": 2140, "unit": "cm4"},
+      "Izz": {"value": 117, "unit": "cm4"},
+      "Iyz": {"value": 0, "unit": "cm4"},
+      "J": {"value": 11.2, "unit": "cm4"},
+      "Cw": {"value": 10520, "unit": "cm6"},
+      "metadata": {
+        "source_document": "CIRSOC tablas perfiles.pdf",
+        "source_table": "IPN según IRAM-IAS U 500-511",
+        "manually_curated": true,
+        "production_complete_library": false,
+        "requires_independent_verification_before_design_use": true,
+        "axis_mapping": {
+          "table_Ix_maps_to": "Iyy_mm4",
+          "table_Iy_maps_to": "Izz_mm4"
+        }
+      }
+    },
+    {
+      "shape_id": "CIRSOC_IPB_200",
+      "shape_family": "IPB",
+      "shape_name": "IPB 200",
+      "source": "CIRSOC 301-EL / 302-EL Tablas de Perfiles",
+      "depth": {"value": 200, "unit": "mm"},
+      "width": {"value": 200, "unit": "mm"},
+      "area": {"value": 78.1, "unit": "cm2"},
+      "weight_per_length": {"value": 61.3, "unit": "kg/m"},
+      "Iyy": {"value": 5700, "unit": "cm4"},
+      "Izz": {"value": 2000, "unit": "cm4"},
+      "Iyz": {"value": 0, "unit": "cm4"},
+      "J": {"value": 49.1, "unit": "cm4"},
+      "Cw": {"value": 171490, "unit": "cm6"},
+      "metadata": {
+        "source_document": "CIRSOC tablas perfiles.pdf",
+        "source_table": "IPB según IRAM-IAS U 500-215-2",
+        "manually_curated": true,
+        "production_complete_library": false,
+        "requires_independent_verification_before_design_use": true,
+        "axis_mapping": {
+          "table_Ix_maps_to": "Iyy_mm4",
+          "table_Iy_maps_to": "Izz_mm4"
+        }
+      }
+    }
+  ]
+}
