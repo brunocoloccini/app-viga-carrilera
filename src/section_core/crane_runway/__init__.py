@@ -1,5 +1,13 @@
 """Crane runway models package."""
 
+from .biaxial_stress import (
+    BiaxialStressAtPoint,
+    CraneRunwayBiaxialStressError,
+    ElasticBiaxialStressAnalyzer,
+    ElasticBiaxialStressResult,
+    InvalidBiaxialMomentError,
+    InvalidBiaxialStressPropertiesError,
+)
 from .analysis import BeamAnalysisPoint, SimpleSpanAnalysisResult, SimpleSpanRunwayBeamAnalyzer
 from .deflection import (
     CraneRunwayDeflectionError,
@@ -111,4 +119,10 @@ __all__ = [
     "CraneRunwayLateralAnalysisError",
     "InvalidLateralMomentError",
     "InvalidLateralStressPropertiesError",
+    "BiaxialStressAtPoint",
+    "ElasticBiaxialStressResult",
+    "ElasticBiaxialStressAnalyzer",
+    "CraneRunwayBiaxialStressError",
+    "InvalidBiaxialStressPropertiesError",
+    "InvalidBiaxialMomentError",
 ]

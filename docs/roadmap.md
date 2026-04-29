@@ -72,3 +72,5 @@ Planned modules:
 
 
 - V1-028: Simple-span lateral wheel-load analysis and elastic lateral bending stress using weak-axis section moduli (`S_z_left_mm3`, `S_z_right_mm3`) in `section_core.crane_runway.lateral_analysis`.
+
+- V1-029: Elastic biaxial stress combination for crane runway beams (My/Sy + Mz/Sz) at representative corner fibers; stress calculation only (no code checks).
