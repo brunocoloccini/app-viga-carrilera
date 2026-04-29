@@ -76,3 +76,6 @@ Planned modules:
 - V1-029: Elastic biaxial stress combination for crane runway beams (My/Sy + Mz/Sz) at representative corner fibers; stress calculation only (no code checks).
 
 - V1-030: Generic elastic stress utilization criteria/checking layer for vertical, lateral, and biaxial stress demand vs configurable allowable stress limits.
+
+
+- V1-031: Rail/load eccentricity torsional input model for crane runway beams (signed wheel torsional moments from vertical eccentricity and lateral load height).
