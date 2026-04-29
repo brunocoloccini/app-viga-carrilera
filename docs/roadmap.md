@@ -58,3 +58,5 @@ Planned modules:
 
 - V1-023: Station-based shear and bending-moment envelope curves for moving wheel groups on simple-span crane runway beams.
 
+
+- V1-024: Simple-span fixed-position elastic vertical deflection analysis for crane runway beams (vertical wheel loads only).

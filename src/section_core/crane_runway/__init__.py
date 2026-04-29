@@ -1,6 +1,14 @@
 """Crane runway models package."""
 
 from .analysis import BeamAnalysisPoint, SimpleSpanAnalysisResult, SimpleSpanRunwayBeamAnalyzer
+from .deflection import (
+    CraneRunwayDeflectionError,
+    DeflectionAnalysisPoint,
+    DeflectionSamplePointError,
+    InvalidFlexuralRigidityError,
+    SimpleSpanDeflectionResult,
+    SimpleSpanRunwayBeamDeflectionAnalyzer,
+)
 from .envelope import (
     InvalidEnvelopeStepError,
     MovingLoadEnvelopeError,
@@ -31,4 +39,10 @@ __all__ = [
     "SimpleSpanEnvelopeCurveAnalyzer",
     "EnvelopeCurveError",
     "InvalidEnvelopeStationError",
+    "DeflectionAnalysisPoint",
+    "SimpleSpanDeflectionResult",
+    "SimpleSpanRunwayBeamDeflectionAnalyzer",
+    "CraneRunwayDeflectionError",
+    "InvalidFlexuralRigidityError",
+    "DeflectionSamplePointError",
 ]
