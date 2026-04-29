@@ -45,6 +45,10 @@ from .crane_runway import (
     DeflectionEnvelopeError,
     InvalidDeflectionEnvelopeStepError,
     InvalidDeflectionEnvelopeStationError,
+    DeflectionLimit,
+    ServiceabilityCheckResult,
+    DeflectionServiceabilityChecker,
+    DeflectionCriteriaSet,
     WheelLoad,
 )
 
@@ -82,6 +86,10 @@ __all__ = [
     "DeflectionEnvelopeError",
     "InvalidDeflectionEnvelopeStepError",
     "InvalidDeflectionEnvelopeStationError",
+    "DeflectionLimit",
+    "ServiceabilityCheckResult",
+    "DeflectionServiceabilityChecker",
+    "DeflectionCriteriaSet",
     "AssemblyOperation",
     "NodeToNodeJoin",
     "NodeToPointJoin",

@@ -63,3 +63,6 @@ Planned modules:
 
 
 - V1-025: Moving-load vertical deflection envelope for simple-span crane runway beams (grid-based moving offsets and station envelope sampling).
+
+
+- V1-026: Configurable serviceability criteria/checking model for vertical crane runway deflection (span/N, absolute, and minimum-combined limits).
