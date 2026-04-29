@@ -9,6 +9,7 @@ from .envelope import (
     SimpleSpanMovingLoadEnvelopeAnalyzer,
     WheelGroupLongerThanSpanError,
 )
+from .envelope_curves import EnvelopeCurveError, EnvelopeCurvePoint, EnvelopeCurveResult, InvalidEnvelopeStationError, SimpleSpanEnvelopeCurveAnalyzer
 from .loads import CraneLoadCase, CraneLoadModel, CraneWheelGroup, WheelLoad
 
 __all__ = [
@@ -25,4 +26,9 @@ __all__ = [
     "MovingLoadEnvelopeError",
     "InvalidEnvelopeStepError",
     "WheelGroupLongerThanSpanError",
+    "EnvelopeCurvePoint",
+    "EnvelopeCurveResult",
+    "SimpleSpanEnvelopeCurveAnalyzer",
+    "EnvelopeCurveError",
+    "InvalidEnvelopeStationError",
 ]
