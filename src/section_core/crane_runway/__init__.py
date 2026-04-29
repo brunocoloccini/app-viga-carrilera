@@ -95,6 +95,13 @@ from .html_reporting import (
     InvalidHtmlReportSummaryError,
 )
 
+from .matrix_reporting import (
+    CraneRunwayMatrixCaseRow,
+    CraneRunwayMatrixReport,
+    CraneRunwayMatrixHtmlFormatter,
+    MatrixReportingError,
+)
+
 from .workflow import (
     CraneRunwayCalculationWorkflow,
     CraneRunwayWorkflowError,
@@ -189,7 +196,11 @@ __all__ = [
     "InvalidDemandSummaryError",
     "CraneRunwayDemandSummaryFormatter",
     "CraneRunwayDemandSummaryHtmlFormatter",
-    "CraneRunwayHtmlReport",
+        "CraneRunwayMatrixCaseRow",
+    "CraneRunwayMatrixReport",
+    "CraneRunwayMatrixHtmlFormatter",
+    "MatrixReportingError",
+"CraneRunwayHtmlReport",
     "HtmlReportingError",
     "InvalidHtmlReportSummaryError",
     "CraneRunwaySummaryReport",
