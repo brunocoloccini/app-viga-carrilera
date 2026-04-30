@@ -215,3 +215,25 @@ Limitations:
 - Advanced/non-common fields still require direct JSON editing.
 - No official CIRSOC/CISC/AISC checks.
 - No fatigue, torsion/warping stress, or LTB checks.
+
+
+## Visual Preview panel (V1-067)
+
+The local UI now includes a **Visual Preview** panel with a **Refresh Visual Preview** action.
+
+What it renders (browser-side only):
+- **Beam Preview**: simple schematic of span, supports, and wheel markers/labels (`wheel_id`, vertical force, `position_x`).
+- **Section Preview**: placeholder base shape rectangle labeled by `base_shape_id`, optional top cover plate marker when enabled, material label (`material_id`, `Fy`), and rail eccentricity enabled/disabled label.
+- **Preview Summary**: key-case table with `case_id`, `base_shape_id`, `span`, wheel count, cover plate enabled, `material_id`, rail eccentricity enabled, and criteria presets.
+
+Status behavior:
+- Success: `Visual preview refreshed.`
+- Invalid JSON: `Cannot refresh visual preview: invalid JSON.`
+
+Important limitations:
+- `Preview is schematic only and not to scale.`
+- This preview does **not** run validation or calculations.
+- No structural formulas or demand/check logic are executed by preview refresh.
+
+Refresh integration:
+- Visual preview refresh is called after **Load Template**, **Import JSON File**, and **Apply Form To JSON** complete.

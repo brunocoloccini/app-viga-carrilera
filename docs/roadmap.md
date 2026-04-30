@@ -183,3 +183,6 @@ Planned modules:
 - V1-065: Local UI autosave and session restore (browser-side localStorage only, with clear saved session control).
 
 - V1-066: Local UI common input form panel.
+
+
+- V1-067: Local UI visual preview pack.
