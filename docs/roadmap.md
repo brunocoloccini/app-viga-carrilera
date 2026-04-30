@@ -163,3 +163,5 @@ Planned modules:
 - V1-055: Add beta health check script for public API/export/CLI/docs/test sanity.
 
 - [x] V1-056 JSON case template generator for crane runway beta workflows.
+
+- [x] V1-057 Add crane runway project workspace initializer script, tests, and documentation.

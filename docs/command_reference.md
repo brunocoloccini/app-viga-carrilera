@@ -54,3 +54,23 @@ PYTHONPATH=src python scripts/run_beta_health_check.py --skip-pytest --quiet
 - `--overwrite`: allow replacing an existing file.
 
 Exit codes: `0` success, `1` template/runtime error (including unknown template), `2` CLI argument error.
+
+
+## init_crane_runway_project.py
+
+```bash
+PYTHONPATH=src python scripts/init_crane_runway_project.py --name <project_name> --template <template_id>
+PYTHONPATH=src python scripts/init_crane_runway_project.py --name <project_name> --template <template_id> --validate
+PYTHONPATH=src python scripts/init_crane_runway_project.py --name <project_name> --template <template_id> --run
+PYTHONPATH=src python scripts/init_crane_runway_project.py --name <project_name> --template <template_id> --root <path>
+PYTHONPATH=src python scripts/init_crane_runway_project.py --name <project_name> --template <template_id> --overwrite
+```
+
+- `--name`: required project name (letters/numbers/dash/underscore only).
+- `--template`: required built-in template id.
+- `--root`: optional workspace root (default `projects`).
+- `--overwrite`: allow replacing known generated files in existing non-empty project folder.
+- `--validate`: validate generated `input_case.json`.
+- `--run`: implies validate and writes report package to `outputs/`.
+
+Exit codes: `0` success, `1` user/runtime error (for example unknown template, invalid project name, or non-empty target without `--overwrite`), `2` CLI argument error.
