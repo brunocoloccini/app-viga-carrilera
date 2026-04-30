@@ -1,5 +1,5 @@
 
-# Crane Runway Local Web UI (V1-060)
+# Crane Runway Local Web UI (V1-061)
 
 Local browser UI for crane runway beta workflows. It is a developer convenience wrapper around the existing API service.
 
@@ -32,6 +32,23 @@ Default URL: `http://127.0.0.1:8765`
 - **Clear JSON**: empties JSON editor content.
 - **Open report in new tab**: appears when an HTML report exists.
 
+## Download / Copy actions (local browser only)
+
+The **Download / Copy** toolbar adds local browser export helpers:
+
+- **Download JSON Case**: validates editor JSON, pretty-prints with 2-space indentation, and downloads `crane_runway_case.json`.
+- **Copy JSON Case**: copies current JSON editor text to clipboard.
+- **Download Summary JSON**: downloads latest run summary as `summary.json`.
+- **Copy Summary JSON**: copies latest run summary JSON.
+- **Download HTML Report**: downloads latest run HTML report as `report.html`.
+- **Copy Validation Response**: copies latest validation response JSON.
+- **Copy Raw Response**: copies current raw response panel JSON text.
+
+Notes:
+- These are client-side browser actions only.
+- The UI does not save files into this repository.
+- There is no server-side persistence for downloaded/copied artifacts.
+
 ## Can do
 
 - load built-in templates;
@@ -50,6 +67,7 @@ Default URL: `http://127.0.0.1:8765`
 - database storage;
 - file management;
 - PDF/DOCX export;
+- project file management from UI;
 - official CIRSOC/CISC/AISC checks;
 - fatigue checks;
 - torsion/warping/LTB checks.

@@ -90,5 +90,11 @@ Suggested quick flow:
    - **Raw Response** panel for full JSON.
 7. Use **Open report in new tab** when available.
 8. Use **Clear Output** and **Clear JSON** as needed for a clean reset.
+9. Use **Download / Copy** actions for local exports:
+   - download/copy case JSON,
+   - download/copy summary JSON,
+   - download HTML report,
+   - copy validation response,
+   - copy raw response.
 
 Important: this is a local beta tool. Results require engineering review.

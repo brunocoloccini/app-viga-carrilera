@@ -90,6 +90,18 @@ th { width: 40%; background: #f9fafb; }
   <button onclick=\"formatJson()\">Format JSON</button>
   <button onclick=\"clearJson()\">Clear JSON</button>
 </div>
+<div class=\"panel\" style=\"margin-top: 1rem;\">
+  <h3>Download / Copy</h3>
+  <div class=\"toolbar\" style=\"margin-top:0;\">
+    <button onclick=\"downloadCaseJson()\">Download JSON Case</button>
+    <button onclick=\"copyCaseJson()\">Copy JSON Case</button>
+    <button onclick=\"downloadSummaryJson()\">Download Summary JSON</button>
+    <button onclick=\"copySummaryJson()\">Copy Summary JSON</button>
+    <button onclick=\"downloadHtmlReport()\">Download HTML Report</button>
+    <button onclick=\"copyValidationResponse()\">Copy Validation Response</button>
+    <button onclick=\"copyRawResponse()\">Copy Raw Response</button>
+  </div>
+</div>
 <div id=\"status\" class=\"status\">Ready.</div>
 <div class=\"panel\" style=\"margin-top: 1rem;\">
   <h3>JSON Editor</h3>
@@ -107,8 +119,16 @@ th { width: 40%; background: #f9fafb; }
 </div>
 <script>
 let latestHtmlReport = '';
+let lastValidationResponse = null;
+let lastRunResponse = null;
+let lastRawResponse = null;
 function setStatus(msg) { document.getElementById('status').textContent = msg; }
-function renderRaw(data) { document.getElementById('raw_output').textContent = JSON.stringify(data, null, 2); }
+function prettyJson(value) { return JSON.stringify(value, null, 2); }
+function renderRaw(data) {
+  lastRawResponse = data;
+  document.getElementById('raw_output').textContent = prettyJson(data);
+}
+function getCurrentCaseJsonText() { return document.getElementById('case_json').value; }
 function escapeHtml(s) {
   return String(s).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }
@@ -119,13 +139,84 @@ function clearOutput() {
   document.getElementById('html_output').srcdoc = '';
   document.getElementById('open_report').style.display = 'none';
   latestHtmlReport = '';
+  lastValidationResponse = null;
+  lastRunResponse = null;
+  lastRawResponse = null;
   setStatus('Output cleared.');
 }
 function clearJson() { document.getElementById('case_json').value = ''; setStatus('JSON editor cleared.'); }
+function downloadText(filename, content, contentType) {
+  const blob = new Blob([content], {type: contentType});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+async function copyText(text, successMessage, failureMessage) {
+  if (!text) { setStatus(failureMessage); return false; }
+  try {
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+      await navigator.clipboard.writeText(text);
+      setStatus(successMessage);
+      return true;
+    }
+    const temp = document.createElement('textarea');
+    temp.value = text;
+    temp.style.position = 'fixed';
+    temp.style.opacity = '0';
+    document.body.appendChild(temp);
+    temp.focus();
+    temp.select();
+    const copied = document.execCommand('copy');
+    temp.remove();
+    if (copied) { setStatus(successMessage); return true; }
+  } catch (err) {}
+  setStatus(failureMessage);
+  return false;
+}
+function downloadCaseJson() {
+  try {
+    const parsed = JSON.parse(getCurrentCaseJsonText());
+    downloadText('crane_runway_case.json', prettyJson(parsed), 'application/json;charset=utf-8');
+    setStatus('JSON case downloaded.');
+  } catch (err) {
+    setStatus('Cannot download case: invalid JSON.');
+  }
+}
+async function copyCaseJson() {
+  await copyText(getCurrentCaseJsonText(), 'JSON case copied.', 'Could not copy JSON case.');
+}
+function downloadSummaryJson() {
+  if (!lastRunResponse || !lastRunResponse.summary) { setStatus('No summary available. Run a case first.'); return; }
+  downloadText('summary.json', prettyJson(lastRunResponse.summary), 'application/json;charset=utf-8');
+  setStatus('Summary downloaded.');
+}
+async function copySummaryJson() {
+  if (!lastRunResponse || !lastRunResponse.summary) { setStatus('No summary available. Run a case first.'); return; }
+  await copyText(prettyJson(lastRunResponse.summary), 'Summary copied.', 'Could not copy summary JSON.');
+}
+function downloadHtmlReport() {
+  if (!lastRunResponse || !lastRunResponse.html_report) { setStatus('No HTML report available. Run a case first.'); return; }
+  downloadText('report.html', lastRunResponse.html_report, 'text/html;charset=utf-8');
+  setStatus('HTML report downloaded.');
+}
+async function copyValidationResponse() {
+  if (!lastValidationResponse) { setStatus('No validation response available. Validate a case first.'); return; }
+  await copyText(prettyJson(lastValidationResponse), 'Validation response copied.', 'Could not copy validation response.');
+}
+async function copyRawResponse() {
+  const rawText = document.getElementById('raw_output').textContent;
+  if (!rawText || rawText.trim().length === 0 || !lastRawResponse) { setStatus('No raw response available.'); return; }
+  await copyText(rawText, 'Raw response copied.', 'Could not copy raw response.');
+}
 function formatJson() {
   try {
-    const parsed = JSON.parse(document.getElementById('case_json').value);
-    document.getElementById('case_json').value = JSON.stringify(parsed, null, 2);
+    const parsed = JSON.parse(getCurrentCaseJsonText());
+    document.getElementById('case_json').value = prettyJson(parsed);
     setStatus('JSON formatted.');
   } catch (err) {
     setStatus('Cannot format: invalid JSON.');
@@ -191,6 +282,8 @@ async function validateCase() {
     const payload = {case_json: document.getElementById('case_json').value};
     const r = await fetch('/api/validate', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
     const data = await r.json();
+    lastValidationResponse = data;
+    lastRunResponse = null;
     renderValidation(data);
     renderRaw(data);
     setStatus(data.valid ? 'Validation complete.' : 'Validation returned errors.');
@@ -202,6 +295,10 @@ async function runCase() {
     const payload = {case_json: document.getElementById('case_json').value, output_formats:['summary','html']};
     const r = await fetch('/api/run', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
     const data = await r.json();
+    lastRunResponse = data;
+    if (data.validation && typeof data.validation === 'object') {
+      lastValidationResponse = data.validation;
+    }
     renderValidation(data.validation || null);
     renderSummary(data.summary || null);
     renderRaw(data);
