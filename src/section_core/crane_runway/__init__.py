@@ -138,6 +138,19 @@ from .case_io import (
     run_crane_runway_case_json,
 )
 
+from .case_templates import (
+    CaseTemplateError,
+    InvalidCaseTemplateError,
+    DuplicateCaseTemplateError,
+    CaseTemplateNotFoundError,
+    CraneRunwayCaseTemplate,
+    CraneRunwayCaseTemplateRegistry,
+    build_default_crane_runway_case_template_registry,
+    get_crane_runway_case_template,
+    list_crane_runway_case_template_ids,
+    write_crane_runway_case_template,
+)
+
 from .case_schema import (
     CASE_SCHEMA_VERSION,
     CaseSchemaValidationIssue,
@@ -175,6 +188,16 @@ from .stress import (
 )
 
 __all__ = [
+    "CaseTemplateError",
+    "InvalidCaseTemplateError",
+    "DuplicateCaseTemplateError",
+    "CaseTemplateNotFoundError",
+    "CraneRunwayCaseTemplate",
+    "CraneRunwayCaseTemplateRegistry",
+    "build_default_crane_runway_case_template_registry",
+    "get_crane_runway_case_template",
+    "list_crane_runway_case_template_ids",
+    "write_crane_runway_case_template",
     "CraneRunwayApiService",
     "CraneRunwayApiExecutionResponse",
     "CraneRunwayApiValidationResponse",

@@ -70,3 +70,10 @@ Units are validated on read/validation. Missing units or incompatible units prod
   }
 }
 ```
+
+
+## Starting from built-in templates
+
+You can generate starter files with `scripts/create_crane_runway_case_template.py`.
+The built-in IDs are `ipn-with-cover`, `ipn-without-cover`, and `ipn-no-rail-eccentricity`.
+Generated files include `schema_version: "1.0"` and are strict-schema valid.
