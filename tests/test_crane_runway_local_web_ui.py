@@ -30,7 +30,26 @@ def test_local_web_ui_response_missing_content_type_rejected() -> None:
 def test_render_index_html_contains_expected_controls() -> None:
     ui = CraneRunwayLocalWebUi()
     html = ui.render_index_html()
-    for token in ["Crane Runway", "textarea", "Validate", "Run", "/api/validate", "/api/run"]:
+    for token in [
+        "Crane Runway Local UI",
+        "Local beta tool",
+        "Load Template",
+        "Validate",
+        "Run",
+        "Clear Output",
+        "Format JSON",
+        "Clear JSON",
+        "Validation",
+        "Summary",
+        "HTML Report",
+        "Raw Response",
+        "/api/validate",
+        "/api/run",
+        "renderValidation",
+        "renderSummary",
+        "formatJson",
+        "clearOutput",
+    ]:
         assert token in html
 
 

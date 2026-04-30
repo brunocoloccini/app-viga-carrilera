@@ -73,4 +73,22 @@ Run:
 - `PYTHONPATH=src python scripts/serve_crane_runway_ui.py`
 - `PYTHONPATH=src python scripts/serve_crane_runway_ui.py --open`
 
-Then open `http://127.0.0.1:8765` and use template loading, JSON editing, Validate, and Run actions.
+Then open `http://127.0.0.1:8765`.
+
+Suggested quick flow:
+
+1. Confirm the header and beta warning in the page.
+2. Select a built-in template and click **Load Template**.
+3. (Optional) Edit the JSON in **JSON Editor**.
+4. Click **Format JSON** to normalize the payload formatting.
+5. Click **Validate** and review the **Validation** panel:
+   - VALID/INVALID state.
+   - listed validation messages (severity/path/message/hint when present).
+6. Click **Run** and review:
+   - **Summary** panel (key fields table),
+   - **HTML Report** iframe preview,
+   - **Raw Response** panel for full JSON.
+7. Use **Open report in new tab** when available.
+8. Use **Clear Output** and **Clear JSON** as needed for a clean reset.
+
+Important: this is a local beta tool. Results require engineering review.
