@@ -34,6 +34,8 @@ from section_core import (
     CraneRunwayDemandSummaryHtmlFormatter,
     CraneRunwayMatrixHtmlFormatter,
     build_generic_criteria_preset_registry,
+    UserFacingValidationMessage,
+    UserFacingValidationReport,
 )
 
 
@@ -74,6 +76,8 @@ def test_public_api_exports_are_importable_from_top_level():
         CraneRunwayDemandSummaryHtmlFormatter,
         CraneRunwayMatrixHtmlFormatter,
         build_generic_criteria_preset_registry,
+        UserFacingValidationMessage,
+        UserFacingValidationReport,
     ]
 
     assert all(item is not None for item in exported)
