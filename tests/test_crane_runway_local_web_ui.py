@@ -53,7 +53,7 @@ def test_render_index_html_contains_expected_controls() -> None:
         "Download Case JSON",
         "Download Validation Response",
         "Download Run Response",
-        "Download Report HTML",
+        "Download HTML Report",
         "Download All Package Files",
         "Validation",
         "Summary",

@@ -334,3 +334,13 @@ Limitations:
 - No server-side scenario database.
 - No official design-code comparison.
 - Engineering review required.
+
+
+## Beta UI manual QA (V1-070)
+
+Before relying on the local beta UI for engineering workflows, run the manual checklist:
+
+- [Local UI Beta Manual QA Checklist](local_ui_beta_manual_qa_checklist.md)
+
+Also run the beta health check script and confirm it passes for your branch/environment.
+
