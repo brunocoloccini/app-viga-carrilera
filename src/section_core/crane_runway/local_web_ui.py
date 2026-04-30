@@ -139,6 +139,7 @@ th { background: #f9fafb; }
   <h3>Common Inputs</h3>
   <p style="margin-top:0;">Common Inputs edits the JSON below. Review generated JSON before running.</p>
   <p style="margin-top:0.2rem;">Advanced fields remain editable directly in JSON.</p>
+  <p style="margin-top:0.2rem;"><strong>For more than two wheels, use Wheel Table Editor.</strong></p>
   <div class="toolbar" style="margin-top:0;">
     <button onclick="loadCommonInputsFromJson()">Load Form From JSON</button>
     <button onclick="validateCommonInputsOnly()">Validate Common Inputs</button>
@@ -154,6 +155,17 @@ th { background: #f9fafb; }
   <tr><td>Lateral Force Factor</td><td><input id="common_lateral_force_factor"/></td><td>Wheel 1 Load</td><td><input id="common_wheel_1_load"/><select id="common_wheel_1_load_unit"><option>kN</option><option>N</option><option>kip</option></select></td></tr><tr><td>Wheel 2 Load</td><td><input id="common_wheel_2_load"/><select id="common_wheel_2_load_unit"><option>kN</option><option>N</option><option>kip</option></select></td><td>Wheel Spacing</td><td><input id="common_wheel_spacing"/><select id="common_wheel_spacing_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr>
   <tr><td>Rail Eccentricity Enabled</td><td><input id="common_rail_eccentricity_enabled" type="checkbox"/></td><td>Vertical Eccentricity Y</td><td><input id="common_vertical_eccentricity_y"/><select id="common_vertical_eccentricity_y_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr><tr><td>Lateral Load Height Z</td><td><input id="common_lateral_load_height_z"/><select id="common_lateral_load_height_z_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Deflection Preset</td><td><input id="common_deflection_preset"/></td></tr><tr><td>Stress Preset</td><td><input id="common_stress_preset"/></td><td></td><td></td></tr></tbody></table>
   <h4>Common Inputs Errors</h4><div id="common_inputs_errors">No common input errors.</div>
+</div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Wheel Table Editor</h3>
+  <div class="toolbar" style="margin-top:0;">
+    <button id="load_wheels_from_json_btn">Load Wheels From JSON</button>
+    <button id="apply_wheels_to_json_btn">Apply Wheels To JSON</button>
+    <button id="add_wheel_row_btn">Add Wheel</button>
+    <button id="clear_wheel_table_btn">Clear Wheel Table</button>
+  </div>
+  <table><thead><tr><th>Wheel ID</th><th>Position X</th><th>Position Unit</th><th>Vertical Force</th><th>Force Unit</th><th>Remove</th></tr></thead><tbody id="wheel_table_body"></tbody></table>
+  <h4>Wheel Table Errors</h4><div id="wheel_table_errors">No wheel table errors.</div>
 </div>
 <div class="panel" style="margin-top: 1rem;">
   <h3>Visual Preview</h3>
@@ -627,6 +639,107 @@ function applyCommonInputsToJson() {
   setStatus('Common inputs applied to JSON.');
 }
 
+
+function getWheelRows() {
+  const body = document.getElementById('wheel_table_body');
+  if (!body) return [];
+  const rows = [];
+  for (const tr of body.querySelectorAll('tr')) {
+    rows.push({
+      wheel_id: String(tr.querySelector('[data-wheel-field="wheel_id"]')?.value ?? '').trim(),
+      position_x: String(tr.querySelector('[data-wheel-field="position_x"]')?.value ?? '').trim(),
+      position_unit: String(tr.querySelector('[data-wheel-field="position_unit"]')?.value ?? '').trim(),
+      vertical_force: String(tr.querySelector('[data-wheel-field="vertical_force"]')?.value ?? '').trim(),
+      force_unit: String(tr.querySelector('[data-wheel-field="force_unit"]')?.value ?? '').trim()
+    });
+  }
+  return rows;
+}
+function renderWheelTableErrors(errors) {
+  const panel = document.getElementById('wheel_table_errors');
+  if (!panel) return;
+  if (!Array.isArray(errors) || errors.length === 0) { panel.innerHTML = '<p>No wheel table errors.</p>'; return; }
+  panel.innerHTML = '<ul style="margin:0.3rem 0 0.1rem 1.2rem;">' + errors.map((e) => '<li>' + escapeHtml(e) + '</li>').join('') + '</ul>';
+}
+function validateWheelTable() {
+  const rows = getWheelRows();
+  const errors = [];
+  const ids = rows.map((row) => row.wheel_id).filter((value) => value !== '');
+  if (ids.length !== new Set(ids).size) errors.push('Wheel IDs must be unique.');
+  for (const row of rows) {
+    if (!row.wheel_id) errors.push('Wheel ID is required.');
+    const px = Number(row.position_x);
+    if (row.position_x === '' || Number.isNaN(px)) errors.push('Wheel position must be numeric.');
+    const vf = Number(row.vertical_force);
+    if (row.vertical_force === '' || Number.isNaN(vf) || vf <= 0) errors.push('Wheel vertical force must be positive.');
+    if (!row.position_unit || !['m','mm','ft'].includes(row.position_unit)) errors.push('Wheel position unit must be selected.');
+    if (!row.force_unit || !['kN','N','kip'].includes(row.force_unit)) errors.push('Wheel force unit must be selected.');
+  }
+  const uniqueErrors = Array.from(new Set(errors));
+  renderWheelTableErrors(uniqueErrors);
+  return uniqueErrors;
+}
+function addWheelRow(initialRow) {
+  const body = document.getElementById('wheel_table_body');
+  if (!body) return;
+  const nextIndex = body.querySelectorAll('tr').length + 1;
+  const row = initialRow || {};
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td><input data-wheel-field="wheel_id" value="' + escapeHtml(String(row.wheel_id || ('W' + nextIndex))) + '"/></td>' +
+    '<td><input data-wheel-field="position_x" value="' + escapeHtml(row.position_x ?? '') + '"/></td>' +
+    '<td><select data-wheel-field="position_unit"><option>m</option><option>mm</option><option>ft</option></select></td>' +
+    '<td><input data-wheel-field="vertical_force" value="' + escapeHtml(row.vertical_force ?? '') + '"/></td>' +
+    '<td><select data-wheel-field="force_unit"><option>kN</option><option>N</option><option>kip</option></select></td>' +
+    '<td><button class="small-btn" data-wheel-action="remove">Remove</button></td>';
+  body.appendChild(tr);
+  tr.querySelector('[data-wheel-field="position_unit"]').value = ['m','mm','ft'].includes(row.position_unit) ? row.position_unit : 'm';
+  tr.querySelector('[data-wheel-field="force_unit"]').value = ['kN','N','kip'].includes(row.force_unit) ? row.force_unit : 'kN';
+  tr.querySelector('[data-wheel-action="remove"]').addEventListener('click', () => removeWheelRow(tr));
+}
+function removeWheelRow(rowElement) { if (rowElement && rowElement.remove) rowElement.remove(); validateWheelTable(); }
+function clearWheelTable() { const body = document.getElementById('wheel_table_body'); if (body) body.innerHTML = ''; renderWheelTableErrors([]); setStatus('Wheel table cleared.'); }
+function setWheelRows(rows) {
+  const body = document.getElementById('wheel_table_body');
+  if (!body) return;
+  body.innerHTML = '';
+  for (const row of (Array.isArray(rows) ? rows : [])) addWheelRow(row);
+  renderWheelTableErrors([]);
+}
+function loadWheelsFromJson() {
+  let data;
+  try { data = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot load wheels: invalid JSON.'); return; }
+  const wheels = Array.isArray(data?.crane?.wheels) ? data.crane.wheels : [];
+  if (wheels.length === 0) { setWheelRows([]); setStatus('No wheels found in JSON.'); return; }
+  const rows = wheels.map((wheel, idx) => ({
+    wheel_id: String(wheel?.wheel_id ?? ('W' + (idx + 1))),
+    position_x: wheel?.position_x?.value ?? '',
+    position_unit: wheel?.position_x?.unit ?? 'm',
+    vertical_force: wheel?.vertical_force?.value ?? '',
+    force_unit: wheel?.vertical_force?.unit ?? 'kN'
+  }));
+  setWheelRows(rows);
+  validateWheelTable();
+  setStatus('Wheel table loaded from JSON.');
+}
+function applyWheelsToJson() {
+  const errors = validateWheelTable();
+  if (errors.length > 0) { setStatus('Wheel table contains errors.'); return; }
+  let data;
+  try { data = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot apply wheels: invalid JSON.'); return; }
+  const rows = getWheelRows();
+  if (!data.crane || typeof data.crane !== 'object') data.crane = {};
+  data.crane.wheels = rows.map((row) => ({
+    wheel_id: row.wheel_id,
+    position_x: {value: Number(row.position_x), unit: row.position_unit},
+    vertical_force: {value: Number(row.vertical_force), unit: row.force_unit}
+  }));
+  document.getElementById('case_json').value = prettyJson(data);
+  if (typeof saveSession === 'function') saveSession();
+  if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
+  if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
+  setStatus('Wheel table applied to JSON.');
+}
+
 function findJsonPath(path) {
   const editor = document.getElementById('case_json');
   if (!editor || !path) { setStatus('Path not found in editor.'); return; }
@@ -950,6 +1063,14 @@ restoreSession();
 loadScenarios();
 document.getElementById('case_json').addEventListener('input', scheduleSessionSave);
 document.getElementById('template').addEventListener('change', saveSession);
+const loadWheelsButton = document.getElementById('load_wheels_from_json_btn');
+if (loadWheelsButton) loadWheelsButton.addEventListener('click', loadWheelsFromJson);
+const applyWheelsButton = document.getElementById('apply_wheels_to_json_btn');
+if (applyWheelsButton) applyWheelsButton.addEventListener('click', applyWheelsToJson);
+const addWheelButton = document.getElementById('add_wheel_row_btn');
+if (addWheelButton) addWheelButton.addEventListener('click', () => addWheelRow());
+const clearWheelTableButton = document.getElementById('clear_wheel_table_btn');
+if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clearWheelTable);
 </script>
 </body></html>"""
 

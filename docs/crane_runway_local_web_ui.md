@@ -378,3 +378,45 @@ Limitations:
 - Client-side helper validation only.
 - JSON schema validation remains authoritative.
 - Engineering review is still required.
+
+
+## Wheel Table Editor (V1-072)
+
+A new **Wheel Table Editor** panel provides beginner-friendly editing of `data.crane.wheels` without manual JSON typing.
+
+Actions:
+- **Load Wheels From JSON**: parse current JSON and populate rows; invalid JSON -> `Cannot load wheels: invalid JSON.`; no wheels -> `No wheels found in JSON.`
+- **Apply Wheels To JSON**: validates rows, writes `crane.wheels`, pretty-prints JSON, triggers autosave/preview/outline refresh, status `Wheel table applied to JSON.`
+- **Add Wheel**: adds a row with default `wheel_id` (`W1`, `W2`, ...), blank position and vertical force.
+- **Clear Wheel Table**: removes all rows and sets `Wheel table cleared.`
+
+Columns:
+- Wheel ID
+- Position X
+- Position Unit (`m`, `mm`, `ft`)
+- Vertical Force
+- Force Unit (`kN`, `N`, `kip`)
+- Remove
+
+Validation rules:
+- Wheel ID required and unique.
+- Position required and numeric.
+- Vertical force required and positive.
+- Unit selectors must be selected.
+
+Wheel Table Errors panel defaults to `No wheel table errors.` and renders required validation messages such as `Wheel ID is required.`, `Wheel IDs must be unique.`, `Wheel position must be numeric.`, and `Wheel vertical force must be positive.`
+
+Mapping used when applying:
+
+```json
+{
+  "wheel_id": "W1",
+  "position_x": {"value": 0, "unit": "m"},
+  "vertical_force": {"value": 80, "unit": "kN"}
+}
+```
+
+Limitation in V1-072:
+- The simple table editor focuses on `wheel_id`, `position_x`, and `vertical_force`.
+- Extra per-wheel fields may be dropped when applying from the table.
+- Advanced users can still edit raw JSON directly for unsupported/extra fields.

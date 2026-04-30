@@ -80,14 +80,15 @@ Suggested quick flow:
 1. Confirm the header and beta warning in the page.
 2. Select a built-in template and click **Load Template**.
 3. (Optional) Edit the JSON in **JSON Editor**.
-4. Click **Format JSON** to normalize the payload formatting.
-5. Click **Validate** and review the **Validation** panel:
+4. For multi-wheel edits (more than two wheels), use **Wheel Table Editor** instead of manual `crane.wheels` JSON edits.
+5. Click **Format JSON** to normalize the payload formatting.
+6. Click **Validate** and review the **Validation** panel:
    - VALID/INVALID state.
    - tabular messages (`Severity`, `Path`, `Message`, `Hint`) when available.
    - **Find Path** per row (best-effort jump in editor).
    - **Copy Error List** for plain-text validation issues.
-6. Click **Refresh Case Outline** to view key fields and quick completeness checks (`N/A` for missing fields).
-7. Click **Run** and review:
+7. Click **Refresh Case Outline** to view key fields and quick completeness checks (`N/A` for missing fields).
+8. Click **Run** and review:
    - **Result Cards** (max demands + PASS/FAIL/N/A criteria),
    - **Result Interpretation** panel (plain-language explanation using existing summary values only),
    - **Summary** panel (key fields table),
