@@ -148,3 +148,5 @@ Planned modules:
 - V1-048: Extend crane runway case schema/case I/O with optional JSON `material` blocks and `criteria_presets` references, including preset-to-limit conversion, material-aware Fy resolution, example case, and tests/documentation updates.
 
 - V1-049: Expand manually curated CIRSOC sample shape library with additional IPN records (IPN 180, 240, 300), plus validation tests and documentation updates.
+
+- V1-050: Add dedicated crane rail data model (`CraneRailRecord`), rail registry (`CraneRailRegistry`), and fake sample rail dataset (`RAIL_TEST_A`, `RAIL_TEST_B`) for future library and runway integration.
