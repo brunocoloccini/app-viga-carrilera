@@ -171,3 +171,5 @@ Planned modules:
 - V1-059: Minimal local web UI for crane runway beta workflows (`scripts/serve_crane_runway_ui.py`, `/api/validate`, `/api/run`, template loading, summary/html preview).
 
 - V1-060: Local web UI usability polish for crane runway beta workflows (status messaging, JSON editor helpers, validation/summary rendering panels, raw response panel, and report new-tab action).
+
+- V1-061: Local web UI download/copy actions (case JSON, summary JSON, HTML report, validation response, and raw response browser actions).
