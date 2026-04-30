@@ -142,3 +142,33 @@ Limitations:
 ## Security
 
 Local-only development UI. It binds to `127.0.0.1` by default; do not expose publicly.
+
+## Autosave and session restore (browser localStorage)
+
+The local UI now autosaves editor session state in the browser using `localStorage` only.
+
+Saved items:
+- `craneRunway.caseJson`: current JSON editor text.
+- `craneRunway.selectedTemplate`: current template selector value.
+- `craneRunway.lastSavedAt`: ISO timestamp for latest autosave.
+
+Behavior:
+- JSON edits trigger autosave with a short debounce.
+- Template changes and template/import/clear-json actions also refresh autosave state.
+- On page load, if autosaved JSON exists, it is restored into the editor and status shows **Restored autosaved JSON.**
+- Restore does **not** auto-run Validate or Run; users still click those actions manually.
+- **Clear Saved Session** removes all autosave keys and resets autosave status to **No saved session**.
+
+Autosave status text near the editor shows one of:
+- `Autosave: Saved locally at <timestamp>`
+- `Autosave: No saved session`
+- `Autosave: Autosave unavailable`
+
+Privacy note shown in UI:
+- `Autosave is stored only in this browser using localStorage.`
+
+Limitations:
+- Autosave does not write files into this repository.
+- Autosave does not save to any server.
+- Clearing browser storage removes autosaved data.
+- For durable storage, still use Download/Copy/Package Export actions.
