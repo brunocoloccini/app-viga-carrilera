@@ -39,6 +39,15 @@ Expected:
 10. Fix span to positive value and click **Validate Common Inputs** again; confirm `Common inputs are valid.`
 11. Click **Apply Form To JSON** and confirm JSON updates only after valid form state.
 
+## C2) Wheel Table Editor workflow
+
+1. Click **Load Wheels From JSON**.
+2. Click **Add Wheel** and create a third wheel row.
+3. Intentionally duplicate a wheel ID and confirm **Wheel Table Errors** shows `Wheel IDs must be unique.`
+4. Fix wheel IDs to be unique and confirm errors clear.
+5. Click **Apply Wheels To JSON** and confirm status `Wheel table applied to JSON.`
+6. Click **Validate** and **Run** to confirm normal workflow still works.
+
 ## D) Import JSON workflow
 
 1. Create a project with `init_crane_runway_project.py`.

@@ -195,3 +195,6 @@ Planned modules:
 - V1-070: Local UI beta stabilization and manual QA checklist.
 
 - V1-071: Common Inputs validation and unit selector pack.
+
+
+- V1-072: Local UI wheel table editor pack.
