@@ -207,6 +207,24 @@ th { background: #f9fafb; }
   <table><thead><tr><th>Scenario</th><th>Saved At</th><th>Actions</th></tr></thead><tbody id="scenario_list_body"></tbody></table>
   <div id="scenario_comparison_output" style="margin-top:0.6rem;"></div>
 </div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Guided Workflow</h3>
+  <div class="toolbar" style="margin-top:0;"><button onclick="resetGuidedWorkflow()">Reset Workflow</button><button onclick="runDemoWorkflow()">Run Demo Workflow</button></div>
+  <table><thead><tr><th>Step</th><th>Description</th><th>Status</th></tr></thead><tbody id="guided_workflow_body"></tbody></table>
+  <div id="demo_workflow_status" style="margin-top:0.5rem;color:#374151;">Demo workflow complete.</div>
+  <div style="margin-top:0.2rem;color:#374151;">Demo workflow failed.</div>
+</div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Beta Readiness</h3>
+  <div class="toolbar" style="margin-top:0;"><button onclick="checkBackendHealth()">Check Backend Health</button></div>
+  <div id="backend_health_status" style="margin-top:0.35rem;">Backend health: OK.</div>
+  <div style="margin-top:0.2rem;">Backend health: FAIL.</div>
+  <div id="beta_readiness_output" style="margin-top:0.5rem;"></div>
+</div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Troubleshooting</h3>
+  <ul><li>If buttons do not respond, refresh the page.</li><li>If the server is unreachable, start scripts/serve_crane_runway_ui.py.</li><li>If JSON validation fails, review the Validation panel.</li><li>If results show FAIL, review configured criteria and engineering assumptions.</li><li>This local UI is a beta tool and requires engineering review.</li></ul>
+</div>
 <div id=\"status\" class=\"status\">Ready.</div>
 <div class=\"page\">
   <div class=\"left-col\">
@@ -245,6 +263,9 @@ const autosaveStorageKeys = {
 };
 let autosaveAvailable = true;
 let autosaveTimer = null;
+const workflowSteps = [{id:1,label:'Load Template or Import JSON',description:'Load built-in template or import local JSON file.'},{id:2,label:'Configure Inputs',description:'Apply Common Inputs, Wheels, or Quick Selectors.'},{id:3,label:'Refresh Preview',description:'Refresh visual preview for quick geometry/load checks.'},{id:4,label:'Validate',description:'Validate case JSON before running.'},{id:5,label:'Run',description:'Run the configured case.'},{id:6,label:'Review Results',description:'Review cards, interpretation, summary, and report.'},{id:7,label:'Export / Compare',description:'Download package artifacts or run scenario comparison.'}];
+const workflowState={1:'Pending',2:'Pending',3:'Pending',4:'Pending',5:'Pending',6:'Pending',7:'Pending'};
+const betaReadinessState={ui_js_loaded:true,backend_health:null,json_loaded:null,validation_status:null,run_status:null,autosave_available:true};
 function updateAutosaveStatus(message) {
   const panel = document.getElementById('autosave_status');
   if (panel) panel.textContent = message;
@@ -303,6 +324,17 @@ function clearSavedSession() {
     setStatus('Autosave unavailable.');
   }
 }
+
+function renderGuidedWorkflow() { const body=document.getElementById('guided_workflow_body'); if (!body) return; let html=''; for (const step of workflowSteps) { const status=workflowState[step.id] || 'Pending'; const cls=status==='Done'?'status-pass':(status==='Needs attention'?'status-fail':'status-na'); html += '<tr><td>'+step.id+'. '+escapeHtml(step.label)+'</td><td>'+escapeHtml(step.description)+'</td><td class="'+cls+'">'+escapeHtml(status)+'</td></tr>'; } body.innerHTML=html; }
+function updateWorkflowStep(stepId, status) { if (!workflowState[stepId]) return; workflowState[stepId]=status; renderGuidedWorkflow(); }
+function markWorkflowStepDone(stepId) { updateWorkflowStep(stepId, 'Done'); }
+function markWorkflowStepNeedsAttention(stepId) { updateWorkflowStep(stepId, 'Needs attention'); }
+function resetGuidedWorkflow() { for (const step of workflowSteps) workflowState[step.id]='Pending'; renderGuidedWorkflow(); const demo=document.getElementById('demo_workflow_status'); if (demo) demo.textContent='Ready for demo workflow.'; }
+function renderBetaReadiness() { const panel=document.getElementById('beta_readiness_output'); if (!panel) return; const rows=[['UI JavaScript loaded', betaReadinessState.ui_js_loaded===true?'PASS':'FAIL'],['Backend health', betaReadinessState.backend_health===true?'PASS':(betaReadinessState.backend_health===false?'FAIL':'N/A')],['JSON loaded', betaReadinessState.json_loaded===true?'PASS':(betaReadinessState.json_loaded===false?'FAIL':'N/A')],['Validation status', betaReadinessState.validation_status===true?'PASS':(betaReadinessState.validation_status===false?'FAIL':'N/A')],['Run status', betaReadinessState.run_status===true?'PASS':(betaReadinessState.run_status===false?'FAIL':'N/A')],['Autosave available', betaReadinessState.autosave_available===true?'PASS':'FAIL']]; let html='<table><thead><tr><th>Check</th><th>Status</th></tr></thead><tbody>'; for (const row of rows) { const cls=row[1]==='PASS'?'status-pass':(row[1]==='FAIL'?'status-fail':'status-na'); html += '<tr><td>'+escapeHtml(row[0])+'</td><td class="'+cls+'">'+row[1]+'</td></tr>'; } panel.innerHTML=html+'</tbody></table>'; }
+function updateBetaReadiness(key, value) { betaReadinessState[key]=value; renderBetaReadiness(); }
+async function checkBackendHealth() { try { const r=await fetch('/api/health'); const data=await r.json(); const ok=Boolean(r.ok && data && data.ok===true); const panel=document.getElementById('backend_health_status'); if (panel) panel.textContent=ok?'Backend health: OK.':'Backend health: FAIL.'; updateBetaReadiness('backend_health', ok); setStatus(ok?'Backend health: OK.':'Backend health: FAIL.'); } catch (err) { const panel=document.getElementById('backend_health_status'); if (panel) panel.textContent='Backend health: FAIL.'; updateBetaReadiness('backend_health', false); setStatus('Backend health: FAIL.'); } }
+async function runDemoWorkflow() { const panel=document.getElementById('demo_workflow_status'); if (panel) panel.textContent='Running demo workflow...'; try { document.getElementById('template').value='ipn-with-cover'; await loadTemplate(); markWorkflowStepDone(1); refreshVisualPreview(); markWorkflowStepDone(3); await validateCase(); if (lastValidationResponse && lastValidationResponse.valid===false) { markWorkflowStepNeedsAttention(4); throw new Error('Validation failed.'); } markWorkflowStepDone(4); await runCase(); if (!lastRunResponse || lastRunResponse.success===false) throw new Error('Run failed.'); markWorkflowStepDone(5); markWorkflowStepDone(6); if (panel) panel.textContent='Demo workflow complete.'; setStatus('Demo workflow complete.'); } catch (err) { if (panel) panel.textContent='Demo workflow failed.'; setStatus('Demo workflow failed.'); } }
+
 function setStatus(msg) { document.getElementById('status').textContent = msg; }
 function prettyJson(value) { return JSON.stringify(value, null, 2); }
 function renderRaw(data) {
@@ -339,7 +371,7 @@ function getRailEccentricityInfo(caseData) { return {enabled:Boolean(caseData?.r
 function renderBeamPreview(caseData) { const panel=document.getElementById('beam_preview_output'); if (!panel) return; const wheels=getWheelList(caseData); const spanValue=Number(caseData?.analysis?.span?.value); const spanLabel=getCaseSpan(caseData); if (!Number.isFinite(spanValue) || spanValue<=0) { panel.innerHTML='<p>Beam preview unavailable: span is N/A.</p>'; return; } if (wheels.length===0) { panel.innerHTML='<p>Beam preview unavailable: wheel list is N/A.</p>'; return; } const w=720,h=220,x0=70,x1=650,y=110; let svg='<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;max-width:720px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;">'; svg += '<line x1="'+x0+'" y1="'+y+'" x2="'+x1+'" y2="'+y+'" stroke="#111827" stroke-width="3"/>'; svg += '<polygon points="'+(x0-14)+','+(y+26)+' '+(x0+14)+','+(y+26)+' '+x0+','+(y+4)+'" fill="#2563eb"/>'; svg += '<polygon points="'+(x1-14)+','+(y+26)+' '+(x1+14)+','+(y+26)+' '+x1+','+(y+4)+'" fill="#2563eb"/>'; for (const wheel of wheels) { const wx=Number(wheel?.position_x?.value); if (!Number.isFinite(wx)) continue; const px=x0 + Math.max(0, Math.min(1, wx / spanValue)) * (x1-x0); svg += '<line x1="'+px+'" y1="'+(y-60)+'" x2="'+px+'" y2="'+(y-8)+'" stroke="#dc2626" stroke-width="2"/>'; svg += '<polygon points="'+(px-6)+','+(y-16)+' '+(px+6)+','+(y-16)+' '+px+','+(y-2)+'" fill="#dc2626"/>'; svg += '<text x="'+(px+6)+'" y="'+(y-66)+'" font-size="11" fill="#111827">'+escapeHtml(String(wheel?.wheel_id ?? 'N/A'))+' | Fv '+escapeHtml(extractQuantityLabel(wheel?.vertical_force))+' | x '+escapeHtml(extractQuantityLabel(wheel?.position_x))+'</text>'; } panel.innerHTML = svg + '<text x="'+((x0+x1)/2-70)+'" y="'+(y+44)+'" font-size="12" fill="#111827">Span: '+escapeHtml(spanLabel)+'</text></svg>'; }
 function renderSectionPreview(caseData) { const panel=document.getElementById('section_preview_output'); if (!panel) return; const baseShapeId=getBaseShapeId(caseData); const cover=getCoverPlateInfo(caseData); const material=getMaterialInfo(caseData); const rail=getRailEccentricityInfo(caseData); let svg='<svg viewBox="0 0 620 240" style="width:100%;max-width:620px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;">'; svg += '<rect x="220" y="90" width="180" height="100" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>'; svg += '<text x="230" y="145" font-size="13" fill="#111827">Base shape: '+escapeHtml(String(baseShapeId))+'</text>'; if (cover.enabled) { svg += '<rect x="205" y="68" width="210" height="18" fill="#fde68a" stroke="#b45309" stroke-width="2"/>'; svg += '<text x="20" y="42" font-size="12" fill="#111827">Cover plate enabled: true</text>'; svg += '<text x="20" y="60" font-size="12" fill="#111827">width='+escapeHtml(cover.width)+', thickness='+escapeHtml(cover.thickness)+'</text>'; } else { svg += '<text x="20" y="42" font-size="12" fill="#111827">Cover plate enabled: false</text>'; } svg += '<text x="20" y="208" font-size="12" fill="#111827">Material: '+escapeHtml(String(material.material_id))+', Fy: '+escapeHtml(material.fy_label)+'</text>'; svg += '<text x="20" y="224" font-size="12" fill="#111827">Rail eccentricity enabled: '+escapeHtml(String(rail.enabled))+'</text>'; panel.innerHTML = svg + '</svg>'; }
 function renderPreviewSummary(caseData) { const panel=document.getElementById('preview_summary_output'); if (!panel) return; const wheels=getWheelList(caseData); const cover=getCoverPlateInfo(caseData); const material=getMaterialInfo(caseData); const rail=getRailEccentricityInfo(caseData); const criteriaLabel = caseData?.criteria_presets && typeof caseData.criteria_presets==='object' ? JSON.stringify(caseData.criteria_presets) : 'N/A'; const rows=[['case_id',caseData?.case_id ?? 'N/A'],['base_shape_id',getBaseShapeId(caseData)],['span',getCaseSpan(caseData)],['number of wheels',wheels.length>0?wheels.length:'N/A'],['cover plate enabled',String(cover.enabled)],['material_id',material.material_id],['rail eccentricity enabled',String(rail.enabled)],['criteria presets',criteriaLabel]]; let html='<table><tbody>'; for (const row of rows) html += '<tr><th>'+escapeHtml(row[0])+'</th><td>'+escapeHtml(String(row[1]))+'</td></tr>'; panel.innerHTML = html + '</tbody></table>'; }
-function refreshVisualPreview() { let caseData; try { caseData = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot refresh visual preview: invalid JSON.'); return; } renderBeamPreview(caseData); renderSectionPreview(caseData); renderPreviewSummary(caseData); setStatus('Visual preview refreshed.'); }
+function refreshVisualPreview() { let caseData; try { caseData = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot refresh visual preview: invalid JSON.'); return; } renderBeamPreview(caseData); renderSectionPreview(caseData); renderPreviewSummary(caseData); setStatus('Visual preview refreshed.'); markWorkflowStepDone(3); }
 
 async function importJsonFile() {
   const fileInput = document.getElementById('import_json_file');
@@ -352,7 +384,7 @@ async function importJsonFile() {
     const text = event && event.target ? String(event.target.result ?? '') : '';
     document.getElementById('case_json').value = text;
     saveSession();
-    setStatus('Imported JSON file: ' + file.name);
+    setStatus('Imported JSON file: ' + file.name); markWorkflowStepDone(1); updateBetaReadiness('json_loaded', true);
     if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
     if (validateAfterImport && validateAfterImport.checked) {
       await validateCase();
@@ -413,7 +445,7 @@ async function copyCaseJson() {
 function downloadSummaryJson() {
   if (!lastRunResponse || !lastRunResponse.summary) { setStatus('No summary available. Run a case first.'); return; }
   downloadText('summary.json', prettyJson(lastRunResponse.summary), 'application/json;charset=utf-8');
-  setStatus('Summary downloaded.');
+  setStatus('Summary downloaded.'); markWorkflowStepDone(7);
 }
 function buildPackageArtifacts() {
   const artifacts = {};
@@ -469,25 +501,25 @@ function downloadPackageMetadata() {
   }
   const metadata = buildPackageMetadata(available, unavailable);
   downloadText('metadata.json', prettyJson(metadata), 'application/json;charset=utf-8');
-  setStatus('Package metadata downloaded.');
+  setStatus('Package metadata downloaded.'); markWorkflowStepDone(7);
 }
 function downloadPackageCaseJson() {
   const artifact = buildPackageArtifacts()['case.json'];
   if (!artifact.available) { setStatus(artifact.reason); return; }
   downloadText('case.json', artifact.content, artifact.contentType);
-  setStatus('Case JSON downloaded.');
+  setStatus('Case JSON downloaded.'); markWorkflowStepDone(7);
 }
 function downloadValidationResponse() {
   const artifact = buildPackageArtifacts()['validation_response.json'];
   if (!artifact.available) { setStatus(artifact.reason); return; }
   downloadText('validation_response.json', artifact.content, artifact.contentType);
-  setStatus('Validation response downloaded.');
+  setStatus('Validation response downloaded.'); markWorkflowStepDone(7);
 }
 function downloadRunResponse() {
   const artifact = buildPackageArtifacts()['run_response.json'];
   if (!artifact.available) { setStatus(artifact.reason); return; }
   downloadText('run_response.json', artifact.content, artifact.contentType);
-  setStatus('Run response downloaded.');
+  setStatus('Run response downloaded.'); markWorkflowStepDone(7);
 }
 function downloadAllPackageFiles() {
   const artifacts = buildPackageArtifacts();
@@ -515,7 +547,7 @@ async function copySummaryJson() {
 function downloadHtmlReport() {
   if (!lastRunResponse || !lastRunResponse.html_report) { setStatus('No HTML report available. Run a case first.'); return; }
   downloadText('report.html', lastRunResponse.html_report, 'text/html;charset=utf-8');
-  setStatus('HTML report downloaded.');
+  setStatus('HTML report downloaded.'); markWorkflowStepDone(7);
 }
 async function copyValidationResponse() {
   if (!lastValidationResponse) { setStatus('No validation response available. Validate a case first.'); return; }
@@ -653,7 +685,7 @@ function applyCommonInputsToJson() {
   if (typeof saveSession === 'function') saveSession();
   if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
   if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
-  setStatus('Common inputs applied to JSON.');
+  setStatus('Common inputs applied to JSON.'); markWorkflowStepDone(2); updateBetaReadiness('json_loaded', true);
 }
 
 
@@ -729,7 +761,7 @@ function applyProfileMaterialToJson() {
   if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
   if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
   if (typeof loadCommonInputsFromJson === 'function') loadCommonInputsFromJson();
-  setStatus('Profile/material applied to JSON.');
+  setStatus('Profile/material applied to JSON.'); markWorkflowStepDone(2); updateBetaReadiness('json_loaded', true);
 }
 function resetProfileMaterial() {
   setSelectedBaseShapeId('');
@@ -840,7 +872,7 @@ function applyWheelsToJson() {
   if (typeof saveSession === 'function') saveSession();
   if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
   if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
-  setStatus('Wheel table applied to JSON.');
+  setStatus('Wheel table applied to JSON.'); markWorkflowStepDone(2); updateBetaReadiness('json_loaded', true);
 }
 
 function findJsonPath(path) {
@@ -1064,7 +1096,7 @@ async function runAllScenarios() {
   }
   lastScenarioComparisonResults = results;
   renderScenarioComparison(results);
-  setStatus('Scenario comparison complete.');
+  setStatus('Scenario comparison complete.'); markWorkflowStepDone(7);
 }
 function renderScenarioComparison(results) {
   const panel = document.getElementById('scenario_comparison_output');
@@ -1084,6 +1116,7 @@ function downloadScenarioComparison() {
 }
 async function copyScenarioComparison() {
   if (!Array.isArray(lastScenarioComparisonResults) || lastScenarioComparisonResults.length === 0) { setStatus('No comparison results available. Run scenarios first.'); return; }
+  markWorkflowStepDone(7);
   await copyText(prettyJson(lastScenarioComparisonResults), 'Scenario comparison copied.', 'Could not copy scenario comparison.');
 }
 
@@ -1123,7 +1156,7 @@ async function loadTemplate() {
     if (!r.ok) { setStatus('Failed to load template: ' + (data.error || 'unknown error')); return; }
     document.getElementById('case_json').value = JSON.stringify(data, null, 2);
     saveSession();
-    setStatus('Template loaded: ' + id);
+    setStatus('Template loaded: ' + id); markWorkflowStepDone(1); updateBetaReadiness('json_loaded', true);
     if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
   } catch (err) { setStatus('Network/error while loading template.'); }
 }
@@ -1137,7 +1170,7 @@ async function validateCase() {
     lastRunResponse = null;
     renderValidation(data);
     renderRaw(data);
-    setStatus(data.valid ? 'Validation complete.' : 'Validation returned errors.');
+    setStatus(data.valid ? 'Validation complete.' : 'Validation returned errors.'); updateBetaReadiness('validation_status', Boolean(data.valid)); if (data.valid) markWorkflowStepDone(4); else markWorkflowStepNeedsAttention(4);
   } catch (err) { setStatus('Network/error during validation.'); }
 }
 async function runCase() {
@@ -1158,11 +1191,14 @@ async function runCase() {
     latestHtmlReport = data.html_report || '';
     document.getElementById('html_output').srcdoc = latestHtmlReport || '<p>No HTML report.</p>';
     document.getElementById('open_report').style.display = latestHtmlReport ? 'inline-block' : 'none';
-    setStatus(data.success ? 'Run complete.' : 'Run failed.');
+    setStatus(data.success ? 'Run complete.' : 'Run failed.'); updateBetaReadiness('run_status', Boolean(data.success)); if (data.success) { markWorkflowStepDone(5); markWorkflowStepDone(6); } else { markWorkflowStepNeedsAttention(5); }
   } catch (err) { setStatus('Network/error during run.'); }
 }
+renderGuidedWorkflow();
+renderBetaReadiness();
 renderHelpPanel();
 restoreSession();
+updateBetaReadiness('autosave_available', autosaveAvailable);
 loadScenarios();
 document.getElementById('case_json').addEventListener('input', scheduleSessionSave);
 document.getElementById('template').addEventListener('change', saveSession);

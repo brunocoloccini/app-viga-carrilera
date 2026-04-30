@@ -201,3 +201,5 @@ Planned modules:
 
 
 - V1-073: Local UI profile and material selector pack.
+
+- V1-074: Local UI guided workflow and beta readiness pack.
