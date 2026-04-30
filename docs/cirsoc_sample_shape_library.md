@@ -1,4 +1,4 @@
-# CIRSOC Sample Shape Library (V1-018)
+# CIRSOC Sample Shape Library (V1-049)
 
 ## Purpose
 
@@ -38,6 +38,9 @@ On import, the package converts to internal units for section computations:
 - `Iyy/Izz/Iyz/J -> mm4`
 - `Cw -> mm6`
 
+`Cw` is handled as `warping_constant` with internal `mm6` units.
+`J` is handled as an inertia-like torsion constant with internal `mm4` units.
+
 ## Axis mapping convention
 
 For this sample, the tabulated axis names are mapped explicitly in metadata:
@@ -52,16 +55,19 @@ This mapping is stored as:
 
 ## Included profiles
 
-Only two sample records are included:
+Only a few sample records are included:
 
+- `CIRSOC_IPN_180`
 - `CIRSOC_IPN_200`
+- `CIRSOC_IPN_240`
+- `CIRSOC_IPN_300`
 - `CIRSOC_IPB_200`
 
 ## Limitations
 
-- Only two sample profiles.
+- Small manually curated sample library only.
+- Not a complete CIRSOC profile database.
 - No automatic PDF extraction.
-- No full CIRSOC profile database.
 - No design-code checks.
 - No section classification checks.
 - No torsion/shear-center calculations beyond storing tabulated `J` and `Cw` values.

@@ -11,15 +11,95 @@
       "shape_family": "IPN",
       "shape_name": "IPN 200",
       "source": "CIRSOC 301-EL / 302-EL Tablas de Perfiles",
-      "depth": {"value": 200, "unit": "mm"},
-      "width": {"value": 90, "unit": "mm"},
-      "area": {"value": 33.4, "unit": "cm2"},
-      "weight_per_length": {"value": 26.2, "unit": "kg/m"},
-      "Iyy": {"value": 2140, "unit": "cm4"},
-      "Izz": {"value": 117, "unit": "cm4"},
-      "Iyz": {"value": 0, "unit": "cm4"},
-      "J": {"value": 11.2, "unit": "cm4"},
-      "Cw": {"value": 10520, "unit": "cm6"},
+      "depth": {
+        "value": 200,
+        "unit": "mm"
+      },
+      "width": {
+        "value": 90,
+        "unit": "mm"
+      },
+      "area": {
+        "value": 33.4,
+        "unit": "cm2"
+      },
+      "weight_per_length": {
+        "value": 26.2,
+        "unit": "kg/m"
+      },
+      "Iyy": {
+        "value": 2140,
+        "unit": "cm4"
+      },
+      "Izz": {
+        "value": 117,
+        "unit": "cm4"
+      },
+      "Iyz": {
+        "value": 0,
+        "unit": "cm4"
+      },
+      "J": {
+        "value": 11.2,
+        "unit": "cm4"
+      },
+      "Cw": {
+        "value": 10520,
+        "unit": "cm6"
+      },
+      "metadata": {
+        "source_document": "CIRSOC tablas perfiles.pdf",
+        "source_table": "IPN según IRAM-IAS U 500-511",
+        "manually_curated": true,
+        "production_complete_library": false,
+        "requires_independent_verification_before_design_use": true,
+        "axis_mapping": {
+          "table_Ix_maps_to": "Iyy_mm4",
+          "table_Iy_maps_to": "Izz_mm4"
+        }
+      }
+    },
+    {
+      "shape_id": "CIRSOC_IPN_180",
+      "shape_family": "IPN",
+      "shape_name": "IPN 180",
+      "source": "CIRSOC 301-EL / 302-EL Tablas de Perfiles",
+      "depth": {
+        "value": 180,
+        "unit": "mm"
+      },
+      "width": {
+        "value": 82,
+        "unit": "mm"
+      },
+      "area": {
+        "value": 27.9,
+        "unit": "cm2"
+      },
+      "weight_per_length": {
+        "value": 21.9,
+        "unit": "kg/m"
+      },
+      "Iyy": {
+        "value": 1450,
+        "unit": "cm4"
+      },
+      "Izz": {
+        "value": 81.3,
+        "unit": "cm4"
+      },
+      "Iyz": {
+        "value": 0,
+        "unit": "cm4"
+      },
+      "J": {
+        "value": 7.89,
+        "unit": "cm4"
+      },
+      "Cw": {
+        "value": 5924,
+        "unit": "cm6"
+      },
       "metadata": {
         "source_document": "CIRSOC tablas perfiles.pdf",
         "source_table": "IPN según IRAM-IAS U 500-511",
@@ -37,18 +117,151 @@
       "shape_family": "IPB",
       "shape_name": "IPB 200",
       "source": "CIRSOC 301-EL / 302-EL Tablas de Perfiles",
-      "depth": {"value": 200, "unit": "mm"},
-      "width": {"value": 200, "unit": "mm"},
-      "area": {"value": 78.1, "unit": "cm2"},
-      "weight_per_length": {"value": 61.3, "unit": "kg/m"},
-      "Iyy": {"value": 5700, "unit": "cm4"},
-      "Izz": {"value": 2000, "unit": "cm4"},
-      "Iyz": {"value": 0, "unit": "cm4"},
-      "J": {"value": 49.1, "unit": "cm4"},
-      "Cw": {"value": 171490, "unit": "cm6"},
+      "depth": {
+        "value": 200,
+        "unit": "mm"
+      },
+      "width": {
+        "value": 200,
+        "unit": "mm"
+      },
+      "area": {
+        "value": 78.1,
+        "unit": "cm2"
+      },
+      "weight_per_length": {
+        "value": 61.3,
+        "unit": "kg/m"
+      },
+      "Iyy": {
+        "value": 5700,
+        "unit": "cm4"
+      },
+      "Izz": {
+        "value": 2000,
+        "unit": "cm4"
+      },
+      "Iyz": {
+        "value": 0,
+        "unit": "cm4"
+      },
+      "J": {
+        "value": 49.1,
+        "unit": "cm4"
+      },
+      "Cw": {
+        "value": 171490,
+        "unit": "cm6"
+      },
       "metadata": {
         "source_document": "CIRSOC tablas perfiles.pdf",
         "source_table": "IPB según IRAM-IAS U 500-215-2",
+        "manually_curated": true,
+        "production_complete_library": false,
+        "requires_independent_verification_before_design_use": true,
+        "axis_mapping": {
+          "table_Ix_maps_to": "Iyy_mm4",
+          "table_Iy_maps_to": "Izz_mm4"
+        }
+      }
+    },
+    {
+      "shape_id": "CIRSOC_IPN_240",
+      "shape_family": "IPN",
+      "shape_name": "IPN 240",
+      "source": "CIRSOC 301-EL / 302-EL Tablas de Perfiles",
+      "depth": {
+        "value": 240,
+        "unit": "mm"
+      },
+      "width": {
+        "value": 106,
+        "unit": "mm"
+      },
+      "area": {
+        "value": 46.1,
+        "unit": "cm2"
+      },
+      "weight_per_length": {
+        "value": 36.2,
+        "unit": "kg/m"
+      },
+      "Iyy": {
+        "value": 4250,
+        "unit": "cm4"
+      },
+      "Izz": {
+        "value": 221,
+        "unit": "cm4"
+      },
+      "Iyz": {
+        "value": 0,
+        "unit": "cm4"
+      },
+      "J": {
+        "value": 20.6,
+        "unit": "cm4"
+      },
+      "Cw": {
+        "value": 28730,
+        "unit": "cm6"
+      },
+      "metadata": {
+        "source_document": "CIRSOC tablas perfiles.pdf",
+        "source_table": "IPN según IRAM-IAS U 500-511",
+        "manually_curated": true,
+        "production_complete_library": false,
+        "requires_independent_verification_before_design_use": true,
+        "axis_mapping": {
+          "table_Ix_maps_to": "Iyy_mm4",
+          "table_Iy_maps_to": "Izz_mm4"
+        }
+      }
+    },
+    {
+      "shape_id": "CIRSOC_IPN_300",
+      "shape_family": "IPN",
+      "shape_name": "IPN 300",
+      "source": "CIRSOC 301-EL / 302-EL Tablas de Perfiles",
+      "depth": {
+        "value": 300,
+        "unit": "mm"
+      },
+      "width": {
+        "value": 125,
+        "unit": "mm"
+      },
+      "area": {
+        "value": 69.0,
+        "unit": "cm2"
+      },
+      "weight_per_length": {
+        "value": 54.2,
+        "unit": "kg/m"
+      },
+      "Iyy": {
+        "value": 9800,
+        "unit": "cm4"
+      },
+      "Izz": {
+        "value": 451,
+        "unit": "cm4"
+      },
+      "Iyz": {
+        "value": 0,
+        "unit": "cm4"
+      },
+      "J": {
+        "value": 46.7,
+        "unit": "cm4"
+      },
+      "Cw": {
+        "value": 91850,
+        "unit": "cm6"
+      },
+      "metadata": {
+        "source_document": "CIRSOC tablas perfiles.pdf",
+        "source_table": "IPN según IRAM-IAS U 500-511",
         "manually_curated": true,
         "production_complete_library": false,
         "requires_independent_verification_before_design_use": true,
