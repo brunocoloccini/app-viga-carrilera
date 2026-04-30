@@ -1,23 +1,73 @@
-# section_core
+# section_core Internal Beta
 
-`section_core` is a Python core library for structural section modeling and property workflows. It is intended to be reused by future applications for crane runway beams, steel beams, steel columns, built-up columns, and arbitrary structural sections.
+`section_core` is a UI-independent Python engineering core focused on crane runway beam workflow modeling, analysis, and reporting.
 
-This repository currently contains only the initial scaffold and the first units subsystem.
+## Internal beta purpose
 
-## Install (editable mode)
+This internal beta packages the current crane runway workflow so the team can validate case authoring, deterministic outputs, CLI/API boundaries, and regression behavior before broader release.
+
+## Beta scope (current)
+
+The engine currently includes:
+
+- units, geometry, section components, and gross section properties;
+- shape library support with manually curated sample CIRSOC shapes;
+- materials and sample rail registries;
+- crane runway load generation, vertical/lateral analysis, deflection, elastic stress, and generic criteria checks;
+- JSON case schema, case I/O, validation/execution scripts;
+- markdown/HTML reporting plus report-package export;
+- scenario matrix and golden regression workflows;
+- API service boundary for validation/execution.
+
+## What it can do today
+
+- Build/assemble sections and compute gross elastic properties.
+- Run crane runway demand workflows from JSON inputs.
+- Validate JSON case files with strict/non-strict schema modes.
+- Produce text/markdown/HTML summaries and report packages.
+- Execute scenario matrix and golden-regression flows for deterministic verification.
+
+## What it cannot do yet
+
+- Official CIRSOC/CISC/AISC compliance checks.
+- Fatigue, torsional/warping stress, or LTB checks.
+- Rail local wheel-patch/local stress checks.
+- Weld strength checks.
+- Full design-code load-combination engines.
+- UI or PDF/DOCX report generation.
+
+## Quick start
 
 ```bash
-pip install -e .
+# Run test suite
+pytest -q
+
+# Validate a JSON case
+PYTHONPATH=src python scripts/validate_crane_runway_case.py examples/crane_runway_case_demo.json
+
+# Run a JSON case
+PYTHONPATH=src python scripts/run_crane_runway_case.py examples/crane_runway_case_demo.json
+
+# Generate Markdown or HTML
+PYTHONPATH=src python scripts/run_crane_runway_case.py examples/crane_runway_case_demo.json --markdown
+PYTHONPATH=src python scripts/run_crane_runway_case.py examples/crane_runway_case_demo.json --html --output out/report.html
+
+# Generate report package
+PYTHONPATH=src python scripts/run_crane_runway_case.py examples/crane_runway_case_demo.json --package-output out/demo --overwrite-package
+
+# Run scenario matrix
+PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py
 ```
 
-From this repository, run that command inside `engineering-core/`.
+## Key documentation
 
-## Run tests
+- [Getting started: crane runway workflow](docs/getting_started_crane_runway.md)
+- [JSON case authoring guide](docs/json_case_authoring_guide.md)
+- [Command reference](docs/command_reference.md)
+- [Known limitations](docs/known_limitations.md)
+- [Internal beta release checklist](docs/beta_release_checklist.md)
 
-```bash
-pytest
-```
+## Important warnings
 
-## Why units are mandatory
-
-Structural calculations are highly sensitive to unit consistency. The units module enforces explicit units at input, validates dimensional compatibility, and converts to internal canonical units for computation. This helps prevent silent errors such as mixing stress/force, mass/weight, or geometry/property dimensions.
+- Sample data in this repository must be independently verified before any engineering use.
+- Current criteria checks are generic software checks only and are **not** official CIRSOC/CISC/AISC compliance checks.
