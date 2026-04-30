@@ -100,7 +100,8 @@ Suggested quick flow:
    - download HTML report,
    - copy validation response,
    - copy raw response.
-11. Use **Package Export** for browser-side artifact packaging:
+11. Local autosave keeps JSON editor/session state in this browser (`localStorage`) and restores it on refresh; use **Clear Saved Session** to remove local autosaved data.
+12. Use **Package Export** for browser-side artifact packaging:
    - download `metadata.json`, `case.json`, `summary.json`, `validation_response.json`, `run_response.json`, `report.html`,
    - or click **Download All Package Files** to export all currently available files.
    - unavailable artifacts are skipped and reported in the status bar.

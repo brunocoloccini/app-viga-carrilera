@@ -130,6 +130,22 @@ def test_render_index_html_contains_expected_controls() -> None:
         "refreshCaseOutline",
         "renderResultCards",
         "renderHelpPanel",
+        "Autosave",
+        "Autosaved locally.",
+        "Restored autosaved JSON.",
+        "Saved session cleared.",
+        "No saved session",
+        "Autosave unavailable.",
+        "Autosave is stored only in this browser using localStorage.",
+        "Clear Saved Session",
+        "localStorage",
+        "craneRunway.caseJson",
+        "craneRunway.selectedTemplate",
+        "craneRunway.lastSavedAt",
+        "saveSession",
+        "restoreSession",
+        "clearSavedSession",
+        "updateAutosaveStatus",
     ]:
         assert token in html
 

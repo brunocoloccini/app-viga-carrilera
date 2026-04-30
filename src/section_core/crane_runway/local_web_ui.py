@@ -97,6 +97,7 @@ th { background: #f9fafb; }
   <button onclick=\"clearOutput()\">Clear Output</button>
   <button onclick=\"formatJson()\">Format JSON</button>
   <button onclick=\"clearJson()\">Clear JSON</button>
+  <button onclick=\"clearSavedSession()\">Clear Saved Session</button>
 </div>
 <div class=\"panel\" style=\"margin-top: 1rem;\">
   <h3>Import JSON File</h3>
@@ -136,6 +137,8 @@ th { background: #f9fafb; }
     <div class=\"panel\">
       <h3>JSON Editor</h3>
       <textarea id=\"case_json\"></textarea>
+      <div id=\"autosave_status\" style=\"margin-top:0.5rem;font-size:0.9rem;color:#374151;\">Autosave: No saved session</div>
+      <div style=\"margin-top:0.3rem;font-size:0.85rem;color:#4b5563;\">Autosave is stored only in this browser using localStorage.</div>
     </div>
   </div>
   <div class=\"right-col\">
@@ -156,6 +159,71 @@ let latestHtmlReport = '';
 let lastValidationResponse = null;
 let lastRunResponse = null;
 let lastRawResponse = null;
+const autosaveStorageKeys = {
+  caseJson: 'craneRunway.caseJson',
+  selectedTemplate: 'craneRunway.selectedTemplate',
+  lastSavedAt: 'craneRunway.lastSavedAt'
+};
+let autosaveAvailable = true;
+let autosaveTimer = null;
+function updateAutosaveStatus(message) {
+  const panel = document.getElementById('autosave_status');
+  if (panel) panel.textContent = message;
+}
+function saveSession() {
+  if (!autosaveAvailable) { updateAutosaveStatus('Autosave: Autosave unavailable'); return false; }
+  try {
+    localStorage.setItem(autosaveStorageKeys.caseJson, getCurrentCaseJsonText());
+    localStorage.setItem(autosaveStorageKeys.selectedTemplate, document.getElementById('template').value);
+    const savedAt = new Date().toISOString();
+    localStorage.setItem(autosaveStorageKeys.lastSavedAt, savedAt);
+    updateAutosaveStatus('Autosave: Saved locally at ' + savedAt);
+    setStatus('Autosaved locally.');
+    return true;
+  } catch (err) {
+    autosaveAvailable = false;
+    updateAutosaveStatus('Autosave: Autosave unavailable');
+    setStatus('Autosave unavailable.');
+    return false;
+  }
+}
+function scheduleSessionSave() {
+  if (autosaveTimer) window.clearTimeout(autosaveTimer);
+  autosaveTimer = window.setTimeout(() => { autosaveTimer = null; saveSession(); }, 250);
+}
+function restoreSession() {
+  try {
+    const savedJson = localStorage.getItem(autosaveStorageKeys.caseJson);
+    const savedTemplate = localStorage.getItem(autosaveStorageKeys.selectedTemplate);
+    const lastSavedAt = localStorage.getItem(autosaveStorageKeys.lastSavedAt);
+    if (savedTemplate) { document.getElementById('template').value = savedTemplate; }
+    if (savedJson !== null) {
+      document.getElementById('case_json').value = savedJson;
+      setStatus('Restored autosaved JSON.');
+    }
+    if (lastSavedAt) updateAutosaveStatus('Autosave: Saved locally at ' + lastSavedAt);
+    else updateAutosaveStatus('Autosave: No saved session');
+  } catch (err) {
+    autosaveAvailable = false;
+    updateAutosaveStatus('Autosave: Autosave unavailable');
+    setStatus('Autosave unavailable.');
+  }
+}
+function clearSavedSession() {
+  if (!autosaveAvailable) { updateAutosaveStatus('Autosave: Autosave unavailable'); setStatus('Autosave unavailable.'); return; }
+  try {
+    localStorage.removeItem(autosaveStorageKeys.caseJson);
+    localStorage.removeItem(autosaveStorageKeys.selectedTemplate);
+    localStorage.removeItem(autosaveStorageKeys.lastSavedAt);
+    updateAutosaveStatus('Autosave: No saved session');
+    clearOutput();
+    setStatus('Saved session cleared.');
+  } catch (err) {
+    autosaveAvailable = false;
+    updateAutosaveStatus('Autosave: Autosave unavailable');
+    setStatus('Autosave unavailable.');
+  }
+}
 function setStatus(msg) { document.getElementById('status').textContent = msg; }
 function prettyJson(value) { return JSON.stringify(value, null, 2); }
 function renderRaw(data) {
@@ -179,7 +247,7 @@ function clearOutput() {
   renderResultCards(null);
   setStatus('Output cleared.');
 }
-function clearJson() { document.getElementById('case_json').value = ''; setStatus('JSON editor cleared.'); }
+function clearJson() { document.getElementById('case_json').value = ''; setStatus('JSON editor cleared.'); saveSession(); }
 
 async function importJsonFile() {
   const fileInput = document.getElementById('import_json_file');
@@ -191,6 +259,7 @@ async function importJsonFile() {
   reader.onload = async function(event) {
     const text = event && event.target ? String(event.target.result ?? '') : '';
     document.getElementById('case_json').value = text;
+    saveSession();
     setStatus('Imported JSON file: ' + file.name);
     if (validateAfterImport && validateAfterImport.checked) {
       await validateCase();
@@ -495,6 +564,7 @@ async function loadTemplate() {
     const data = await r.json();
     if (!r.ok) { setStatus('Failed to load template: ' + (data.error || 'unknown error')); return; }
     document.getElementById('case_json').value = JSON.stringify(data, null, 2);
+    saveSession();
     setStatus('Template loaded: ' + id);
   } catch (err) { setStatus('Network/error while loading template.'); }
 }
@@ -532,6 +602,9 @@ async function runCase() {
   } catch (err) { setStatus('Network/error during run.'); }
 }
 renderHelpPanel();
+restoreSession();
+document.getElementById('case_json').addEventListener('input', scheduleSessionSave);
+document.getElementById('template').addEventListener('change', saveSession);
 </script>
 </body></html>"""
 
