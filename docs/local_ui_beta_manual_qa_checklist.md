@@ -35,6 +35,10 @@ Expected:
 7. Refresh **Visual Preview**.
 8. **Validate** and **Run**.
 
+9. Enter invalid span (for example `0`), click **Validate Common Inputs**, and confirm `Span must be positive.` appears in **Common Inputs Errors**.
+10. Fix span to positive value and click **Validate Common Inputs** again; confirm `Common inputs are valid.`
+11. Click **Apply Form To JSON** and confirm JSON updates only after valid form state.
+
 ## D) Import JSON workflow
 
 1. Create a project with `init_crane_runway_project.py`.

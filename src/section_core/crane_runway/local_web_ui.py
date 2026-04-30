@@ -141,17 +141,19 @@ th { background: #f9fafb; }
   <p style="margin-top:0.2rem;">Advanced fields remain editable directly in JSON.</p>
   <div class="toolbar" style="margin-top:0;">
     <button onclick="loadCommonInputsFromJson()">Load Form From JSON</button>
+    <button onclick="validateCommonInputsOnly()">Validate Common Inputs</button>
     <button onclick="applyCommonInputsToJson()">Apply Form To JSON</button>
     <button onclick="resetCommonInputs()">Reset Form</button>
   </div>
   <table><tbody><tr><td>Case ID</td><td><input id="common_case_id"/></td><td>Description</td><td><input id="common_description"/></td></tr>
   <tr><td>Base Shape ID</td><td><input id="common_base_shape_id"/></td><td>Cover Plate Enabled</td><td><input id="common_cover_plate_enabled" type="checkbox"/></td></tr>
-  <tr><td>Cover Plate Width</td><td><input id="common_cover_plate_width"/></td><td>Cover Plate Thickness</td><td><input id="common_cover_plate_thickness"/></td></tr>
-  <tr><td>Cover Plate Weld Size</td><td><input id="common_cover_plate_weld_size"/></td><td>Material ID</td><td><input id="common_material_id"/></td></tr>
-  <tr><td>Fy</td><td><input id="common_fy"/></td><td>Fu</td><td><input id="common_fu"/></td></tr><tr><td>E</td><td><input id="common_e"/></td><td>Span</td><td><input id="common_span"/></td></tr>
-  <tr><td>Movement Step</td><td><input id="common_movement_step"/></td><td>Station Step</td><td><input id="common_station_step"/></td></tr><tr><td>Crane ID</td><td><input id="common_crane_id"/></td><td>Vertical Impact Factor</td><td><input id="common_vertical_impact_factor"/></td></tr>
-  <tr><td>Lateral Force Factor</td><td><input id="common_lateral_force_factor"/></td><td>Wheel 1 Load</td><td><input id="common_wheel_1_load"/></td></tr><tr><td>Wheel 2 Load</td><td><input id="common_wheel_2_load"/></td><td>Wheel Spacing</td><td><input id="common_wheel_spacing"/></td></tr>
-  <tr><td>Rail Eccentricity Enabled</td><td><input id="common_rail_eccentricity_enabled" type="checkbox"/></td><td>Vertical Eccentricity Y</td><td><input id="common_vertical_eccentricity_y"/></td></tr><tr><td>Lateral Load Height Z</td><td><input id="common_lateral_load_height_z"/></td><td>Deflection Preset</td><td><input id="common_deflection_preset"/></td></tr><tr><td>Stress Preset</td><td><input id="common_stress_preset"/></td><td></td><td></td></tr></tbody></table>
+  <tr><td>Cover Plate Width</td><td><input id="common_cover_plate_width"/><select id="common_cover_plate_width_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Cover Plate Thickness</td><td><input id="common_cover_plate_thickness"/><select id="common_cover_plate_thickness_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr>
+  <tr><td>Cover Plate Weld Size</td><td><input id="common_cover_plate_weld_size"/><select id="common_cover_plate_weld_size_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Material ID</td><td><input id="common_material_id"/></td></tr>
+  <tr><td>Fy</td><td><input id="common_fy"/><select id="common_fy_unit"><option>MPa</option><option>ksi</option><option>psi</option></select></td><td>Fu</td><td><input id="common_fu"/><select id="common_fu_unit"><option>MPa</option><option>ksi</option><option>psi</option></select></td></tr><tr><td>E</td><td><input id="common_e"/><select id="common_e_unit"><option>MPa</option><option>ksi</option><option>psi</option></select></td><td>Span</td><td><input id="common_span"/><select id="common_span_unit"><option>m</option><option>mm</option><option>ft</option></select></td></tr>
+  <tr><td>Movement Step</td><td><input id="common_movement_step"/><select id="common_movement_step_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Station Step</td><td><input id="common_station_step"/><select id="common_station_step_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr><tr><td>Crane ID</td><td><input id="common_crane_id"/></td><td>Vertical Impact Factor</td><td><input id="common_vertical_impact_factor"/></td></tr>
+  <tr><td>Lateral Force Factor</td><td><input id="common_lateral_force_factor"/></td><td>Wheel 1 Load</td><td><input id="common_wheel_1_load"/><select id="common_wheel_1_load_unit"><option>kN</option><option>N</option><option>kip</option></select></td></tr><tr><td>Wheel 2 Load</td><td><input id="common_wheel_2_load"/><select id="common_wheel_2_load_unit"><option>kN</option><option>N</option><option>kip</option></select></td><td>Wheel Spacing</td><td><input id="common_wheel_spacing"/><select id="common_wheel_spacing_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr>
+  <tr><td>Rail Eccentricity Enabled</td><td><input id="common_rail_eccentricity_enabled" type="checkbox"/></td><td>Vertical Eccentricity Y</td><td><input id="common_vertical_eccentricity_y"/><select id="common_vertical_eccentricity_y_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr><tr><td>Lateral Load Height Z</td><td><input id="common_lateral_load_height_z"/><select id="common_lateral_load_height_z_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Deflection Preset</td><td><input id="common_deflection_preset"/></td></tr><tr><td>Stress Preset</td><td><input id="common_stress_preset"/></td><td></td><td></td></tr></tbody></table>
+  <h4>Common Inputs Errors</h4><div id="common_inputs_errors">No common input errors.</div>
 </div>
 <div class="panel" style="margin-top: 1rem;">
   <h3>Visual Preview</h3>
@@ -529,10 +531,46 @@ function getNestedValue(obj, path) {
 }
 function setQuantity(obj, path, value, unit) { if (value === '' || value === null || value === undefined) return; const n = Number(value); if (Number.isNaN(n)) return; setNestedValue(obj, path, {value: n, unit: unit}); }
 function getQuantityValue(obj, path) { const q = getNestedValue(obj, path); if (!q || typeof q !== 'object') return ''; return q.value ?? ''; }
+function getSelectedUnit(id, fallbackUnit) { const el = document.getElementById(id); return el && el.value ? el.value : fallbackUnit; }
+function setSelectedUnit(id, unit, supportedUnits) { const el = document.getElementById(id); if (!el || !Array.isArray(supportedUnits)) return; if (supportedUnits.includes(unit)) el.value = unit; }
+function parseOptionalNumber(value) { if (value === '' || value === null || value === undefined) return null; const n = Number(value); return Number.isNaN(n) ? NaN : n; }
+function isPositiveNumber(value) { return typeof value === 'number' && Number.isFinite(value) && value > 0; }
+function isNonNegativeNumber(value) { return typeof value === 'number' && Number.isFinite(value) && value >= 0; }
+function renderCommonInputErrors(errors) {
+  const panel = document.getElementById('common_inputs_errors');
+  if (!panel) return;
+  if (!Array.isArray(errors) || errors.length === 0) { panel.innerHTML = '<p>No common input errors.</p>'; return; }
+  let html = '<table><thead><tr><th>Field</th><th>Message</th></tr></thead><tbody>';
+  for (const e of errors) html += '<tr><td>' + escapeHtml(e.field || 'N/A') + '</td><td>' + escapeHtml(e.message || 'N/A') + '</td></tr>';
+  panel.innerHTML = html + '</tbody></table>';
+}
+function validateCommonInputs() {
+  const gv=(id)=>{ const el=document.getElementById(id); if (!el) return ''; return el.type==='checkbox' ? el.checked : String(el.value ?? '').trim(); };
+  const errors = [];
+  const add=(field,message)=>errors.push({field: field, message: message});
+  const caseId = gv('common_case_id'); if (caseId !== '' && caseId.includes(' ')) add('Case ID', 'Case ID must not contain spaces.');
+  const checkPositive=(id,field,msg)=>{ const n=parseOptionalNumber(gv(id)); if (Number.isNaN(n) || (n !== null && !isPositiveNumber(n))) add(field,msg); };
+  const checkNonNegative=(id,field,msg)=>{ const n=parseOptionalNumber(gv(id)); if (Number.isNaN(n) || (n !== null && !isNonNegativeNumber(n))) add(field,msg); };
+  const checkNumeric=(id,field,msg)=>{ const n=parseOptionalNumber(gv(id)); if (Number.isNaN(n)) add(field,msg); };
+  checkPositive('common_cover_plate_width','Cover Plate Width','Cover Plate Width must be positive.');
+  checkPositive('common_cover_plate_thickness','Cover Plate Thickness','Cover Plate Thickness must be positive.');
+  checkPositive('common_cover_plate_weld_size','Cover Plate Weld Size','Cover Plate Weld Size must be positive.');
+  checkPositive('common_fy','Fy','Fy must be positive.'); checkPositive('common_fu','Fu','Fu must be positive.'); checkPositive('common_e','E','E must be positive.');
+  checkPositive('common_span','Span','Span must be positive.'); checkPositive('common_movement_step','Movement Step','Movement Step must be positive.'); checkPositive('common_station_step','Station Step','Station Step must be positive.');
+  checkNonNegative('common_vertical_impact_factor','Vertical Impact Factor','Vertical Impact Factor must be >= 0.');
+  checkNonNegative('common_lateral_force_factor','Lateral Force Factor','Lateral Force Factor must be >= 0.');
+  checkPositive('common_wheel_1_load','Wheel 1 Load','Wheel 1 Load must be positive.'); checkPositive('common_wheel_2_load','Wheel 2 Load','Wheel 2 Load must be positive.'); checkPositive('common_wheel_spacing','Wheel Spacing','Wheel Spacing must be positive.');
+  checkNumeric('common_vertical_eccentricity_y','Vertical Eccentricity Y','Vertical Eccentricity Y must be numeric.');
+  checkNumeric('common_lateral_load_height_z','Lateral Load Height Z','Lateral Load Height Z must be numeric.');
+  renderCommonInputErrors(errors);
+  return errors;
+}
+function validateCommonInputsOnly() { const errors = validateCommonInputs(); setStatus(errors.length === 0 ? 'Common inputs are valid.' : 'Common inputs contain errors.'); }
 function resetCommonInputs() {
   for (const el of document.querySelectorAll('[id^="common_"]')) {
-    if (el.type === 'checkbox') el.checked = false; else el.value = '';
+    if (el.type === 'checkbox') el.checked = false; else if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = '';
   }
+  renderCommonInputErrors([]);
   setStatus('Common inputs reset.');
 }
 function loadCommonInputsFromJson() {
@@ -543,37 +581,44 @@ function loadCommonInputsFromJson() {
   setVal('common_description', getNestedValue(data,['description']));
   setVal('common_base_shape_id', getNestedValue(data,['section','base_shape_id']) ?? getNestedValue(data,['base_shape_id']));
   setVal('common_cover_plate_enabled', getNestedValue(data,['section','cover_plate','enabled']));
-  setVal('common_cover_plate_width', getQuantityValue(data,['section','cover_plate','width']));
-  setVal('common_cover_plate_thickness', getQuantityValue(data,['section','cover_plate','thickness']));
-  setVal('common_cover_plate_weld_size', getQuantityValue(data,['section','cover_plate','weld_size']));
+  setVal('common_cover_plate_width', getQuantityValue(data,['section','cover_plate','width'])); setSelectedUnit('common_cover_plate_width_unit', getNestedValue(data,['section','cover_plate','width','unit']), ['mm','cm','in']);
+  setVal('common_cover_plate_thickness', getQuantityValue(data,['section','cover_plate','thickness'])); setSelectedUnit('common_cover_plate_thickness_unit', getNestedValue(data,['section','cover_plate','thickness','unit']), ['mm','cm','in']);
+  setVal('common_cover_plate_weld_size', getQuantityValue(data,['section','cover_plate','weld_size'])); setSelectedUnit('common_cover_plate_weld_size_unit', getNestedValue(data,['section','cover_plate','weld_size','unit']), ['mm','cm','in']);
   setVal('common_material_id', getNestedValue(data,['material','material_id']));
-  setVal('common_fy', getQuantityValue(data,['material','Fy'])); setVal('common_fu', getQuantityValue(data,['material','Fu'])); setVal('common_e', getQuantityValue(data,['material','E']));
-  setVal('common_span', getQuantityValue(data,['analysis','span'])); setVal('common_movement_step', getQuantityValue(data,['analysis','movement_step'])); setVal('common_station_step', getQuantityValue(data,['analysis','station_step']));
+  setVal('common_fy', getQuantityValue(data,['material','Fy'])); setSelectedUnit('common_fy_unit', getNestedValue(data,['material','Fy','unit']), ['MPa','ksi','psi']);
+  setVal('common_fu', getQuantityValue(data,['material','Fu'])); setSelectedUnit('common_fu_unit', getNestedValue(data,['material','Fu','unit']), ['MPa','ksi','psi']);
+  setVal('common_e', getQuantityValue(data,['material','E'])); setSelectedUnit('common_e_unit', getNestedValue(data,['material','E','unit']), ['MPa','ksi','psi']);
+  setVal('common_span', getQuantityValue(data,['analysis','span'])); setSelectedUnit('common_span_unit', getNestedValue(data,['analysis','span','unit']), ['m','mm','ft']);
+  setVal('common_movement_step', getQuantityValue(data,['analysis','movement_step'])); setSelectedUnit('common_movement_step_unit', getNestedValue(data,['analysis','movement_step','unit']), ['mm','cm','in']);
+  setVal('common_station_step', getQuantityValue(data,['analysis','station_step'])); setSelectedUnit('common_station_step_unit', getNestedValue(data,['analysis','station_step','unit']), ['mm','cm','in']);
   setVal('common_crane_id', getNestedValue(data,['crane','crane_id'])); setVal('common_vertical_impact_factor', getNestedValue(data,['crane','vertical_impact_factor'])); setVal('common_lateral_force_factor', getNestedValue(data,['crane','lateral_force_factor']));
   const wheels = Array.isArray(getNestedValue(data,['crane','wheels'])) ? getNestedValue(data,['crane','wheels']) : [];
-  setVal('common_wheel_1_load', wheels[0] && wheels[0].vertical_force ? wheels[0].vertical_force.value : '');
-  setVal('common_wheel_2_load', wheels[1] && wheels[1].vertical_force ? wheels[1].vertical_force.value : '');
+  setVal('common_wheel_1_load', wheels[0] && wheels[0].vertical_force ? wheels[0].vertical_force.value : ''); setSelectedUnit('common_wheel_1_load_unit', wheels[0] && wheels[0].vertical_force ? wheels[0].vertical_force.unit : null, ['kN','N','kip']);
+  setVal('common_wheel_2_load', wheels[1] && wheels[1].vertical_force ? wheels[1].vertical_force.value : ''); setSelectedUnit('common_wheel_2_load_unit', wheels[1] && wheels[1].vertical_force ? wheels[1].vertical_force.unit : null, ['kN','N','kip']);
   if (wheels[0] && wheels[1] && wheels[0].position_x && wheels[1].position_x) setVal('common_wheel_spacing', Number(wheels[1].position_x.value) - Number(wheels[0].position_x.value)); else setVal('common_wheel_spacing','');
-  setVal('common_rail_eccentricity_enabled', getNestedValue(data,['rail_eccentricity','enabled'])); setVal('common_vertical_eccentricity_y', getQuantityValue(data,['rail_eccentricity','vertical_eccentricity_y'])); setVal('common_lateral_load_height_z', getQuantityValue(data,['rail_eccentricity','lateral_load_height_z']));
+  setSelectedUnit('common_wheel_spacing_unit', wheels[0] && wheels[0].position_x ? wheels[0].position_x.unit : null, ['mm','cm','in']);
+  setVal('common_rail_eccentricity_enabled', getNestedValue(data,['rail_eccentricity','enabled'])); setVal('common_vertical_eccentricity_y', getQuantityValue(data,['rail_eccentricity','vertical_eccentricity_y'])); setSelectedUnit('common_vertical_eccentricity_y_unit', getNestedValue(data,['rail_eccentricity','vertical_eccentricity_y','unit']), ['mm','cm','in']); setVal('common_lateral_load_height_z', getQuantityValue(data,['rail_eccentricity','lateral_load_height_z'])); setSelectedUnit('common_lateral_load_height_z_unit', getNestedValue(data,['rail_eccentricity','lateral_load_height_z','unit']), ['mm','cm','in']);
   const d = getNestedValue(data,['criteria_presets','deflection']); const st = getNestedValue(data,['criteria_presets','stress']);
   setVal('common_deflection_preset', Array.isArray(d) ? (d[0] ?? '') : ''); setVal('common_stress_preset', Array.isArray(st) ? (st[0] ?? '') : '');
+  renderCommonInputErrors([]);
 }
 function applyCommonInputsToJson() {
+  const errors = validateCommonInputs(); if (errors.length > 0) { setStatus('Common inputs contain errors.'); return; }
   let data; try { data = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot apply form: invalid JSON.'); return; }
   const gv=(id)=>{ const el=document.getElementById(id); if (!el) return ''; return el.type==='checkbox' ? el.checked : String(el.value ?? '').trim(); };
   const setText=(path,id)=>{ const v=gv(id); if (v!=='') setNestedValue(data,path,v); };
   setText(['case_id'],'common_case_id'); setText(['description'],'common_description');
   const baseShapeId=gv('common_base_shape_id'); if (baseShapeId!=='') { if (getNestedValue(data,['section','base_shape_id']) !== undefined) setNestedValue(data,['section','base_shape_id'],baseShapeId); else setNestedValue(data,['base_shape_id'],baseShapeId); }
   setNestedValue(data,['section','cover_plate','enabled'],gv('common_cover_plate_enabled'));
-  setQuantity(data,['section','cover_plate','width'],gv('common_cover_plate_width'),'mm'); setQuantity(data,['section','cover_plate','thickness'],gv('common_cover_plate_thickness'),'mm'); setQuantity(data,['section','cover_plate','weld_size'],gv('common_cover_plate_weld_size'),'mm');
-  setText(['material','material_id'],'common_material_id'); setQuantity(data,['material','Fy'],gv('common_fy'),'MPa'); setQuantity(data,['material','Fu'],gv('common_fu'),'MPa'); setQuantity(data,['material','E'],gv('common_e'),'MPa');
-  setQuantity(data,['analysis','span'],gv('common_span'),'m'); setQuantity(data,['analysis','movement_step'],gv('common_movement_step'),'mm'); setQuantity(data,['analysis','station_step'],gv('common_station_step'),'mm');
+  setQuantity(data,['section','cover_plate','width'],gv('common_cover_plate_width'),getSelectedUnit('common_cover_plate_width_unit','mm')); setQuantity(data,['section','cover_plate','thickness'],gv('common_cover_plate_thickness'),getSelectedUnit('common_cover_plate_thickness_unit','mm')); setQuantity(data,['section','cover_plate','weld_size'],gv('common_cover_plate_weld_size'),getSelectedUnit('common_cover_plate_weld_size_unit','mm'));
+  setText(['material','material_id'],'common_material_id'); setQuantity(data,['material','Fy'],gv('common_fy'),getSelectedUnit('common_fy_unit','MPa')); setQuantity(data,['material','Fu'],gv('common_fu'),getSelectedUnit('common_fu_unit','MPa')); setQuantity(data,['material','E'],gv('common_e'),getSelectedUnit('common_e_unit','MPa'));
+  setQuantity(data,['analysis','span'],gv('common_span'),getSelectedUnit('common_span_unit','m')); setQuantity(data,['analysis','movement_step'],gv('common_movement_step'),getSelectedUnit('common_movement_step_unit','mm')); setQuantity(data,['analysis','station_step'],gv('common_station_step'),getSelectedUnit('common_station_step_unit','mm'));
   setText(['crane','crane_id'],'common_crane_id'); const vif=gv('common_vertical_impact_factor'); if (vif!=='') setNestedValue(data,['crane','vertical_impact_factor'],Number(vif)); const lff=gv('common_lateral_force_factor'); if (lff!=='') setNestedValue(data,['crane','lateral_force_factor'],Number(lff));
   if (!Array.isArray(data.crane?.wheels)) { ensureObjectPath(data,['crane']); data.crane.wheels = []; }
-  while (data.crane.wheels.length < 2) { const idx=data.crane.wheels.length+1; data.crane.wheels.push({wheel_id:'W'+idx, position_x:{value: idx===1?0:1, unit:'m'}, vertical_force:{value:0, unit:'kN'}}); }
-  setQuantity(data,['crane','wheels',0,'vertical_force'],gv('common_wheel_1_load'),'kN'); setQuantity(data,['crane','wheels',1,'vertical_force'],gv('common_wheel_2_load'),'kN');
-  const spacing = gv('common_wheel_spacing'); if (spacing !== '') { const w1 = getQuantityValue(data,['crane','wheels',0,'position_x']); const base = w1 === '' ? 0 : Number(w1); setQuantity(data,['crane','wheels',0,'position_x'],base,'m'); setQuantity(data,['crane','wheels',1,'position_x'],base + Number(spacing),'m'); }
-  setNestedValue(data,['rail_eccentricity','enabled'],gv('common_rail_eccentricity_enabled')); setQuantity(data,['rail_eccentricity','vertical_eccentricity_y'],gv('common_vertical_eccentricity_y'),'mm'); setQuantity(data,['rail_eccentricity','lateral_load_height_z'],gv('common_lateral_load_height_z'),'mm');
+  while (data.crane.wheels.length < 2) { const idx=data.crane.wheels.length+1; data.crane.wheels.push({wheel_id:'W'+idx, position_x:{value: idx===1?0:1, unit:'mm'}, vertical_force:{value:0, unit:'kN'}}); }
+  setQuantity(data,['crane','wheels',0,'vertical_force'],gv('common_wheel_1_load'),getSelectedUnit('common_wheel_1_load_unit','kN')); setQuantity(data,['crane','wheels',1,'vertical_force'],gv('common_wheel_2_load'),getSelectedUnit('common_wheel_2_load_unit','kN'));
+  const spacing = gv('common_wheel_spacing'); if (spacing !== '') { const w1 = getQuantityValue(data,['crane','wheels',0,'position_x']); const base = w1 === '' ? 0 : Number(w1); const spacingNum = Number(spacing); const spacingUnit = getSelectedUnit('common_wheel_spacing_unit','mm'); setQuantity(data,['crane','wheels',0,'position_x'],base,spacingUnit); setQuantity(data,['crane','wheels',1,'position_x'],base + spacingNum,spacingUnit); }
+  setNestedValue(data,['rail_eccentricity','enabled'],gv('common_rail_eccentricity_enabled')); setQuantity(data,['rail_eccentricity','vertical_eccentricity_y'],gv('common_vertical_eccentricity_y'),getSelectedUnit('common_vertical_eccentricity_y_unit','mm')); setQuantity(data,['rail_eccentricity','lateral_load_height_z'],gv('common_lateral_load_height_z'),getSelectedUnit('common_lateral_load_height_z_unit','mm'));
   const def=gv('common_deflection_preset'); if (def!=='') setNestedValue(data,['criteria_presets','deflection'],[def]); const stress=gv('common_stress_preset'); if (stress!=='') setNestedValue(data,['criteria_presets','stress'],[stress]);
   document.getElementById('case_json').value = prettyJson(data);
   if (typeof saveSession === 'function') saveSession();

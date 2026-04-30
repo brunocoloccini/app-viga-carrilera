@@ -193,3 +193,5 @@ Planned modules:
 - V1-069: Local UI scenario comparison pack.
 
 - V1-070: Local UI beta stabilization and manual QA checklist.
+
+- V1-071: Common Inputs validation and unit selector pack.
