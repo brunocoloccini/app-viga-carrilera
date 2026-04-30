@@ -13,6 +13,7 @@ from .shapes import (
     registry_from_json_dict,
     registry_to_json_dict,
 )
+from .units import Dimension, UnitRegistry
 from .units.quantity import Quantity
 from .materials import SteelMaterial, build_sample_steel_materials
 from .rails import CraneRailRecord, CraneRailRegistry, build_sample_crane_rail_registry
@@ -154,6 +155,8 @@ __all__ = [
     "CraneRunwayCaseInput",
     "GeometryTolerance",
     "Quantity",
+    "UnitRegistry",
+    "Dimension",
     "SteelMaterial",
     "build_sample_steel_materials",
     "WheelLoad",
