@@ -121,12 +121,18 @@ from .crane_runway import (
     CraneRunwayWorkflowInput,
     CraneRunwayWorkflowResult,
     CraneRunwayCaseErrorFormatter,
+    CraneRunwayApiService,
+    CraneRunwayApiExecutionResponse,
+    CraneRunwayApiValidationResponse,
     CraneRunwayReportPackageManifest,
     CraneRunwayReportPackageResult,
     CraneRunwayReportPackageWriter,
 )
 
 __all__ = [
+    "CraneRunwayApiService",
+    "CraneRunwayApiExecutionResponse",
+    "CraneRunwayApiValidationResponse",
     "build_generic_criteria_preset_registry",
     "CriteriaPresetRegistry",
     "StressLimitPreset",
