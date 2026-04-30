@@ -131,3 +131,12 @@ Important: this is a local beta tool. Results require engineering review.
 6. Validate.
 7. Run.
 8. Download outputs.
+
+
+### Recommended first local UI flow (V1-074)
+
+1. Open the local UI.
+2. Click **Check Backend Health**.
+3. Click **Run Demo Workflow**.
+4. Inspect **Results**, **Result Interpretation**, and **HTML Report**.
+5. Then edit your own case and rerun Validate/Run.

@@ -116,3 +116,13 @@ Expected:
 - Operating system:
 - Result (PASS/FAIL):
 - Notes:
+
+
+## J) Guided workflow and beta readiness checks (V1-074)
+
+1. Click **Check Backend Health** and confirm status shows `Backend health: OK.` (or `Backend health: FAIL.` when service is unavailable).
+2. Confirm **Beta Readiness** panel updates backend health line to PASS/FAIL accordingly.
+3. Click **Run Demo Workflow**.
+4. Confirm demo status becomes `Demo workflow complete.` for healthy runs (or `Demo workflow failed.` on forced failure).
+5. Confirm **Guided Workflow** statuses update across load/configure/preview/validate/run/review/export-compare steps.
+6. Confirm **Beta Readiness** lines update for JSON loaded, validation status, and run status after demo and manual runs.

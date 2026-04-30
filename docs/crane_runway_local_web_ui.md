@@ -453,3 +453,50 @@ Warnings:
 - Material presets are sample helpers and must be independently verified.
 - No official CIRSOC/CISC/AISC compliance checks are performed.
 - Engineering review is required before design use.
+
+## Guided Workflow and beta readiness (V1-074)
+
+New usability helpers in the local UI:
+- **Guided Workflow** panel with 7 steps:
+  1. Load Template or Import JSON
+  2. Configure Inputs
+  3. Refresh Preview
+  4. Validate
+  5. Run
+  6. Review Results
+  7. Export / Compare
+- Step statuses are client-side only: **Pending**, **Done**, **Needs attention**.
+- **Run Demo Workflow** runs an end-to-end path using `ipn-with-cover` (template load, preview refresh, validate, run, result rendering).
+- Demo status text reports `Demo workflow complete.` or `Demo workflow failed.`
+
+### Beta Readiness panel
+
+- Includes local checks with PASS/FAIL/N/A:
+  - UI JavaScript loaded
+  - Backend health
+  - JSON loaded
+  - Validation status
+  - Run status
+  - Autosave available
+- Includes **Check Backend Health** button that calls `/api/health` and reports:
+  - `Backend health: OK.`
+  - `Backend health: FAIL.`
+
+### Troubleshooting panel
+
+Visible guidance:
+- If buttons do not respond, refresh the page.
+- If the server is unreachable, start `scripts/serve_crane_runway_ui.py`.
+- If JSON validation fails, review the Validation panel.
+- If results show FAIL, review configured criteria and engineering assumptions.
+- This local UI is a beta tool and requires engineering review.
+
+### Important limitations
+
+- Guided workflow and beta readiness are **beta helpers only**.
+- They do **not** prove engineering correctness.
+- No official CIRSOC/CISC/AISC checks are performed.
+- No fatigue checks.
+- No torsional/warping stress checks.
+- No LTB checks.
+- Engineering review is required.
