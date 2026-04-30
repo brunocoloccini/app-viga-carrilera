@@ -83,3 +83,12 @@ PYTHONPATH=src python scripts/validate_crane_runway_case.py examples/editing_gui
 PYTHONPATH=src python scripts/run_crane_runway_case.py examples/editing_guide/ipn_with_cover_editing_example.json --package-output out/editing_with_cover --overwrite-package
 PYTHONPATH=src python scripts/run_crane_runway_case.py examples/editing_guide/ipn_without_cover_editing_example.json --package-output out/editing_without_cover --overwrite-package
 ```
+
+
+## serve_crane_runway_ui.py
+
+Start local crane runway browser UI.
+
+```bash
+PYTHONPATH=src python scripts/serve_crane_runway_ui.py [--host 127.0.0.1] [--port 8765] [--open]
+```

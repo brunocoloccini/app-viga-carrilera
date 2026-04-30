@@ -65,3 +65,12 @@ After you initialize a project, use the dedicated user editing guide for practic
 - [User Case Editing Guide](user_case_editing_guide.md)
 - `examples/editing_guide/`
 
+
+
+## Use the local web UI
+
+Run:
+- `PYTHONPATH=src python scripts/serve_crane_runway_ui.py`
+- `PYTHONPATH=src python scripts/serve_crane_runway_ui.py --open`
+
+Then open `http://127.0.0.1:8765` and use template loading, JSON editing, Validate, and Run actions.
