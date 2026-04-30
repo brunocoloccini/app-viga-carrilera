@@ -117,6 +117,7 @@ Important: this is a local beta tool. Results require engineering review.
 2. Load Form From JSON.
 3. Edit Common Inputs.
 4. Apply Form To JSON.
-5. Validate.
-6. Run.
-7. Download outputs.
+5. Click **Refresh Visual Preview** (or use the auto-refresh after template/import/apply) to inspect Beam/Section/Preview Summary schematic data.
+6. Validate.
+7. Run.
+8. Download outputs.

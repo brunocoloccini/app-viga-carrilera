@@ -149,6 +149,14 @@ th { background: #f9fafb; }
   <tr><td>Lateral Force Factor</td><td><input id="common_lateral_force_factor"/></td><td>Wheel 1 Load</td><td><input id="common_wheel_1_load"/></td></tr><tr><td>Wheel 2 Load</td><td><input id="common_wheel_2_load"/></td><td>Wheel Spacing</td><td><input id="common_wheel_spacing"/></td></tr>
   <tr><td>Rail Eccentricity Enabled</td><td><input id="common_rail_eccentricity_enabled" type="checkbox"/></td><td>Vertical Eccentricity Y</td><td><input id="common_vertical_eccentricity_y"/></td></tr><tr><td>Lateral Load Height Z</td><td><input id="common_lateral_load_height_z"/></td><td>Deflection Preset</td><td><input id="common_deflection_preset"/></td></tr><tr><td>Stress Preset</td><td><input id="common_stress_preset"/></td><td></td><td></td></tr></tbody></table>
 </div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Visual Preview</h3>
+  <div class="toolbar" style="margin-top:0;"><button onclick="refreshVisualPreview()">Refresh Visual Preview</button></div>
+  <p style="margin-top:0.35rem;color:#4b5563;">Preview is schematic only and not to scale.</p>
+  <h4>Beam Preview</h4><div id="beam_preview_output"></div>
+  <h4>Section Preview</h4><div id="section_preview_output"></div>
+  <h4>Preview Summary</h4><div id="preview_summary_output"></div>
+</div>
 <div id=\"status\" class=\"status\">Ready.</div>
 <div class=\"page\">
   <div class=\"left-col\">
@@ -267,6 +275,18 @@ function clearOutput() {
 }
 function clearJson() { document.getElementById('case_json').value = ''; setStatus('JSON editor cleared.'); saveSession(); }
 
+function extractQuantityLabel(value, fallback='N/A') { if (!value || typeof value !== 'object') return fallback; const numeric=value.value; const unit=value.unit?String(value.unit):''; if (numeric===undefined || numeric===null || numeric==='') return fallback; return unit ? String(numeric) + ' ' + unit : String(numeric); }
+function getWheelList(caseData) { const wheels = caseData && caseData.crane && Array.isArray(caseData.crane.wheels) ? caseData.crane.wheels : []; return wheels.filter((wheel) => wheel && typeof wheel === 'object'); }
+function getCaseSpan(caseData) { return extractQuantityLabel(caseData && caseData.analysis ? caseData.analysis.span : null); }
+function getBaseShapeId(caseData) { return caseData?.section?.base_shape_id ?? caseData?.base_shape_id ?? 'N/A'; }
+function getCoverPlateInfo(caseData) { const cover = caseData?.section?.cover_plate; return {enabled:Boolean(cover?.enabled), width:extractQuantityLabel(cover?.width), thickness:extractQuantityLabel(cover?.thickness)}; }
+function getMaterialInfo(caseData) { const material = caseData?.material; return {material_id:material?.material_id ?? 'N/A', fy_label:extractQuantityLabel(material?.Fy)}; }
+function getRailEccentricityInfo(caseData) { return {enabled:Boolean(caseData?.rail_eccentricity?.enabled)}; }
+function renderBeamPreview(caseData) { const panel=document.getElementById('beam_preview_output'); if (!panel) return; const wheels=getWheelList(caseData); const spanValue=Number(caseData?.analysis?.span?.value); const spanLabel=getCaseSpan(caseData); if (!Number.isFinite(spanValue) || spanValue<=0) { panel.innerHTML='<p>Beam preview unavailable: span is N/A.</p>'; return; } if (wheels.length===0) { panel.innerHTML='<p>Beam preview unavailable: wheel list is N/A.</p>'; return; } const w=720,h=220,x0=70,x1=650,y=110; let svg='<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;max-width:720px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;">'; svg += '<line x1="'+x0+'" y1="'+y+'" x2="'+x1+'" y2="'+y+'" stroke="#111827" stroke-width="3"/>'; svg += '<polygon points="'+(x0-14)+','+(y+26)+' '+(x0+14)+','+(y+26)+' '+x0+','+(y+4)+'" fill="#2563eb"/>'; svg += '<polygon points="'+(x1-14)+','+(y+26)+' '+(x1+14)+','+(y+26)+' '+x1+','+(y+4)+'" fill="#2563eb"/>'; for (const wheel of wheels) { const wx=Number(wheel?.position_x?.value); if (!Number.isFinite(wx)) continue; const px=x0 + Math.max(0, Math.min(1, wx / spanValue)) * (x1-x0); svg += '<line x1="'+px+'" y1="'+(y-60)+'" x2="'+px+'" y2="'+(y-8)+'" stroke="#dc2626" stroke-width="2"/>'; svg += '<polygon points="'+(px-6)+','+(y-16)+' '+(px+6)+','+(y-16)+' '+px+','+(y-2)+'" fill="#dc2626"/>'; svg += '<text x="'+(px+6)+'" y="'+(y-66)+'" font-size="11" fill="#111827">'+escapeHtml(String(wheel?.wheel_id ?? 'N/A'))+' | Fv '+escapeHtml(extractQuantityLabel(wheel?.vertical_force))+' | x '+escapeHtml(extractQuantityLabel(wheel?.position_x))+'</text>'; } panel.innerHTML = svg + '<text x="'+((x0+x1)/2-70)+'" y="'+(y+44)+'" font-size="12" fill="#111827">Span: '+escapeHtml(spanLabel)+'</text></svg>'; }
+function renderSectionPreview(caseData) { const panel=document.getElementById('section_preview_output'); if (!panel) return; const baseShapeId=getBaseShapeId(caseData); const cover=getCoverPlateInfo(caseData); const material=getMaterialInfo(caseData); const rail=getRailEccentricityInfo(caseData); let svg='<svg viewBox="0 0 620 240" style="width:100%;max-width:620px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;">'; svg += '<rect x="220" y="90" width="180" height="100" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>'; svg += '<text x="230" y="145" font-size="13" fill="#111827">Base shape: '+escapeHtml(String(baseShapeId))+'</text>'; if (cover.enabled) { svg += '<rect x="205" y="68" width="210" height="18" fill="#fde68a" stroke="#b45309" stroke-width="2"/>'; svg += '<text x="20" y="42" font-size="12" fill="#111827">Cover plate enabled: true</text>'; svg += '<text x="20" y="60" font-size="12" fill="#111827">width='+escapeHtml(cover.width)+', thickness='+escapeHtml(cover.thickness)+'</text>'; } else { svg += '<text x="20" y="42" font-size="12" fill="#111827">Cover plate enabled: false</text>'; } svg += '<text x="20" y="208" font-size="12" fill="#111827">Material: '+escapeHtml(String(material.material_id))+', Fy: '+escapeHtml(material.fy_label)+'</text>'; svg += '<text x="20" y="224" font-size="12" fill="#111827">Rail eccentricity enabled: '+escapeHtml(String(rail.enabled))+'</text>'; panel.innerHTML = svg + '</svg>'; }
+function renderPreviewSummary(caseData) { const panel=document.getElementById('preview_summary_output'); if (!panel) return; const wheels=getWheelList(caseData); const cover=getCoverPlateInfo(caseData); const material=getMaterialInfo(caseData); const rail=getRailEccentricityInfo(caseData); const criteriaLabel = caseData?.criteria_presets && typeof caseData.criteria_presets==='object' ? JSON.stringify(caseData.criteria_presets) : 'N/A'; const rows=[['case_id',caseData?.case_id ?? 'N/A'],['base_shape_id',getBaseShapeId(caseData)],['span',getCaseSpan(caseData)],['number of wheels',wheels.length>0?wheels.length:'N/A'],['cover plate enabled',String(cover.enabled)],['material_id',material.material_id],['rail eccentricity enabled',String(rail.enabled)],['criteria presets',criteriaLabel]]; let html='<table><tbody>'; for (const row of rows) html += '<tr><th>'+escapeHtml(row[0])+'</th><td>'+escapeHtml(String(row[1]))+'</td></tr>'; panel.innerHTML = html + '</tbody></table>'; }
+function refreshVisualPreview() { let caseData; try { caseData = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot refresh visual preview: invalid JSON.'); return; } renderBeamPreview(caseData); renderSectionPreview(caseData); renderPreviewSummary(caseData); setStatus('Visual preview refreshed.'); }
+
 async function importJsonFile() {
   const fileInput = document.getElementById('import_json_file');
   const validateAfterImport = document.getElementById('validate_after_import');
@@ -279,6 +299,7 @@ async function importJsonFile() {
     document.getElementById('case_json').value = text;
     saveSession();
     setStatus('Imported JSON file: ' + file.name);
+    if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
     if (validateAfterImport && validateAfterImport.checked) {
       await validateCase();
     }
@@ -534,6 +555,7 @@ function applyCommonInputsToJson() {
   document.getElementById('case_json').value = prettyJson(data);
   if (typeof saveSession === 'function') saveSession();
   if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
+  if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
   setStatus('Common inputs applied to JSON.');
 }
 
@@ -661,6 +683,7 @@ async function loadTemplate() {
     document.getElementById('case_json').value = JSON.stringify(data, null, 2);
     saveSession();
     setStatus('Template loaded: ' + id);
+    if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
   } catch (err) { setStatus('Network/error while loading template.'); }
 }
 async function validateCase() {
