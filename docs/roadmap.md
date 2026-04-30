@@ -181,3 +181,5 @@ Planned modules:
 - V1-064: Local UI browser-side export package builder (Package Export panel, artifact downloads for case/validation/run/summary/report/metadata, and download-all with availability status).
 
 - V1-065: Local UI autosave and session restore (browser-side localStorage only, with clear saved session control).
+
+- V1-066: Local UI common input form panel.

@@ -109,3 +109,14 @@ Suggested quick flow:
 - You can import generated `projects/<name>/input_case.json` into the local UI using **Import JSON File**.
 
 Important: this is a local beta tool. Results require engineering review.
+
+
+### Local UI Common Inputs quick workflow (V1-066)
+
+1. Load Template.
+2. Load Form From JSON.
+3. Edit Common Inputs.
+4. Apply Form To JSON.
+5. Validate.
+6. Run.
+7. Download outputs.
