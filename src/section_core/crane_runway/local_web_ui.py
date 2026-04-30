@@ -79,6 +79,10 @@ th { background: #f9fafb; }
 .result-card { border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.55rem; background: #f9fafb; }
 .result-card-title { font-size: 0.85rem; color: #374151; margin-bottom: 0.2rem; }
 .result-card-value { font-weight: bold; }
+.interpretation-pass { color: #166534; font-weight: 600; }
+.interpretation-fail { color: #991b1b; font-weight: 600; }
+.interpretation-warning { color: #9a3412; font-weight: 600; }
+.interpretation-na { color: #374151; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -172,6 +176,7 @@ th { background: #f9fafb; }
   <div class=\"panel\"><h3>Case Outline</h3><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"refreshCaseOutline()\">Refresh Case Outline</button></div><div id=\"case_outline_output\"></div></div>
   <div class=\"panel\"><h3>Validation</h3><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"copyErrorList()\">Copy Error List</button></div><div id=\"validation_output\"></div></div>
   <div class=\"panel\"><h3>Summary</h3><div id=\"result_cards\"></div><div id=\"summary_output\"></div></div>
+  <div class=\"panel\"><h3>Result Interpretation</h3><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"copyInterpretation()\">Copy Interpretation</button></div><div id=\"interpretation_output\"><p>Run a case to see result interpretation.</p></div></div>
   <div class=\"panel\">
     <h3>HTML Report</h3>
     <button id=\"open_report\" onclick=\"openReportInNewTab()\" style=\"display:none; margin-bottom: 0.6rem;\">Open report in new tab</button>
@@ -271,6 +276,7 @@ function clearOutput() {
   lastRunResponse = null;
   lastRawResponse = null;
   renderResultCards(null);
+  renderResultInterpretation(null, null);
   setStatus('Output cleared.');
 }
 function clearJson() { document.getElementById('case_json').value = ''; setStatus('JSON editor cleared.'); saveSession(); }
@@ -646,6 +652,57 @@ function renderResultCards(summary) {
   }
   panel.innerHTML = html + '</div>';
 }
+
+function renderResultInterpretation(summary, runResponse) {
+  const panel = document.getElementById('interpretation_output');
+  if (!panel) return;
+  if (!summary || typeof summary !== 'object') {
+    panel.innerHTML = '<p>Run a case to see result interpretation.</p>';
+    return;
+  }
+  const lines = [];
+  const addLine = (message, cssClass) => { lines.push({message: message, cssClass: cssClass}); };
+  if (summary.overall_passed === true) addLine('Overall status: PASS based on configured generic criteria.', 'interpretation-pass');
+  else if (summary.overall_passed === false) addLine('Overall status: FAIL based on configured generic criteria.', 'interpretation-fail');
+  else addLine('Overall status: N/A.', 'interpretation-na');
+
+  if (summary.serviceability_passed === true) addLine('Serviceability: PASS.', 'interpretation-pass');
+  else if (summary.serviceability_passed === false) addLine('Serviceability: FAIL. Review deflection demand and configured limits.', 'interpretation-fail');
+  else addLine('Serviceability: N/A.', 'interpretation-na');
+
+  if (summary.stress_criteria_passed === true) addLine('Stress criteria: PASS.', 'interpretation-pass');
+  else if (summary.stress_criteria_passed === false) addLine('Stress criteria: FAIL. Review stress demand and configured limits.', 'interpretation-fail');
+  else addLine('Stress criteria: N/A.', 'interpretation-na');
+
+  if (summary.serviceability_passed === false) addLine('Deflection demand appears high relative to configured checks.', 'interpretation-warning');
+  else if (summary.serviceability_passed === true) addLine('Deflection demand appears within configured checks.', 'interpretation-pass');
+  else addLine('Deflection demand interpretation: N/A.', 'interpretation-na');
+
+  if (summary.stress_criteria_passed === false) addLine('Stress demand appears high relative to configured checks.', 'interpretation-warning');
+  else if (summary.stress_criteria_passed === true) addLine('Stress demand appears within configured checks.', 'interpretation-pass');
+  else addLine('Stress demand interpretation: N/A.', 'interpretation-na');
+
+  const torsionalInput = Number(summary.max_torsional_input_Nmm ?? 0);
+  if (Number.isFinite(torsionalInput) && torsionalInput > 0) addLine('Torsional input is present. Current UI reports torsional input only; torsional/warping stress checks are not performed.', 'interpretation-warning');
+  else addLine('No torsional input reported.', 'interpretation-na');
+
+  const warnings = Array.isArray(runResponse?.warnings) ? runResponse.warnings : [];
+  if (warnings.length > 0) addLine('Warnings are present. Review them before using results.', 'interpretation-warning');
+  else addLine('No warnings reported.', 'interpretation-pass');
+
+  addLine('These are generic configured checks, not official CIRSOC/CISC/AISC compliance checks.', 'interpretation-warning');
+  addLine('Engineering review is required.', 'interpretation-warning');
+
+  panel.innerHTML = '<ul style="margin:0.4rem 0 0.2rem 1.2rem; padding:0;">' + lines.map((line) => '<li class="' + line.cssClass + '">' + escapeHtml(line.message) + '</li>').join('') + '</ul>';
+}
+
+async function copyInterpretation() {
+  const panel = document.getElementById('interpretation_output');
+  const text = panel ? (panel.textContent || '').trim() : '';
+  if (!text || text === 'Run a case to see result interpretation.') { setStatus('No interpretation available. Run a case first.'); return; }
+  await copyText(text, 'Interpretation copied.', 'Could not copy interpretation.');
+}
+
 function refreshCaseOutline() {
   const panel = document.getElementById('case_outline_output');
   try {
@@ -712,6 +769,7 @@ async function runCase() {
     renderValidation(data.validation || null);
     renderSummary(data.summary || null);
     renderResultCards(data.summary || null);
+    renderResultInterpretation(data.summary || null, data);
     renderRaw(data);
     latestHtmlReport = data.html_report || '';
     document.getElementById('html_output').srcdoc = latestHtmlReport || '<p>No HTML report.</p>';

@@ -89,6 +89,7 @@ Suggested quick flow:
 6. Click **Refresh Case Outline** to view key fields and quick completeness checks (`N/A` for missing fields).
 7. Click **Run** and review:
    - **Result Cards** (max demands + PASS/FAIL/N/A criteria),
+   - **Result Interpretation** panel (plain-language explanation using existing summary values only),
    - **Summary** panel (key fields table),
    - **HTML Report** iframe preview,
    - **Raw Response** panel for full JSON.
