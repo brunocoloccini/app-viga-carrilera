@@ -36,3 +36,12 @@ PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py --html --output ou
 ```bash
 PYTHONPATH=src python scripts/update_crane_runway_golden_outputs.py
 ```
+
+## Beta health check
+
+```bash
+PYTHONPATH=src python scripts/run_beta_health_check.py
+PYTHONPATH=src python scripts/run_beta_health_check.py --skip-pytest
+PYTHONPATH=src python scripts/run_beta_health_check.py --skip-pytest --quiet
+```
+

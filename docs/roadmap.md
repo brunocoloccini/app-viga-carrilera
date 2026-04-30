@@ -159,3 +159,5 @@ Planned modules:
 - V1-053: Add a minimal pure-Python crane runway local API service boundary (`api_service.py`) for dict/JSON-text validation + execution with structured response dataclasses, optional output format selection, tests, and documentation.
 
 - V1-054: Internal beta release documentation and checklist, including README/doc refresh, command references, known limitations, examples index, and docs smoke tests.
+
+- V1-055: Add beta health check script for public API/export/CLI/docs/test sanity.
