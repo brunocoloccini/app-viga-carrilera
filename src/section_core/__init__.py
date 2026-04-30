@@ -36,6 +36,8 @@ from .crane_runway import (
     CraneRunwayDemandSummaryFormatter,
     CraneRunwayDemandSummaryHtmlFormatter,
     CraneRunwayHtmlReport,
+    HtmlReportingError,
+    InvalidHtmlReportSummaryError,
     CraneRunwayMatrixCaseRow,
     CraneRunwayMatrixReport,
     CraneRunwayMatrixHtmlFormatter,
