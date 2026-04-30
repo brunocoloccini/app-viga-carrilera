@@ -115,6 +115,8 @@ Suggested quick flow:
 
 Important: this is a local beta tool. Results require engineering review.
 
+- For end-to-end UI testing, follow `docs/local_ui_beta_manual_qa_checklist.md`.
+
 
 ### Local UI Common Inputs quick workflow (V1-066)
 

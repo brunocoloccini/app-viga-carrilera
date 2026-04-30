@@ -131,7 +131,7 @@ th { background: #f9fafb; }
     <button onclick=\"downloadValidationResponse()\">Download Validation Response</button>
     <button onclick=\"downloadRunResponse()\">Download Run Response</button>
     <button onclick=\"downloadSummaryJson()\">Download Summary JSON</button>
-    <button onclick=\"downloadHtmlReport()\">Download Report HTML</button>
+    <button onclick=\"downloadHtmlReport()\">Download HTML Report</button>
     <button onclick=\"downloadAllPackageFiles()\">Download All Package Files</button>
   </div>
 </div>
@@ -843,7 +843,7 @@ function refreshCaseOutline() {
   } catch (err) { panel.innerHTML = '<p>Cannot build outline: invalid JSON.</p>'; }
 }
 function renderHelpPanel() {
-  document.getElementById('help_panel').innerHTML = '<ol><li>Load a template or import JSON.</li><li>Edit JSON.</li><li>Click Validate.</li><li>Fix validation errors.</li><li>Click Run.</li><li>Review Summary and HTML Report.</li><li>Download JSON / Summary / Report.</li></ol><p><strong>Warnings:</strong> Local beta tool; Results require engineering review; Generic checks only; no official CIRSOC/CISC/AISC checks; no fatigue; no torsional/warping stress; no LTB.</p>';
+  document.getElementById('help_panel').innerHTML = '<ol><li>Load a template or import JSON.</li><li>Edit JSON.</li><li>Click Validate.</li><li>Fix validation errors.</li><li>Click Run.</li><li>Review Summary and HTML Report.</li><li>Download JSON / Summary / Report.</li></ol><p><strong>Warnings:</strong> Local beta tool; Results require engineering review; Generic checks only; no official CIRSOC/CISC/AISC checks; no fatigue; no torsional/warping stress; no LTB.</p><p><strong>API:</strong> /api/health, /api/templates, /api/validate, /api/run</p>';
 }
 function openReportInNewTab() {
   if (!latestHtmlReport) return;
