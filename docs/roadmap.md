@@ -150,3 +150,5 @@ Planned modules:
 - V1-049: Expand manually curated CIRSOC sample shape library with additional IPN records (IPN 180, 240, 300), plus validation tests and documentation updates.
 
 - V1-050: Add dedicated crane rail data model (`CraneRailRecord`), rail registry (`CraneRailRegistry`), and fake sample rail dataset (`RAIL_TEST_A`, `RAIL_TEST_B`) for future library and runway integration.
+
+- V1-051: Add public API export, workflow consistency, and reporting consistency contract tests; document workflow/API boundaries and result/report determinism expectations.
