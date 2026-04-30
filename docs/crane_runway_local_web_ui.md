@@ -49,6 +49,23 @@ Notes:
 - The UI does not save files into this repository.
 - There is no server-side persistence for downloaded/copied artifacts.
 
+
+## Importing a local JSON case file
+
+Use **Import JSON File** in the UI to load an existing `.json` case from your machine directly into the JSON editor.
+
+- Import uses the browser `FileReader` API and is **client-side only**.
+- The selected file is **not uploaded** to the server.
+- The selected file is **not saved** on the server.
+- If **Validate after import** is checked, the UI automatically runs **Validate** after loading.
+- If unchecked (default), the UI only loads the file.
+- After import, you can continue with **Validate**, **Run**, and local **Download / Copy** actions.
+
+Limitations:
+- No project file management in the UI yet.
+- No automatic save back to the original local file.
+- Use browser **Download JSON Case** to save edited JSON.
+
 ## Can do
 
 - load built-in templates;
