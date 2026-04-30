@@ -80,3 +80,23 @@ This script intentionally does **not** add:
 - fatigue checks;
 - torsional/warping stress checks;
 - substitution for engineering review.
+
+
+## Report package export
+Use `--package-output DIR` to also write a deterministic package folder while still producing the selected output mode (unless `--output` is used).
+
+```bash
+PYTHONPATH=src python scripts/run_crane_runway_case.py examples/crane_runway_case_demo.json --package-output out/demo
+```
+
+Use `--overwrite-package` to allow writing package files into a non-empty package directory:
+
+```bash
+PYTHONPATH=src python scripts/run_crane_runway_case.py examples/crane_runway_case_demo.json --package-output out/demo --overwrite-package
+```
+
+On successful package write, stdout includes:
+
+```text
+PACKAGE WROTE: out/demo
+```

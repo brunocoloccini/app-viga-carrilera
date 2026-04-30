@@ -105,3 +105,27 @@ def test_mutually_exclusive_output_modes() -> None:
 def test_mutually_exclusive_html_and_markdown() -> None:
     result = _run("--html", "--markdown", "examples/crane_runway_case_demo.json")
     assert result.returncode == 2
+
+def test_package_output(tmp_path: Path) -> None:
+    pkg = tmp_path / "pkg"
+    result = _run("examples/crane_runway_case_demo.json", "--package-output", str(pkg))
+    assert result.returncode == 0
+    assert "PACKAGE WROTE:" in result.stdout
+    assert (pkg / "manifest.json").exists()
+
+
+def test_package_output_non_empty_without_overwrite(tmp_path: Path) -> None:
+    pkg = tmp_path / "pkg"
+    pkg.mkdir(parents=True)
+    (pkg / "junk.txt").write_text("x", encoding="utf-8")
+    result = _run("examples/crane_runway_case_demo.json", "--package-output", str(pkg))
+    assert result.returncode == 1
+
+
+def test_package_output_non_empty_with_overwrite(tmp_path: Path) -> None:
+    pkg = tmp_path / "pkg"
+    pkg.mkdir(parents=True)
+    (pkg / "junk.txt").write_text("x", encoding="utf-8")
+    result = _run("examples/crane_runway_case_demo.json", "--package-output", str(pkg), "--overwrite-package")
+    assert result.returncode == 0
+    assert (pkg / "manifest.json").exists()
