@@ -131,6 +131,24 @@ th { background: #f9fafb; }
     <button onclick=\"downloadAllPackageFiles()\">Download All Package Files</button>
   </div>
 </div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Common Inputs</h3>
+  <p style="margin-top:0;">Common Inputs edits the JSON below. Review generated JSON before running.</p>
+  <p style="margin-top:0.2rem;">Advanced fields remain editable directly in JSON.</p>
+  <div class="toolbar" style="margin-top:0;">
+    <button onclick="loadCommonInputsFromJson()">Load Form From JSON</button>
+    <button onclick="applyCommonInputsToJson()">Apply Form To JSON</button>
+    <button onclick="resetCommonInputs()">Reset Form</button>
+  </div>
+  <table><tbody><tr><td>Case ID</td><td><input id="common_case_id"/></td><td>Description</td><td><input id="common_description"/></td></tr>
+  <tr><td>Base Shape ID</td><td><input id="common_base_shape_id"/></td><td>Cover Plate Enabled</td><td><input id="common_cover_plate_enabled" type="checkbox"/></td></tr>
+  <tr><td>Cover Plate Width</td><td><input id="common_cover_plate_width"/></td><td>Cover Plate Thickness</td><td><input id="common_cover_plate_thickness"/></td></tr>
+  <tr><td>Cover Plate Weld Size</td><td><input id="common_cover_plate_weld_size"/></td><td>Material ID</td><td><input id="common_material_id"/></td></tr>
+  <tr><td>Fy</td><td><input id="common_fy"/></td><td>Fu</td><td><input id="common_fu"/></td></tr><tr><td>E</td><td><input id="common_e"/></td><td>Span</td><td><input id="common_span"/></td></tr>
+  <tr><td>Movement Step</td><td><input id="common_movement_step"/></td><td>Station Step</td><td><input id="common_station_step"/></td></tr><tr><td>Crane ID</td><td><input id="common_crane_id"/></td><td>Vertical Impact Factor</td><td><input id="common_vertical_impact_factor"/></td></tr>
+  <tr><td>Lateral Force Factor</td><td><input id="common_lateral_force_factor"/></td><td>Wheel 1 Load</td><td><input id="common_wheel_1_load"/></td></tr><tr><td>Wheel 2 Load</td><td><input id="common_wheel_2_load"/></td><td>Wheel Spacing</td><td><input id="common_wheel_spacing"/></td></tr>
+  <tr><td>Rail Eccentricity Enabled</td><td><input id="common_rail_eccentricity_enabled" type="checkbox"/></td><td>Vertical Eccentricity Y</td><td><input id="common_vertical_eccentricity_y"/></td></tr><tr><td>Lateral Load Height Z</td><td><input id="common_lateral_load_height_z"/></td><td>Deflection Preset</td><td><input id="common_deflection_preset"/></td></tr><tr><td>Stress Preset</td><td><input id="common_stress_preset"/></td><td></td><td></td></tr></tbody></table>
+</div>
 <div id=\"status\" class=\"status\">Ready.</div>
 <div class=\"page\">
   <div class=\"left-col\">
@@ -442,6 +460,83 @@ function formatJson() {
     setStatus('Cannot format: invalid JSON.');
   }
 }
+
+function ensureObjectPath(obj, path) {
+  let current = obj;
+  for (let i = 0; i < path.length; i += 1) {
+    const key = path[i];
+    if (!current[key] || typeof current[key] !== 'object' || Array.isArray(current[key])) current[key] = {};
+    current = current[key];
+  }
+  return current;
+}
+function setNestedValue(obj, path, value) {
+  if (!obj || !Array.isArray(path) || path.length === 0) return;
+  const parent = ensureObjectPath(obj, path.slice(0, -1));
+  parent[path[path.length - 1]] = value;
+}
+function getNestedValue(obj, path) {
+  let current = obj;
+  for (const key of path) {
+    if (!current || typeof current !== 'object' || !Object.prototype.hasOwnProperty.call(current, key)) return undefined;
+    current = current[key];
+  }
+  return current;
+}
+function setQuantity(obj, path, value, unit) { if (value === '' || value === null || value === undefined) return; const n = Number(value); if (Number.isNaN(n)) return; setNestedValue(obj, path, {value: n, unit: unit}); }
+function getQuantityValue(obj, path) { const q = getNestedValue(obj, path); if (!q || typeof q !== 'object') return ''; return q.value ?? ''; }
+function resetCommonInputs() {
+  for (const el of document.querySelectorAll('[id^="common_"]')) {
+    if (el.type === 'checkbox') el.checked = false; else el.value = '';
+  }
+  setStatus('Common inputs reset.');
+}
+function loadCommonInputsFromJson() {
+  let data;
+  try { data = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot load form: invalid JSON.'); return; }
+  const setVal=(id,v)=>{ const el=document.getElementById(id); if (!el) return; if (el.type==='checkbox') el.checked=Boolean(v); else el.value=(v ?? '');};
+  setVal('common_case_id', getNestedValue(data,['case_id']));
+  setVal('common_description', getNestedValue(data,['description']));
+  setVal('common_base_shape_id', getNestedValue(data,['section','base_shape_id']) ?? getNestedValue(data,['base_shape_id']));
+  setVal('common_cover_plate_enabled', getNestedValue(data,['section','cover_plate','enabled']));
+  setVal('common_cover_plate_width', getQuantityValue(data,['section','cover_plate','width']));
+  setVal('common_cover_plate_thickness', getQuantityValue(data,['section','cover_plate','thickness']));
+  setVal('common_cover_plate_weld_size', getQuantityValue(data,['section','cover_plate','weld_size']));
+  setVal('common_material_id', getNestedValue(data,['material','material_id']));
+  setVal('common_fy', getQuantityValue(data,['material','Fy'])); setVal('common_fu', getQuantityValue(data,['material','Fu'])); setVal('common_e', getQuantityValue(data,['material','E']));
+  setVal('common_span', getQuantityValue(data,['analysis','span'])); setVal('common_movement_step', getQuantityValue(data,['analysis','movement_step'])); setVal('common_station_step', getQuantityValue(data,['analysis','station_step']));
+  setVal('common_crane_id', getNestedValue(data,['crane','crane_id'])); setVal('common_vertical_impact_factor', getNestedValue(data,['crane','vertical_impact_factor'])); setVal('common_lateral_force_factor', getNestedValue(data,['crane','lateral_force_factor']));
+  const wheels = Array.isArray(getNestedValue(data,['crane','wheels'])) ? getNestedValue(data,['crane','wheels']) : [];
+  setVal('common_wheel_1_load', wheels[0] && wheels[0].vertical_force ? wheels[0].vertical_force.value : '');
+  setVal('common_wheel_2_load', wheels[1] && wheels[1].vertical_force ? wheels[1].vertical_force.value : '');
+  if (wheels[0] && wheels[1] && wheels[0].position_x && wheels[1].position_x) setVal('common_wheel_spacing', Number(wheels[1].position_x.value) - Number(wheels[0].position_x.value)); else setVal('common_wheel_spacing','');
+  setVal('common_rail_eccentricity_enabled', getNestedValue(data,['rail_eccentricity','enabled'])); setVal('common_vertical_eccentricity_y', getQuantityValue(data,['rail_eccentricity','vertical_eccentricity_y'])); setVal('common_lateral_load_height_z', getQuantityValue(data,['rail_eccentricity','lateral_load_height_z']));
+  const d = getNestedValue(data,['criteria_presets','deflection']); const st = getNestedValue(data,['criteria_presets','stress']);
+  setVal('common_deflection_preset', Array.isArray(d) ? (d[0] ?? '') : ''); setVal('common_stress_preset', Array.isArray(st) ? (st[0] ?? '') : '');
+}
+function applyCommonInputsToJson() {
+  let data; try { data = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot apply form: invalid JSON.'); return; }
+  const gv=(id)=>{ const el=document.getElementById(id); if (!el) return ''; return el.type==='checkbox' ? el.checked : String(el.value ?? '').trim(); };
+  const setText=(path,id)=>{ const v=gv(id); if (v!=='') setNestedValue(data,path,v); };
+  setText(['case_id'],'common_case_id'); setText(['description'],'common_description');
+  const baseShapeId=gv('common_base_shape_id'); if (baseShapeId!=='') { if (getNestedValue(data,['section','base_shape_id']) !== undefined) setNestedValue(data,['section','base_shape_id'],baseShapeId); else setNestedValue(data,['base_shape_id'],baseShapeId); }
+  setNestedValue(data,['section','cover_plate','enabled'],gv('common_cover_plate_enabled'));
+  setQuantity(data,['section','cover_plate','width'],gv('common_cover_plate_width'),'mm'); setQuantity(data,['section','cover_plate','thickness'],gv('common_cover_plate_thickness'),'mm'); setQuantity(data,['section','cover_plate','weld_size'],gv('common_cover_plate_weld_size'),'mm');
+  setText(['material','material_id'],'common_material_id'); setQuantity(data,['material','Fy'],gv('common_fy'),'MPa'); setQuantity(data,['material','Fu'],gv('common_fu'),'MPa'); setQuantity(data,['material','E'],gv('common_e'),'MPa');
+  setQuantity(data,['analysis','span'],gv('common_span'),'m'); setQuantity(data,['analysis','movement_step'],gv('common_movement_step'),'mm'); setQuantity(data,['analysis','station_step'],gv('common_station_step'),'mm');
+  setText(['crane','crane_id'],'common_crane_id'); const vif=gv('common_vertical_impact_factor'); if (vif!=='') setNestedValue(data,['crane','vertical_impact_factor'],Number(vif)); const lff=gv('common_lateral_force_factor'); if (lff!=='') setNestedValue(data,['crane','lateral_force_factor'],Number(lff));
+  if (!Array.isArray(data.crane?.wheels)) { ensureObjectPath(data,['crane']); data.crane.wheels = []; }
+  while (data.crane.wheels.length < 2) { const idx=data.crane.wheels.length+1; data.crane.wheels.push({wheel_id:'W'+idx, position_x:{value: idx===1?0:1, unit:'m'}, vertical_force:{value:0, unit:'kN'}}); }
+  setQuantity(data,['crane','wheels',0,'vertical_force'],gv('common_wheel_1_load'),'kN'); setQuantity(data,['crane','wheels',1,'vertical_force'],gv('common_wheel_2_load'),'kN');
+  const spacing = gv('common_wheel_spacing'); if (spacing !== '') { const w1 = getQuantityValue(data,['crane','wheels',0,'position_x']); const base = w1 === '' ? 0 : Number(w1); setQuantity(data,['crane','wheels',0,'position_x'],base,'m'); setQuantity(data,['crane','wheels',1,'position_x'],base + Number(spacing),'m'); }
+  setNestedValue(data,['rail_eccentricity','enabled'],gv('common_rail_eccentricity_enabled')); setQuantity(data,['rail_eccentricity','vertical_eccentricity_y'],gv('common_vertical_eccentricity_y'),'mm'); setQuantity(data,['rail_eccentricity','lateral_load_height_z'],gv('common_lateral_load_height_z'),'mm');
+  const def=gv('common_deflection_preset'); if (def!=='') setNestedValue(data,['criteria_presets','deflection'],[def]); const stress=gv('common_stress_preset'); if (stress!=='') setNestedValue(data,['criteria_presets','stress'],[stress]);
+  document.getElementById('case_json').value = prettyJson(data);
+  if (typeof saveSession === 'function') saveSession();
+  if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
+  setStatus('Common inputs applied to JSON.');
+}
+
 function findJsonPath(path) {
   const editor = document.getElementById('case_json');
   if (!editor || !path) { setStatus('Path not found in editor.'); return; }

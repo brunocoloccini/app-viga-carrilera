@@ -172,3 +172,46 @@ Limitations:
 - Autosave does not save to any server.
 - Clearing browser storage removes autosaved data.
 - For durable storage, still use Download/Copy/Package Export actions.
+
+## Common Inputs panel (V1-066)
+
+A beginner-friendly **Common Inputs** panel is available above the JSON editor to edit frequent fields without manual JSON navigation.
+
+Supported fields:
+- General: Case ID, Description.
+- Section: Base Shape ID, Cover Plate Enabled, Cover Plate Width/Thickness/Weld Size.
+- Material: Material ID, Fy, Fu, E.
+- Analysis: Span, Movement Step, Station Step.
+- Crane: Crane ID, Vertical Impact Factor, Lateral Force Factor, Wheel 1 Load, Wheel 2 Load, Wheel Spacing.
+- Rail eccentricity: Enabled, Vertical Eccentricity Y, Lateral Load Height Z.
+- Criteria: Deflection Preset, Stress Preset.
+
+Panel actions:
+- **Load Form From JSON**: parses editor JSON and fills matching form fields; invalid JSON shows `Cannot load form: invalid JSON.`
+- **Apply Form To JSON**: writes non-empty form values to JSON and pretty-prints with 2-space indentation; invalid JSON shows `Cannot apply form: invalid JSON.`
+- **Reset Form**: clears panel inputs and shows `Common inputs reset.`
+
+Notes shown in UI:
+- `Common Inputs edits the JSON below. Review generated JSON before running.`
+- `Advanced fields remain editable directly in JSON.`
+
+Default units used in this version:
+- Span: `m`
+- Cover plate width/thickness/weld size: `mm`
+- Fy/Fu/E: `MPa`
+- Wheel loads: `kN`
+- Movement/station step: `mm`
+- Rail eccentricities: `mm`
+
+Wheel behavior:
+- Wheel 1 load -> `crane.wheels[0].vertical_force`
+- Wheel 2 load -> `crane.wheels[1].vertical_force`
+- Wheel spacing sets wheel 2 position relative to wheel 1 (`position_x` in `m`).
+- If fewer than two wheels exist, simple `W1`/`W2` entries are created, preserving existing wheel IDs when present.
+
+Limitations:
+- The form is a convenience layer only.
+- Generated JSON must still be reviewed by the user.
+- Advanced/non-common fields still require direct JSON editing.
+- No official CIRSOC/CISC/AISC checks.
+- No fatigue, torsion/warping stress, or LTB checks.
