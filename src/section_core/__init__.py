@@ -19,6 +19,8 @@ from .materials import SteelMaterial, build_sample_steel_materials
 from .rails import CraneRailRecord, CraneRailRegistry, build_sample_crane_rail_registry
 from .crane_runway import (
     GenericCriteriaPreset,
+    UserFacingValidationMessage,
+    UserFacingValidationReport,
     DeflectionLimitPreset,
     StressLimitPreset,
     CriteriaPresetRegistry,
