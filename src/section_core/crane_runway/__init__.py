@@ -156,6 +156,14 @@ from .error_formatting import (
     UserFacingValidationReport,
 )
 
+from .api_service import (
+    CraneRunwayApiExecutionResponse,
+    CraneRunwayApiService,
+    CraneRunwayApiServiceError,
+    CraneRunwayApiValidationResponse,
+    InvalidCraneRunwayApiRequestError,
+)
+
 from .stress import (
     CraneRunwayStressError,
     ElasticBendingStressResult,
@@ -167,6 +175,9 @@ from .stress import (
 )
 
 __all__ = [
+    "CraneRunwayApiService",
+    "CraneRunwayApiExecutionResponse",
+    "CraneRunwayApiValidationResponse",
     "CriteriaPresetNotFoundError",
     "DuplicateCriteriaPresetError",
     "InvalidCriteriaPresetError",
