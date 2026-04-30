@@ -100,6 +100,10 @@ Suggested quick flow:
    - download HTML report,
    - copy validation response,
    - copy raw response.
+11. Use **Package Export** for browser-side artifact packaging:
+   - download `metadata.json`, `case.json`, `summary.json`, `validation_response.json`, `run_response.json`, `report.html`,
+   - or click **Download All Package Files** to export all currently available files.
+   - unavailable artifacts are skipped and reported in the status bar.
 
 - You can import generated `projects/<name>/input_case.json` into the local UI using **Import JSON File**.
 

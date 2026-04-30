@@ -54,6 +54,39 @@ Notes:
 - The UI does not save files into this repository.
 - There is no server-side persistence for downloaded/copied artifacts.
 
+## Package Export panel (browser-side package builder)
+
+The **Package Export** panel provides one-click browser downloads for calculation artifacts after Validate/Run:
+
+- `case.json`
+- `summary.json`
+- `validation_response.json`
+- `run_response.json`
+- `report.html`
+- `metadata.json`
+
+Buttons:
+
+- **Download Package Metadata**
+- **Download Case JSON**
+- **Download Validation Response**
+- **Download Run Response**
+- **Download Summary JSON**
+- **Download Report HTML**
+- **Download All Package Files**
+
+Behavior:
+
+- Individual buttons download one artifact if available and show a clear status message if unavailable.
+- **Download All Package Files** downloads every currently available artifact and skips unavailable files.
+- `metadata.json` is generated client-side with timestamp, available/unavailable lists, and review/limitations notes.
+
+Important:
+- Downloads are browser-side only.
+- Files are not saved automatically to this repo.
+- There is no server-side file persistence.
+- No ZIP bundle is generated yet; save files manually into your project folder if needed.
+
 
 ## Importing a local JSON case file
 
@@ -94,6 +127,7 @@ Limitations:
 - database storage;
 - file management;
 - PDF/DOCX export;
+- ZIP package export;
 - project file management from UI;
 - official CIRSOC/CISC/AISC checks;
 - fatigue checks;

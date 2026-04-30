@@ -118,6 +118,18 @@ th { background: #f9fafb; }
     <button onclick=\"copyRawResponse()\">Copy Raw Response</button>
   </div>
 </div>
+<div class=\"panel\" style=\"margin-top: 1rem;\">
+  <h3>Package Export</h3>
+  <div class=\"toolbar\" style=\"margin-top:0;\">
+    <button onclick=\"downloadPackageMetadata()\">Download Package Metadata</button>
+    <button onclick=\"downloadPackageCaseJson()\">Download Case JSON</button>
+    <button onclick=\"downloadValidationResponse()\">Download Validation Response</button>
+    <button onclick=\"downloadRunResponse()\">Download Run Response</button>
+    <button onclick=\"downloadSummaryJson()\">Download Summary JSON</button>
+    <button onclick=\"downloadHtmlReport()\">Download Report HTML</button>
+    <button onclick=\"downloadAllPackageFiles()\">Download All Package Files</button>
+  </div>
+</div>
 <div id=\"status\" class=\"status\">Ready.</div>
 <div class=\"page\">
   <div class=\"left-col\">
@@ -240,6 +252,99 @@ function downloadSummaryJson() {
   if (!lastRunResponse || !lastRunResponse.summary) { setStatus('No summary available. Run a case first.'); return; }
   downloadText('summary.json', prettyJson(lastRunResponse.summary), 'application/json;charset=utf-8');
   setStatus('Summary downloaded.');
+}
+function buildPackageArtifacts() {
+  const artifacts = {};
+  try {
+    const parsed = JSON.parse(getCurrentCaseJsonText());
+    artifacts['case.json'] = {available: true, content: prettyJson(parsed), contentType: 'application/json;charset=utf-8'};
+  } catch (err) {
+    artifacts['case.json'] = {available: false, reason: 'Cannot export case.json: invalid JSON.'};
+  }
+  if (lastRunResponse && lastRunResponse.summary) {
+    artifacts['summary.json'] = {available: true, content: prettyJson(lastRunResponse.summary), contentType: 'application/json;charset=utf-8'};
+  } else {
+    artifacts['summary.json'] = {available: false, reason: 'No summary available. Run a case first.'};
+  }
+  if (lastValidationResponse) {
+    artifacts['validation_response.json'] = {available: true, content: prettyJson(lastValidationResponse), contentType: 'application/json;charset=utf-8'};
+  } else {
+    artifacts['validation_response.json'] = {available: false, reason: 'No validation response available. Validate a case first.'};
+  }
+  if (lastRunResponse) {
+    artifacts['run_response.json'] = {available: true, content: prettyJson(lastRunResponse), contentType: 'application/json;charset=utf-8'};
+  } else {
+    artifacts['run_response.json'] = {available: false, reason: 'No run response available. Run a case first.'};
+  }
+  if (lastRunResponse && lastRunResponse.html_report) {
+    artifacts['report.html'] = {available: true, content: lastRunResponse.html_report, contentType: 'text/html;charset=utf-8'};
+  } else {
+    artifacts['report.html'] = {available: false, reason: 'No HTML report available. Run a case first.'};
+  }
+  return artifacts;
+}
+function buildPackageMetadata(availableArtifacts, unavailableArtifacts) {
+  return {
+    generated_by: 'CraneRunwayLocalWebUi',
+    generated_at: new Date().toISOString(),
+    available_artifacts: availableArtifacts,
+    unavailable_artifacts: unavailableArtifacts,
+    notes: [
+      'Browser-side export package.',
+      'Results require engineering review.',
+      'Generic checks only; no official CIRSOC/CISC/AISC compliance checks.',
+      'No fatigue, torsional/warping stress, or LTB checks are performed.'
+    ]
+  };
+}
+function downloadPackageMetadata() {
+  const artifacts = buildPackageArtifacts();
+  const available = [];
+  const unavailable = [];
+  for (const [name, artifact] of Object.entries(artifacts)) {
+    if (artifact.available) available.push(name);
+    else unavailable.push(name);
+  }
+  const metadata = buildPackageMetadata(available, unavailable);
+  downloadText('metadata.json', prettyJson(metadata), 'application/json;charset=utf-8');
+  setStatus('Package metadata downloaded.');
+}
+function downloadPackageCaseJson() {
+  const artifact = buildPackageArtifacts()['case.json'];
+  if (!artifact.available) { setStatus(artifact.reason); return; }
+  downloadText('case.json', artifact.content, artifact.contentType);
+  setStatus('Case JSON downloaded.');
+}
+function downloadValidationResponse() {
+  const artifact = buildPackageArtifacts()['validation_response.json'];
+  if (!artifact.available) { setStatus(artifact.reason); return; }
+  downloadText('validation_response.json', artifact.content, artifact.contentType);
+  setStatus('Validation response downloaded.');
+}
+function downloadRunResponse() {
+  const artifact = buildPackageArtifacts()['run_response.json'];
+  if (!artifact.available) { setStatus(artifact.reason); return; }
+  downloadText('run_response.json', artifact.content, artifact.contentType);
+  setStatus('Run response downloaded.');
+}
+function downloadAllPackageFiles() {
+  const artifacts = buildPackageArtifacts();
+  const downloaded = [];
+  const unavailable = [];
+  for (const [name, artifact] of Object.entries(artifacts)) {
+    if (artifact.available) {
+      downloadText(name, artifact.content, artifact.contentType);
+      downloaded.push(name);
+      continue;
+    }
+    unavailable.push(name);
+  }
+  const metadata = buildPackageMetadata(downloaded, unavailable);
+  downloadText('metadata.json', prettyJson(metadata), 'application/json;charset=utf-8');
+  downloaded.push('metadata.json');
+  let status = 'Downloaded package files: ' + (downloaded.length > 0 ? downloaded.join(', ') : 'none') + '.';
+  if (unavailable.length > 0) status += ' Unavailable package files: ' + unavailable.join(', ') + '.';
+  setStatus(status);
 }
 async function copySummaryJson() {
   if (!lastRunResponse || !lastRunResponse.summary) { setStatus('No summary available. Run a case first.'); return; }
