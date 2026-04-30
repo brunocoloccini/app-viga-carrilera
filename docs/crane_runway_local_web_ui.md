@@ -344,3 +344,37 @@ Before relying on the local beta UI for engineering workflows, run the manual ch
 
 Also run the beta health check script and confirm it passes for your branch/environment.
 
+
+
+## V1-071 Common Inputs validation and unit selectors
+
+The **Common Inputs** panel now includes:
+- **Validate Common Inputs** button (form-only check, no JSON mutation).
+- **Common Inputs Errors** area:
+  - shows `No common input errors.` when clear,
+  - shows a Field/Message table when invalid.
+- Apply flow safety: **Apply Form To JSON** runs client-side validation first and aborts JSON updates when errors exist, showing `Common inputs contain errors.`
+
+Validation rules include:
+- `Case ID` must not contain spaces (if provided).
+- Positive numeric checks for section/material/analysis wheel fields (if provided).
+- Non-negative checks for vertical impact and lateral force factors (if provided).
+- Signed numeric acceptance for rail eccentricity Y/Z (if provided).
+
+Unit selector pack:
+- Span: `m`, `mm`, `ft`
+- Cover plate width/thickness/weld: `mm`, `cm`, `in`
+- Movement/station step: `mm`, `cm`, `in`
+- Rail eccentricity Y/Z: `mm`, `cm`, `in`
+- Wheel loads: `kN`, `N`, `kip`
+- Fy/Fu/E: `MPa`, `ksi`, `psi`
+
+Behavior:
+- Apply writes selected units into quantity objects.
+- Load selects unit when unit is supported.
+- Unsupported existing units do not fail the load; value remains and default selector remains selected.
+
+Limitations:
+- Client-side helper validation only.
+- JSON schema validation remains authoritative.
+- Engineering review is still required.
