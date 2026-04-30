@@ -652,7 +652,8 @@ function renderValidationTable(messages) {
     const path = m && m.path ? m.path : 'N/A';
     const msg = m && m.message ? m.message : 'N/A';
     const hint = m && m.hint ? m.hint : 'N/A';
-    const find = path !== 'N/A' ? '<button class=\"small-btn\" onclick=\"findJsonPath(\\'' + escapeHtml(String(path).replaceAll('\\\\', '\\\\\\\\').replaceAll('\'', '\\\\\'')) + '\\')\">Find Path</button>' : '';
+    const findPathPayload = encodeURIComponent(String(path));
+    const find = path !== 'N/A' ? '<button class=\"small-btn\" onclick=\"findJsonPath(decodeURIComponent(\\'' + findPathPayload + '\\'))\">Find Path</button>' : '';
     html += '<tr><td>' + escapeHtml(sev) + '</td><td>' + escapeHtml(path) + (find ? '<br/>' + find : '') + '</td><td>' + escapeHtml(msg) + '</td><td>' + escapeHtml(hint) + '</td></tr>';
   }
   html += '</tbody></table>';

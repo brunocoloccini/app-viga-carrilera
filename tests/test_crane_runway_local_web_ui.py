@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import json
+import re
+import shutil
+import subprocess
 
 import pytest
 
@@ -355,3 +358,28 @@ def test_handle_request_routes() -> None:
     assert run_resp.status_code == 200
 
     assert ui.handle_request("GET", "/missing").status_code == 404
+
+
+def test_inline_script_defines_critical_ui_functions() -> None:
+    ui = CraneRunwayLocalWebUi()
+    html = ui.render_index_html()
+    match = re.search(r"<script>(.*?)</script>", html, re.DOTALL)
+    assert match is not None
+    script = match.group(1)
+    assert "function importJsonFile" in script
+    assert "async function validateCase" in script
+    assert "async function runCase" in script
+    assert "async function loadTemplate" in script
+
+
+def test_inline_script_node_syntax_check() -> None:
+    node_path = shutil.which("node")
+    if node_path is None:
+        pytest.skip("node is not available in test environment")
+    ui = CraneRunwayLocalWebUi()
+    html = ui.render_index_html()
+    match = re.search(r"<script>(.*?)</script>", html, re.DOTALL)
+    assert match is not None
+    script = match.group(1)
+    result = subprocess.run([node_path, "--check"], input=script, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
