@@ -173,3 +173,5 @@ Planned modules:
 - V1-060: Local web UI usability polish for crane runway beta workflows (status messaging, JSON editor helpers, validation/summary rendering panels, raw response panel, and report new-tab action).
 
 - V1-061: Local web UI download/copy actions (case JSON, summary JSON, HTML report, validation response, and raw response browser actions).
+
+- V1-062: Local web UI JSON file import workflow.

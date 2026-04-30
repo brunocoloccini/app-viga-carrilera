@@ -97,4 +97,6 @@ Suggested quick flow:
    - copy validation response,
    - copy raw response.
 
+- You can import generated `projects/<name>/input_case.json` into the local UI using **Import JSON File**.
+
 Important: this is a local beta tool. Results require engineering review.

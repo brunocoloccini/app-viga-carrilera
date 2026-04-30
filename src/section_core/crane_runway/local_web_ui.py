@@ -91,6 +91,14 @@ th { width: 40%; background: #f9fafb; }
   <button onclick=\"clearJson()\">Clear JSON</button>
 </div>
 <div class=\"panel\" style=\"margin-top: 1rem;\">
+  <h3>Import JSON File</h3>
+  <div class=\"toolbar\" style=\"margin-top:0;\">
+    <input id=\"import_json_file\" type=\"file\" accept=\".json,application/json\"/>
+    <button onclick=\"importJsonFile()\">Import JSON File</button>
+    <label><input id=\"validate_after_import\" type=\"checkbox\"/> Validate after import</label>
+  </div>
+</div>
+<div class=\"panel\" style=\"margin-top: 1rem;\">
   <h3>Download / Copy</h3>
   <div class=\"toolbar\" style=\"margin-top:0;\">
     <button onclick=\"downloadCaseJson()\">Download JSON Case</button>
@@ -145,6 +153,29 @@ function clearOutput() {
   setStatus('Output cleared.');
 }
 function clearJson() { document.getElementById('case_json').value = ''; setStatus('JSON editor cleared.'); }
+
+async function importJsonFile() {
+  const fileInput = document.getElementById('import_json_file');
+  const validateAfterImport = document.getElementById('validate_after_import');
+  if (!fileInput || !fileInput.files || fileInput.files.length === 0) { setStatus('No JSON file selected.'); return; }
+  const file = fileInput.files[0];
+  clearOutput();
+  const reader = new FileReader();
+  reader.onload = async function(event) {
+    const text = event && event.target ? String(event.target.result ?? '') : '';
+    document.getElementById('case_json').value = text;
+    setStatus('Imported JSON file: ' + file.name);
+    if (validateAfterImport && validateAfterImport.checked) {
+      await validateCase();
+    }
+  };
+  reader.onerror = function() { setStatus('Could not import JSON file.'); };
+  try {
+    reader.readAsText(file);
+  } catch (err) {
+    setStatus('Could not import JSON file.');
+  }
+}
 function downloadText(filename, content, contentType) {
   const blob = new Blob([content], {type: contentType});
   const url = URL.createObjectURL(blob);

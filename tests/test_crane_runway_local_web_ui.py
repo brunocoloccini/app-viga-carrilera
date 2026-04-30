@@ -39,6 +39,8 @@ def test_render_index_html_contains_expected_controls() -> None:
         "Clear Output",
         "Format JSON",
         "Clear JSON",
+        "Import JSON File",
+        "Validate after import",
         "Download JSON Case",
         "Copy JSON Case",
         "Download Summary JSON",
@@ -55,6 +57,9 @@ def test_render_index_html_contains_expected_controls() -> None:
         "No HTML report available. Run a case first.",
         "No validation response available. Validate a case first.",
         "No raw response available.",
+        "No JSON file selected.",
+        "Imported JSON file:",
+        "Could not import JSON file.",
         "/api/validate",
         "/api/run",
         "renderValidation",
@@ -70,6 +75,12 @@ def test_render_index_html_contains_expected_controls() -> None:
         "downloadHtmlReport",
         "copyValidationResponse",
         "copyRawResponse",
+        "type=\"file\"",
+        "accept=\".json,application/json\"",
+        "FileReader",
+        "importJsonFile",
+        "validateAfterImport",
+        "validate_after_import",
     ]:
         assert token in html
 
