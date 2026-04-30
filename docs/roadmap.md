@@ -167,3 +167,5 @@ Planned modules:
 - [x] V1-057 Add crane runway project workspace initializer script, tests, and documentation.
 
 - [x] V1-058 Add user case editing guide and annotated editable JSON examples, with doc/example validation tests.
+
+- V1-059: Minimal local web UI for crane runway beta workflows (`scripts/serve_crane_runway_ui.py`, `/api/validate`, `/api/run`, template loading, summary/html preview).
