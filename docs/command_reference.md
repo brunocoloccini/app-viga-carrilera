@@ -45,3 +45,12 @@ PYTHONPATH=src python scripts/run_beta_health_check.py --skip-pytest
 PYTHONPATH=src python scripts/run_beta_health_check.py --skip-pytest --quiet
 ```
 
+
+
+## create_crane_runway_case_template.py
+
+- `--list`: list built-in template IDs.
+- `--template TEMPLATE_ID --output PATH`: write a JSON case file from a template.
+- `--overwrite`: allow replacing an existing file.
+
+Exit codes: `0` success, `1` template/runtime error (including unknown template), `2` CLI argument error.

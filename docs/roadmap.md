@@ -161,3 +161,5 @@ Planned modules:
 - V1-054: Internal beta release documentation and checklist, including README/doc refresh, command references, known limitations, examples index, and docs smoke tests.
 
 - V1-055: Add beta health check script for public API/export/CLI/docs/test sanity.
+
+- [x] V1-056 JSON case template generator for crane runway beta workflows.
