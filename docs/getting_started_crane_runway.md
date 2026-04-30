@@ -106,6 +106,10 @@ Suggested quick flow:
    - download `metadata.json`, `case.json`, `summary.json`, `validation_response.json`, `run_response.json`, `report.html`,
    - or click **Download All Package Files** to export all currently available files.
    - unavailable artifacts are skipped and reported in the status bar.
+13. Use **Scenario Comparison** to compare alternatives in-browser:
+   - enter **Scenario Name** and click **Save Current Scenario** for each variant,
+   - click **Run All Scenarios** to generate a comparison table from summary outputs,
+   - use **Download Comparison JSON** or **Copy Comparison JSON** for downstream review.
 
 - You can import generated `projects/<name>/input_case.json` into the local UI using **Import JSON File**.
 

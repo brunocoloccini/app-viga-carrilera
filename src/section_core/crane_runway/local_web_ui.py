@@ -161,6 +161,21 @@ th { background: #f9fafb; }
   <h4>Section Preview</h4><div id="section_preview_output"></div>
   <h4>Preview Summary</h4><div id="preview_summary_output"></div>
 </div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Scenario Comparison</h3>
+  <div class="toolbar" style="margin-top:0;">
+    <label for="scenario_name">Scenario Name</label>
+    <input id="scenario_name" type="text"/>
+    <button onclick="saveCurrentScenario()">Save Current Scenario</button>
+    <button onclick="loadScenarios()">Refresh Scenario List</button>
+    <button onclick="runAllScenarios()">Run All Scenarios</button>
+    <button onclick="clearAllScenarios()">Clear All Scenarios</button>
+    <button onclick="downloadScenarioComparison()">Download Comparison JSON</button>
+    <button onclick="copyScenarioComparison()">Copy Comparison JSON</button>
+  </div>
+  <table><thead><tr><th>Scenario</th><th>Saved At</th><th>Actions</th></tr></thead><tbody id="scenario_list_body"></tbody></table>
+  <div id="scenario_comparison_output" style="margin-top:0.6rem;"></div>
+</div>
 <div id=\"status\" class=\"status\">Ready.</div>
 <div class=\"page\">
   <div class=\"left-col\">
@@ -190,6 +205,8 @@ let latestHtmlReport = '';
 let lastValidationResponse = null;
 let lastRunResponse = null;
 let lastRawResponse = null;
+let lastScenarioComparisonResults = null;
+const scenarioStorageKey = 'craneRunway.scenarios';
 const autosaveStorageKeys = {
   caseJson: 'craneRunway.caseJson',
   selectedTemplate: 'craneRunway.selectedTemplate',
@@ -702,6 +719,111 @@ async function copyInterpretation() {
   if (!text || text === 'Run a case to see result interpretation.') { setStatus('No interpretation available. Run a case first.'); return; }
   await copyText(text, 'Interpretation copied.', 'Could not copy interpretation.');
 }
+function loadScenarios() {
+  try {
+    const raw = localStorage.getItem(scenarioStorageKey);
+    const scenarios = raw ? JSON.parse(raw) : [];
+    const normalized = Array.isArray(scenarios) ? scenarios.filter((item) => item && typeof item === 'object') : [];
+    renderScenarioList(normalized);
+    return normalized;
+  } catch (err) { renderScenarioList([]); return []; }
+}
+function renderScenarioList(scenarios) {
+  const body = document.getElementById('scenario_list_body');
+  if (!body) return;
+  if (!Array.isArray(scenarios) || scenarios.length === 0) { body.innerHTML = '<tr><td colspan="3">No saved scenarios available.</td></tr>'; return; }
+  let html = '';
+  for (const scenario of scenarios) {
+    const encoded = encodeURIComponent(String(scenario.scenario_id ?? ''));
+    html += '<tr><td>' + escapeHtml(String(scenario.scenario_id ?? 'N/A')) + '</td><td>' + escapeHtml(String(scenario.saved_at ?? 'N/A')) + '</td><td><button class="small-btn" onclick="loadScenario(\\'' + encoded + '\\')">Load Scenario</button> <button class="small-btn" onclick="deleteScenario(\\'' + encoded + '\\')">Delete Scenario</button></td></tr>';
+  }
+  body.innerHTML = html;
+}
+function saveCurrentScenario() {
+  const scenarioId = String(document.getElementById('scenario_name')?.value ?? '').trim();
+  if (!scenarioId) { setStatus('Scenario name is required.'); return; }
+  let caseJson = '';
+  try { caseJson = prettyJson(JSON.parse(getCurrentCaseJsonText())); } catch (err) { setStatus('Cannot save scenario: invalid JSON.'); return; }
+  const scenarios = loadScenarios();
+  if (scenarios.some((item) => item.scenario_id === scenarioId)) { setStatus('Scenario already exists.'); return; }
+  scenarios.push({scenario_id: scenarioId, case_json: caseJson, saved_at: new Date().toISOString()});
+  localStorage.setItem(scenarioStorageKey, JSON.stringify(scenarios));
+  renderScenarioList(scenarios);
+  setStatus('Scenario saved.');
+}
+function loadScenario(scenarioIdEncoded) {
+  const scenarioId = decodeURIComponent(String(scenarioIdEncoded ?? ''));
+  const scenario = loadScenarios().find((item) => item.scenario_id === scenarioId);
+  if (!scenario) { setStatus('No saved scenarios available.'); return; }
+  document.getElementById('case_json').value = String(scenario.case_json ?? '');
+  saveSession();
+  setStatus('Scenario loaded.');
+}
+function deleteScenario(scenarioIdEncoded) {
+  const scenarioId = decodeURIComponent(String(scenarioIdEncoded ?? ''));
+  const filtered = loadScenarios().filter((item) => item.scenario_id !== scenarioId);
+  localStorage.setItem(scenarioStorageKey, JSON.stringify(filtered));
+  renderScenarioList(filtered);
+  setStatus('Scenario deleted.');
+}
+function clearAllScenarios() {
+  localStorage.setItem(scenarioStorageKey, JSON.stringify([]));
+  renderScenarioList([]);
+  setStatus('All scenarios cleared.');
+}
+function getScenarioCaseSummaryFields(summary) {
+  return {
+    case_id: summary?.summary_id ?? 'N/A',
+    base_shape_id: summary?.section_id ?? 'N/A',
+    cover_plate_enabled: 'N/A',
+    span: summary?.span_internal_mm ?? 'N/A',
+    max_vertical_moment_Nmm: summary?.max_vertical_moment_Nmm ?? 'N/A',
+    max_vertical_shear_abs_N: summary?.max_vertical_shear_abs_N ?? 'N/A',
+    max_vertical_deflection_mm: summary?.max_vertical_deflection_mm ?? 'N/A',
+    max_biaxial_stress_MPa: summary?.max_biaxial_stress_MPa ?? 'N/A',
+    serviceability_passed: summary?.serviceability_passed,
+    stress_criteria_passed: summary?.stress_criteria_passed,
+    overall_passed: summary?.overall_passed
+  };
+}
+async function runAllScenarios() {
+  const scenarios = loadScenarios();
+  if (!Array.isArray(scenarios) || scenarios.length === 0) { setStatus('No saved scenarios available.'); return; }
+  setStatus('Running saved scenarios...');
+  const results = [];
+  for (const scenario of scenarios) {
+    try {
+      const payload = {case_json: String(scenario.case_json ?? ''), output_formats: ['summary']};
+      const response = await fetch('/api/run', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+      const data = await response.json();
+      if (!response.ok || data.success === false || !data.summary) results.push({scenario: scenario.scenario_id, error: data.error || 'Run failed.'});
+      else results.push({scenario: scenario.scenario_id, summary_fields: getScenarioCaseSummaryFields(data.summary)});
+    } catch (err) { results.push({scenario: scenario.scenario_id, error: 'Network/error during run.'}); }
+  }
+  lastScenarioComparisonResults = results;
+  renderScenarioComparison(results);
+  setStatus('Scenario comparison complete.');
+}
+function renderScenarioComparison(results) {
+  const panel = document.getElementById('scenario_comparison_output');
+  if (!panel) return;
+  if (!Array.isArray(results) || results.length === 0) { panel.innerHTML = '<p>No saved scenarios available.</p>'; return; }
+  let html = '<table><thead><tr><th>Scenario</th><th>case_id</th><th>base_shape_id</th><th>cover_plate_enabled</th><th>span</th><th>max_vertical_moment_Nmm</th><th>max_vertical_shear_abs_N</th><th>max_vertical_deflection_mm</th><th>max_biaxial_stress_MPa</th><th>serviceability_passed</th><th>stress_criteria_passed</th><th>overall_passed</th></tr></thead><tbody>';
+  for (const result of results) {
+    if (result.error) { html += '<tr><td>' + escapeHtml(String(result.scenario)) + '</td><td colspan="11">' + escapeHtml(String(result.error)) + '</td></tr>'; continue; }
+    const f = result.summary_fields || {};
+    html += '<tr><td>' + escapeHtml(String(result.scenario)) + '</td><td>' + escapeHtml(String(f.case_id ?? 'N/A')) + '</td><td>' + escapeHtml(String(f.base_shape_id ?? 'N/A')) + '</td><td>' + escapeHtml(String(f.cover_plate_enabled ?? 'N/A')) + '</td><td>' + escapeHtml(String(f.span ?? 'N/A')) + '</td><td>' + escapeHtml(String(f.max_vertical_moment_Nmm ?? 'N/A')) + '</td><td>' + escapeHtml(String(f.max_vertical_shear_abs_N ?? 'N/A')) + '</td><td>' + escapeHtml(String(f.max_vertical_deflection_mm ?? 'N/A')) + '</td><td>' + escapeHtml(String(f.max_biaxial_stress_MPa ?? 'N/A')) + '</td><td>' + formatPassFail(f.serviceability_passed) + '</td><td>' + formatPassFail(f.stress_criteria_passed) + '</td><td>' + formatPassFail(f.overall_passed) + '</td></tr>';
+  }
+  panel.innerHTML = html + '</tbody></table>';
+}
+function downloadScenarioComparison() {
+  if (!Array.isArray(lastScenarioComparisonResults) || lastScenarioComparisonResults.length === 0) { setStatus('No comparison results available. Run scenarios first.'); return; }
+  downloadText('scenario_comparison.json', prettyJson(lastScenarioComparisonResults), 'application/json;charset=utf-8');
+}
+async function copyScenarioComparison() {
+  if (!Array.isArray(lastScenarioComparisonResults) || lastScenarioComparisonResults.length === 0) { setStatus('No comparison results available. Run scenarios first.'); return; }
+  await copyText(prettyJson(lastScenarioComparisonResults), 'Scenario comparison copied.', 'Could not copy scenario comparison.');
+}
 
 function refreshCaseOutline() {
   const panel = document.getElementById('case_outline_output');
@@ -779,6 +901,7 @@ async function runCase() {
 }
 renderHelpPanel();
 restoreSession();
+loadScenarios();
 document.getElementById('case_json').addEventListener('input', scheduleSessionSave);
 document.getElementById('template').addEventListener('change', saveSession);
 </script>
