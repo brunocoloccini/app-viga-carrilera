@@ -157,3 +157,5 @@ Planned modules:
 - V1-052: Add report package export layer for crane runway case execution, including deterministic artifact folder writing, CLI integration (`--package-output`, `--overwrite-package`), tests, and documentation.
 
 - V1-053: Add a minimal pure-Python crane runway local API service boundary (`api_service.py`) for dict/JSON-text validation + execution with structured response dataclasses, optional output format selection, tests, and documentation.
+
+- V1-054: Internal beta release documentation and checklist, including README/doc refresh, command references, known limitations, examples index, and docs smoke tests.
