@@ -189,3 +189,5 @@ Planned modules:
 
 
 - V1-068: Local UI result interpretation pack.
+
+- V1-069: Local UI scenario comparison pack.

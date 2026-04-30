@@ -269,3 +269,68 @@ Limitations (unchanged):
 - no torsional/warping stress checks;
 - no LTB checks;
 - engineering review required.
+
+## Scenario Comparison panel (V1-069)
+
+The local UI includes a **Scenario Comparison** panel for browser-side comparison of alternatives.
+
+Storage model:
+- Uses `localStorage` key: `craneRunway.scenarios`.
+- Stores an array with:
+  - `scenario_id` (user-provided name),
+  - `case_json` (JSON text for the case),
+  - `saved_at` (ISO timestamp).
+- Storage is browser-local only (no server-side database).
+
+Controls:
+- **Scenario Name**
+- **Save Current Scenario**
+- **Refresh Scenario List**
+- **Run All Scenarios**
+- **Clear All Scenarios**
+- **Download Comparison JSON**
+- **Copy Comparison JSON**
+- Row actions: **Load Scenario**, **Delete Scenario**
+
+Behavior:
+- Save validates `scenario_id` and current JSON.
+- Empty scenario name -> `Scenario name is required.`
+- Invalid JSON on save -> `Cannot save scenario: invalid JSON.`
+- Existing `scenario_id` is not overwritten in this version -> `Scenario already exists.`
+- Load action restores selected scenario JSON into editor.
+- Delete removes one scenario; clear removes all scenarios.
+
+Run-all comparison:
+- **Run All Scenarios** executes each saved case with `/api/run` using `output_formats: ["summary"]`.
+- Status messages include:
+  - `Running saved scenarios...`
+  - `Scenario comparison complete.`
+- If no scenarios exist:
+  - `No saved scenarios available.`
+
+Comparison table fields:
+- `Scenario`
+- `case_id`
+- `base_shape_id`
+- `cover_plate_enabled`
+- `span`
+- `max_vertical_moment_Nmm`
+- `max_vertical_shear_abs_N`
+- `max_vertical_deflection_mm`
+- `max_biaxial_stress_MPa`
+- `serviceability_passed`
+- `stress_criteria_passed`
+- `overall_passed`
+
+Export/copy comparison:
+- Uses last run-all results.
+- **Download Comparison JSON** -> `scenario_comparison.json`.
+- **Copy Comparison JSON** copies current comparison payload.
+- If no results are available:
+  - `No comparison results available. Run scenarios first.`
+
+Limitations:
+- Browser local only.
+- No server-side scenario database.
+- No official design-code comparison.
+- Engineering review required.
