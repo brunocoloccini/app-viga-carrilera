@@ -237,3 +237,35 @@ Important limitations:
 
 Refresh integration:
 - Visual preview refresh is called after **Load Template**, **Import JSON File**, and **Apply Form To JSON** complete.
+
+
+## Result Interpretation panel (V1-068)
+
+A new **Result Interpretation** panel appears near Summary/Result Cards after **Run**.
+
+What it does:
+- Interprets existing `summary` values only (no new formulas/check engines).
+- Explains PASS/FAIL/N/A for overall, serviceability, and stress criteria.
+- Adds beginner-oriented context for high deflection/stress demand relative to configured checks.
+- Reports whether torsional input exists from `max_torsional_input_Nmm`.
+- Reports whether run warnings are present.
+
+Status meanings:
+- **PASS**: relevant configured generic criterion passed in `summary`.
+- **FAIL**: relevant configured generic criterion failed in `summary`.
+- **N/A**: summary value missing/null, so no interpretation available for that line.
+
+Important scope notes:
+- Interpretation is explanatory only and uses run response summary values already produced by backend execution.
+- It is **not** an official CIRSOC/CISC/AISC code-compliance verdict.
+
+Copy support:
+- **Copy Interpretation** copies plain-text interpretation lines to clipboard.
+- If interpretation has not been generated yet, UI shows: `No interpretation available. Run a case first.`
+
+Limitations (unchanged):
+- no official code checks;
+- no fatigue checks;
+- no torsional/warping stress checks;
+- no LTB checks;
+- engineering review required.
