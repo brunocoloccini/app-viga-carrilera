@@ -56,21 +56,29 @@ class CraneRunwayLocalWebUi:
 body { font-family: Arial, sans-serif; margin: 1rem; background: #f8fafc; color: #111827; }
 h1 { margin-bottom: 0.3rem; }
 .warning { background: #fff7ed; color: #9a3412; border: 1px solid #fdba74; padding: 0.6rem; border-radius: 6px; }
+.page { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1rem; }
+.left-col, .right-col { display: grid; gap: 1rem; align-content: start; }
+@media (min-width: 1080px) { .page { grid-template-columns: 1.1fr 1fr; } }
 .toolbar { margin-top: 0.8rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
 button { padding: 0.45rem 0.7rem; border: 1px solid #d1d5db; border-radius: 6px; background: white; cursor: pointer; }
 button:hover { background: #f3f4f6; }
 select, textarea { border: 1px solid #d1d5db; border-radius: 6px; }
 textarea { width: 100%; min-height: 300px; font-family: Consolas, monospace; padding: 0.6rem; box-sizing: border-box; }
-.status { margin-top: 0.8rem; padding: 0.6rem; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 6px; }
-.grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1rem; }
+.status { margin-top: 0.8rem; padding: 0.7rem; background: #eff6ff; border: 2px solid #60a5fa; border-radius: 6px; font-weight: 600; }
 .panel { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.8rem; }
 .panel h3 { margin-top: 0; }
 pre { white-space: pre-wrap; word-break: break-word; background: #f9fafb; border: 1px solid #e5e7eb; padding: 0.6rem; border-radius: 6px; min-height: 80px; }
 table { border-collapse: collapse; width: 100%; }
-th, td { border: 1px solid #e5e7eb; padding: 0.4rem; text-align: left; font-size: 0.92rem; }
-th { width: 40%; background: #f9fafb; }
-.pass { color: #166534; font-weight: bold; }
-.fail { color: #991b1b; font-weight: bold; }
+th, td { border: 1px solid #e5e7eb; padding: 0.4rem; text-align: left; font-size: 0.92rem; vertical-align: top; }
+th { background: #f9fafb; }
+.pass, .status-pass { color: #166534; font-weight: bold; }
+.fail, .status-fail { color: #991b1b; font-weight: bold; }
+.status-na { color: #374151; font-weight: bold; }
+.small-btn { padding: 0.25rem 0.45rem; font-size: 0.82rem; }
+.result-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.6rem; margin-bottom: 0.8rem; }
+.result-card { border: 1px solid #e5e7eb; border-radius: 6px; padding: 0.55rem; background: #f9fafb; }
+.result-card-title { font-size: 0.85rem; color: #374151; margin-bottom: 0.2rem; }
+.result-card-value { font-weight: bold; }
 </style>
 </head>
 <body>
@@ -111,19 +119,25 @@ th { width: 40%; background: #f9fafb; }
   </div>
 </div>
 <div id=\"status\" class=\"status\">Ready.</div>
-<div class=\"panel\" style=\"margin-top: 1rem;\">
-  <h3>JSON Editor</h3>
-  <textarea id=\"case_json\"></textarea>
-</div>
-<div class=\"grid\">
-  <div class=\"panel\"><h3>Validation</h3><div id=\"validation_output\"></div></div>
-  <div class=\"panel\"><h3>Summary</h3><div id=\"summary_output\"></div></div>
+<div class=\"page\">
+  <div class=\"left-col\">
+    <div class=\"panel\">
+      <h3>JSON Editor</h3>
+      <textarea id=\"case_json\"></textarea>
+    </div>
+  </div>
+  <div class=\"right-col\">
+  <div class=\"panel\"><h3>Help / Workflow</h3><div id=\"help_panel\"></div></div>
+  <div class=\"panel\"><h3>Case Outline</h3><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"refreshCaseOutline()\">Refresh Case Outline</button></div><div id=\"case_outline_output\"></div></div>
+  <div class=\"panel\"><h3>Validation</h3><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"copyErrorList()\">Copy Error List</button></div><div id=\"validation_output\"></div></div>
+  <div class=\"panel\"><h3>Summary</h3><div id=\"result_cards\"></div><div id=\"summary_output\"></div></div>
   <div class=\"panel\">
     <h3>HTML Report</h3>
     <button id=\"open_report\" onclick=\"openReportInNewTab()\" style=\"display:none; margin-bottom: 0.6rem;\">Open report in new tab</button>
     <iframe id=\"html_output\" style=\"width:100%;height:380px;border:1px solid #d1d5db;border-radius:6px;\"></iframe>
   </div>
   <div class=\"panel\"><h3>Raw Response</h3><pre id=\"raw_output\"></pre></div>
+  </div>
 </div>
 <script>
 let latestHtmlReport = '';
@@ -150,6 +164,7 @@ function clearOutput() {
   lastValidationResponse = null;
   lastRunResponse = null;
   lastRawResponse = null;
+  renderResultCards(null);
   setStatus('Output cleared.');
 }
 function clearJson() { document.getElementById('case_json').value = ''; setStatus('JSON editor cleared.'); }
@@ -253,23 +268,53 @@ function formatJson() {
     setStatus('Cannot format: invalid JSON.');
   }
 }
+function findJsonPath(path) {
+  const editor = document.getElementById('case_json');
+  if (!editor || !path) { setStatus('Path not found in editor.'); return; }
+  const segments = String(path).split('.').filter(Boolean);
+  const lastSegment = segments.length > 0 ? segments[segments.length - 1] : String(path);
+  const keyHint = '"' + lastSegment + '"';
+  const searchText = editor.value || '';
+  let idx = searchText.indexOf(keyHint);
+  if (idx < 0) idx = searchText.indexOf(lastSegment);
+  editor.focus();
+  if (idx >= 0) {
+    const end = Math.min(searchText.length, idx + Math.max(lastSegment.length, keyHint.length));
+    editor.setSelectionRange(idx, end);
+    setStatus('Found path hint: ' + lastSegment);
+    return;
+  }
+  setStatus('Path not found in editor.');
+}
+function renderValidationTable(messages) {
+  let html = '<table><thead><tr><th>Severity</th><th>Path</th><th>Message</th><th>Hint</th></tr></thead><tbody>';
+  for (const m of messages) {
+    const sev = m && m.severity ? m.severity : 'N/A';
+    const path = m && m.path ? m.path : 'N/A';
+    const msg = m && m.message ? m.message : 'N/A';
+    const hint = m && m.hint ? m.hint : 'N/A';
+    const find = path !== 'N/A' ? '<button class=\"small-btn\" onclick=\"findJsonPath(\\'' + escapeHtml(String(path).replaceAll('\\\\', '\\\\\\\\').replaceAll('\'', '\\\\\'')) + '\\')\">Find Path</button>' : '';
+    html += '<tr><td>' + escapeHtml(sev) + '</td><td>' + escapeHtml(path) + (find ? '<br/>' + find : '') + '</td><td>' + escapeHtml(msg) + '</td><td>' + escapeHtml(hint) + '</td></tr>';
+  }
+  html += '</tbody></table>';
+  return html;
+}
 function renderValidation(validation) {
   const panel = document.getElementById('validation_output');
   if (!validation || typeof validation !== 'object') { panel.innerHTML = '<p>N/A</p>'; return; }
   const isValid = validation.valid === true;
   let html = '<p><strong>Status:</strong> <span class=\"' + (isValid ? 'pass' : 'fail') + '\">' + (isValid ? 'VALID' : 'INVALID') + '</span></p>';
   const messages = Array.isArray(validation.messages) ? validation.messages : [];
-  if (messages.length === 0) { html += '<p>No validation messages.</p>'; panel.innerHTML = html; return; }
-  html += '<ul>';
-  for (const m of messages) {
-    const sev = m && m.severity ? m.severity : 'N/A';
-    const path = m && m.path ? m.path : 'N/A';
-    const msg = m && m.message ? m.message : 'N/A';
-    const hint = m && m.hint ? m.hint : 'N/A';
-    html += '<li><strong>[' + escapeHtml(sev) + ']</strong> path=' + escapeHtml(path) + ' | message=' + escapeHtml(msg) + ' | hint=' + escapeHtml(hint) + '</li>';
-  }
-  html += '</ul>';
+  if (messages.length === 0) { panel.innerHTML = html; return; }
+  html += renderValidationTable(messages);
   panel.innerHTML = html;
+}
+async function copyErrorList() {
+  const validation = lastValidationResponse;
+  const messages = validation && Array.isArray(validation.messages) ? validation.messages : [];
+  if (messages.length === 0) { setStatus('No validation messages available.'); return; }
+  const lines = messages.map((m, i) => (i + 1) + '. [' + (m.severity || 'N/A') + '] path=' + (m.path || 'N/A') + ' | message=' + (m.message || 'N/A') + ' | hint=' + (m.hint || 'N/A'));
+  await copyText(lines.join('\\n'), 'Validation error list copied.', 'Could not copy validation error list.');
 }
 function formatPassFail(value) {
   if (value === true) return '<span class=\"pass\">PASS</span>';
@@ -288,6 +333,47 @@ function renderSummary(summary) {
   }
   html += '</tbody></table>';
   panel.innerHTML = html;
+}
+function renderResultCards(summary) {
+  const panel = document.getElementById('result_cards');
+  if (!panel) return;
+  const statusClass = (value) => value === true ? 'status-pass' : (value === false ? 'status-fail' : 'status-na');
+  const statusText = (value) => value === true ? 'PASS' : (value === false ? 'FAIL' : 'N/A');
+  if (!summary || typeof summary !== 'object') { panel.innerHTML = '<h4>Result Cards</h4><p>N/A</p>'; return; }
+  const cards = [
+    ['Max Moment', summary.max_vertical_moment_Nmm ?? 'N/A', 'status-na'],
+    ['Max Shear', summary.max_vertical_shear_abs_N ?? 'N/A', 'status-na'],
+    ['Max Deflection', summary.max_vertical_deflection_mm ?? 'N/A', 'status-na'],
+    ['Max Biaxial Stress', summary.max_biaxial_stress_MPa ?? 'N/A', 'status-na'],
+    ['Serviceability', statusText(summary.serviceability_passed), statusClass(summary.serviceability_passed)],
+    ['Stress', statusText(summary.stress_criteria_passed), statusClass(summary.stress_criteria_passed)],
+    ['Overall', statusText(summary.overall_passed), statusClass(summary.overall_passed)]
+  ];
+  let html = '<h4>Result Cards</h4><div class=\"result-cards\">';
+  for (const card of cards) {
+    html += '<div class=\"result-card\"><div class=\"result-card-title\">' + escapeHtml(card[0]) + '</div><div class=\"result-card-value ' + card[2] + '\">' + escapeHtml(card[1]) + '</div></div>';
+  }
+  panel.innerHTML = html + '</div>';
+}
+function refreshCaseOutline() {
+  const panel = document.getElementById('case_outline_output');
+  try {
+    const c = JSON.parse(getCurrentCaseJsonText());
+    const read = (root, path, fallback='N/A') => path.reduce((acc, key) => (acc && Object.prototype.hasOwnProperty.call(acc, key)) ? acc[key] : undefined, root) ?? fallback;
+    const rows = [
+      ['schema_version', read(c, ['schema_version'])], ['case_id', read(c, ['case_id'])], ['description', read(c, ['description'])],
+      ['base_shape_id', read(c, ['base_shape_id'])], ['section.section_id', read(c, ['section','section_id'])], ['section.cover_plate.enabled', read(c, ['section','cover_plate','enabled'])],
+      ['material.material_id', read(c, ['material','material_id'])], ['material.Fy', read(c, ['material','Fy'])], ['analysis.span', read(c, ['analysis','span'])],
+      ['crane.crane_id', read(c, ['crane','crane_id'])], ['number of crane.wheels', Array.isArray(read(c, ['crane','wheels'], null)) ? read(c, ['crane','wheels']).length : 'N/A'],
+      ['criteria_presets', read(c, ['criteria_presets'])], ['rail_eccentricity.enabled', read(c, ['rail_eccentricity','enabled'])]
+    ];
+    let html = '<table><tbody>';
+    for (const r of rows) { html += '<tr><th>' + escapeHtml(r[0]) + '</th><td>' + escapeHtml(typeof r[1] === 'object' ? JSON.stringify(r[1]) : String(r[1])) + '</td></tr>'; }
+    panel.innerHTML = html + '</tbody></table>';
+  } catch (err) { panel.innerHTML = '<p>Cannot build outline: invalid JSON.</p>'; }
+}
+function renderHelpPanel() {
+  document.getElementById('help_panel').innerHTML = '<ol><li>Load a template or import JSON.</li><li>Edit JSON.</li><li>Click Validate.</li><li>Fix validation errors.</li><li>Click Run.</li><li>Review Summary and HTML Report.</li><li>Download JSON / Summary / Report.</li></ol><p><strong>Warnings:</strong> Local beta tool; Results require engineering review; Generic checks only; no official CIRSOC/CISC/AISC checks; no fatigue; no torsional/warping stress; no LTB.</p>';
 }
 function openReportInNewTab() {
   if (!latestHtmlReport) return;
@@ -332,6 +418,7 @@ async function runCase() {
     }
     renderValidation(data.validation || null);
     renderSummary(data.summary || null);
+    renderResultCards(data.summary || null);
     renderRaw(data);
     latestHtmlReport = data.html_report || '';
     document.getElementById('html_output').srcdoc = latestHtmlReport || '<p>No HTML report.</p>';
@@ -339,6 +426,7 @@ async function runCase() {
     setStatus(data.success ? 'Run complete.' : 'Run failed.');
   } catch (err) { setStatus('Network/error during run.'); }
 }
+renderHelpPanel();
 </script>
 </body></html>"""
 

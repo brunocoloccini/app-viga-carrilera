@@ -83,14 +83,18 @@ Suggested quick flow:
 4. Click **Format JSON** to normalize the payload formatting.
 5. Click **Validate** and review the **Validation** panel:
    - VALID/INVALID state.
-   - listed validation messages (severity/path/message/hint when present).
-6. Click **Run** and review:
+   - tabular messages (`Severity`, `Path`, `Message`, `Hint`) when available.
+   - **Find Path** per row (best-effort jump in editor).
+   - **Copy Error List** for plain-text validation issues.
+6. Click **Refresh Case Outline** to view key fields and quick completeness checks (`N/A` for missing fields).
+7. Click **Run** and review:
+   - **Result Cards** (max demands + PASS/FAIL/N/A criteria),
    - **Summary** panel (key fields table),
    - **HTML Report** iframe preview,
    - **Raw Response** panel for full JSON.
-7. Use **Open report in new tab** when available.
-8. Use **Clear Output** and **Clear JSON** as needed for a clean reset.
-9. Use **Download / Copy** actions for local exports:
+8. Use **Open report in new tab** when available.
+9. Use **Clear Output** and **Clear JSON** as needed for a clean reset.
+10. Use **Download / Copy** actions for local exports:
    - download/copy case JSON,
    - download/copy summary JSON,
    - download HTML report,

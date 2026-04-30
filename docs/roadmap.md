@@ -175,3 +175,5 @@ Planned modules:
 - V1-061: Local web UI download/copy actions (case JSON, summary JSON, HTML report, validation response, and raw response browser actions).
 
 - V1-062: Local web UI JSON file import workflow.
+
+- V1-063: Local UI beta usability pack (validation table, error copy/path helpers, case outline, result cards, workflow/help panel, responsive layout polish).
