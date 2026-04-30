@@ -15,6 +15,7 @@ from .shapes import (
 )
 from .units.quantity import Quantity
 from .materials import SteelMaterial, build_sample_steel_materials
+from .rails import CraneRailRecord, CraneRailRegistry, build_sample_crane_rail_registry
 from .crane_runway import (
     GenericCriteriaPreset,
     DeflectionLimitPreset,
@@ -255,4 +256,7 @@ __all__ = [
     "dump_shape_library_json",
     "registry_from_json_dict",
     "registry_to_json_dict",
+    "build_sample_crane_rail_registry",
+    "CraneRailRegistry",
+    "CraneRailRecord",
 ]
