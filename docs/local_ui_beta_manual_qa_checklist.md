@@ -39,6 +39,18 @@ Expected:
 10. Fix span to positive value and click **Validate Common Inputs** again; confirm `Common inputs are valid.`
 11. Click **Apply Form To JSON** and confirm JSON updates only after valid form state.
 
+
+
+## C1) Profile / Material Selector workflow
+
+1. Load template.
+2. Click **Load Profile/Material From JSON**.
+3. Change profile to `CIRSOC_IPN_240`.
+4. Change material preset to `F36`.
+5. Click **Apply Profile/Material To JSON**.
+6. Click **Validate** and **Run**.
+7. Confirm **Visual Preview** and **Case Outline** update after apply/refresh.
+
 ## C2) Wheel Table Editor workflow
 
 1. Click **Load Wheels From JSON**.
