@@ -57,3 +57,11 @@ This creates `projects/mi_viga/input_case.json`, `projects/mi_viga/README.md`, a
 
 - Sample data is for demonstration/regression and requires independent verification.
 - Current checks are generic and are not official CIRSOC/CISC/AISC code compliance checks.
+
+## I) Edit generated project cases
+
+After you initialize a project, use the dedicated user editing guide for practical JSON edits and examples:
+
+- [User Case Editing Guide](user_case_editing_guide.md)
+- `examples/editing_guide/`
+
