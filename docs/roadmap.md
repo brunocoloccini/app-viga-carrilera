@@ -177,3 +177,5 @@ Planned modules:
 - V1-062: Local web UI JSON file import workflow.
 
 - V1-063: Local UI beta usability pack (validation table, error copy/path helpers, case outline, result cards, workflow/help panel, responsive layout polish).
+
+- V1-064: Local UI browser-side export package builder (Package Export panel, artifact downloads for case/validation/run/summary/report/metadata, and download-all with availability status).
