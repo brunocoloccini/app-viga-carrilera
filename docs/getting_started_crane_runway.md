@@ -44,6 +44,15 @@ PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py
 PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py --html --output out/matrix.html
 ```
 
+
+## H) Create your first project
+
+```bash
+PYTHONPATH=src python scripts/init_crane_runway_project.py --name mi_viga --template ipn-with-cover
+```
+
+This creates `projects/mi_viga/input_case.json`, `projects/mi_viga/README.md`, and `projects/mi_viga/outputs/`.
+
 ## Notes
 
 - Sample data is for demonstration/regression and requires independent verification.
