@@ -7,6 +7,7 @@ from pathlib import Path
 from section_core.crane_runway import (
     CraneRunwayCaseErrorFormatter,
     CraneRunwayDemandSummaryHtmlFormatter,
+    CraneRunwayReportPackageWriter,
     run_crane_runway_case_json,
 )
 
@@ -25,6 +26,8 @@ def _build_parser() -> argparse.ArgumentParser:
     group.add_argument("--summary-json", action="store_true", help="Print summary.to_dict() as JSON.")
     group.add_argument("--html", action="store_true", help="Print HTML report.")
     parser.add_argument("--output", help="Write selected output to file instead of stdout.")
+    parser.add_argument("--package-output", help="Write a deterministic report package folder to DIR.")
+    parser.add_argument("--overwrite-package", action="store_true", help="Allow overwriting known package files in non-empty package directory.")
     parser.add_argument("path", help="Crane runway JSON case file path.")
     return parser
 
@@ -63,6 +66,21 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:
         _print_user_error(exc)
         return 1
+
+    if args.package_output:
+        try:
+            writer = CraneRunwayReportPackageWriter()
+            writer.write_case_result_package(
+                args.path,
+                result,
+                CraneRunwayCaseErrorFormatter.validate_case_json_for_user(args.path),
+                args.package_output,
+                overwrite=args.overwrite_package,
+            )
+        except Exception as exc:
+            _print_user_error(exc)
+            return 1
+        print(f"PACKAGE WROTE: {args.package_output}")
 
     if args.output:
         try:

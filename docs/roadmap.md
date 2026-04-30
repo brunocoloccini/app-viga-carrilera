@@ -152,3 +152,6 @@ Planned modules:
 - V1-050: Add dedicated crane rail data model (`CraneRailRecord`), rail registry (`CraneRailRegistry`), and fake sample rail dataset (`RAIL_TEST_A`, `RAIL_TEST_B`) for future library and runway integration.
 
 - V1-051: Add public API export, workflow consistency, and reporting consistency contract tests; document workflow/API boundaries and result/report determinism expectations.
+
+
+- V1-052: Add report package export layer for crane runway case execution, including deterministic artifact folder writing, CLI integration (`--package-output`, `--overwrite-package`), tests, and documentation.
