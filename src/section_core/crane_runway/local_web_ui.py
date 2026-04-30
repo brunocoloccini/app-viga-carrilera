@@ -156,6 +156,23 @@ th { background: #f9fafb; }
   <tr><td>Rail Eccentricity Enabled</td><td><input id="common_rail_eccentricity_enabled" type="checkbox"/></td><td>Vertical Eccentricity Y</td><td><input id="common_vertical_eccentricity_y"/><select id="common_vertical_eccentricity_y_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr><tr><td>Lateral Load Height Z</td><td><input id="common_lateral_load_height_z"/><select id="common_lateral_load_height_z_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Deflection Preset</td><td><input id="common_deflection_preset"/></td></tr><tr><td>Stress Preset</td><td><input id="common_stress_preset"/></td><td></td><td></td></tr></tbody></table>
   <h4>Common Inputs Errors</h4><div id="common_inputs_errors">No common input errors.</div>
 </div>
+</div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Profile / Material Selector</h3>
+  <p style="margin-top:0.2rem;color:#92400e;">Profile sample data is manually curated and incomplete. Verify before design use.</p>
+  <p style="margin-top:0.2rem;color:#92400e;">Material presets are sample helpers and must be independently verified.</p>
+  <div class="toolbar" style="margin-top:0;">
+    <button onclick="loadProfileMaterialFromJson()">Load Profile/Material From JSON</button>
+    <button onclick="applyProfileMaterialToJson()">Apply Profile/Material To JSON</button>
+    <button onclick="resetProfileMaterial()">Reset Profile/Material</button>
+  </div>
+  <table><tbody>
+    <tr><td>Base Shape ID</td><td><select id="profile_base_shape_id"><option value="">-- Select --</option><option>CIRSOC_IPN_180</option><option>CIRSOC_IPN_200</option><option>CIRSOC_IPN_240</option><option>CIRSOC_IPN_300</option><option>CIRSOC_IPB_200</option></select></td><td>Material Preset</td><td><select id="profile_material_preset" onchange="applyMaterialPreset()"><option>F24</option><option>F36</option><option>Custom</option></select></td></tr>
+    <tr><td>Material ID</td><td><input id="profile_material_id"/></td><td>Fy</td><td><input id="profile_fy"/></td></tr>
+    <tr><td>Fu</td><td><input id="profile_fu"/></td><td>E</td><td><input id="profile_e"/></td></tr>
+  </tbody></table>
+  <h4>Profile / Material Errors</h4><div id="profile_material_errors">No profile/material errors.</div>
+</div>
 <div class="panel" style="margin-top: 1rem;">
   <h3>Wheel Table Editor</h3>
   <div class="toolbar" style="margin-top:0;">
@@ -637,6 +654,92 @@ function applyCommonInputsToJson() {
   if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
   if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
   setStatus('Common inputs applied to JSON.');
+}
+
+
+function getSelectedBaseShapeId() {
+  const el = document.getElementById('profile_base_shape_id');
+  return el ? String(el.value ?? '').trim() : '';
+}
+function setSelectedBaseShapeId(value) {
+  const el = document.getElementById('profile_base_shape_id');
+  if (!el) return;
+  const v = String(value ?? '').trim();
+  const supported = ['CIRSOC_IPN_180','CIRSOC_IPN_200','CIRSOC_IPN_240','CIRSOC_IPN_300','CIRSOC_IPB_200'];
+  el.value = supported.includes(v) ? v : '';
+}
+function renderProfileMaterialErrors(errors) {
+  const panel = document.getElementById('profile_material_errors');
+  if (!panel) return;
+  if (!Array.isArray(errors) || errors.length === 0) { panel.innerHTML = '<p>No profile/material errors.</p>'; return; }
+  panel.innerHTML = '<ul style="margin:0.3rem 0 0.1rem 1.2rem;">' + errors.map((e) => '<li>' + escapeHtml(e) + '</li>').join('') + '</ul>';
+}
+function validateProfileMaterialInputs() {
+  const materialPreset = String(document.getElementById('profile_material_preset')?.value ?? 'F24').trim();
+  const materialId = String(document.getElementById('profile_material_id')?.value ?? '').trim();
+  const fy = parseOptionalNumber(String(document.getElementById('profile_fy')?.value ?? '').trim());
+  const fu = parseOptionalNumber(String(document.getElementById('profile_fu')?.value ?? '').trim());
+  const e = parseOptionalNumber(String(document.getElementById('profile_e')?.value ?? '').trim());
+  const errors = [];
+  if (getSelectedBaseShapeId() === '') errors.push('Base Shape ID is required.');
+  const allMaterialBlank = materialId === '' && fy === null && fu === null && e === null;
+  if (materialId === '' && !(materialPreset === 'Custom' && allMaterialBlank)) errors.push('Material ID is required.');
+  if (Number.isNaN(fy) || (fy !== null && !isPositiveNumber(fy))) errors.push('Fy must be positive.');
+  if (Number.isNaN(fu) || (fu !== null && !isPositiveNumber(fu))) errors.push('Fu must be positive.');
+  if (Number.isNaN(e) || (e !== null && !isPositiveNumber(e))) errors.push('E must be positive.');
+  renderProfileMaterialErrors(errors);
+  return {errors: Array.from(new Set(errors)), materialId: materialId, fy: fy, fu: fu, e: e};
+}
+function applyMaterialPreset() {
+  const preset = String(document.getElementById('profile_material_preset')?.value ?? 'F24').trim();
+  const setVal = (id, value, overwrite=true) => { const el = document.getElementById(id); if (!el) return; if (overwrite || String(el.value ?? '').trim() === '') el.value = String(value); };
+  if (preset === 'F24') { setVal('profile_material_id','F24'); setVal('profile_fy','235'); setVal('profile_fu','370'); setVal('profile_e','200000'); }
+  if (preset === 'F36') { setVal('profile_material_id','F36'); setVal('profile_fy','355'); setVal('profile_fu','470'); setVal('profile_e','200000'); }
+  if (preset === 'Custom') {
+    setVal('profile_material_id','',false); setVal('profile_fy','',false); setVal('profile_fu','',false); setVal('profile_e','',false);
+  }
+}
+function loadProfileMaterialFromJson() {
+  let data;
+  try { data = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot load profile/material: invalid JSON.'); return; }
+  setSelectedBaseShapeId(getNestedValue(data,['base_shape_id']) ?? getNestedValue(data,['section','base_shape_id']) ?? '');
+  const setVal=(id,v)=>{ const el=document.getElementById(id); if (el) el.value = v ?? ''; };
+  setVal('profile_material_id', getNestedValue(data,['material','material_id']) ?? '');
+  setVal('profile_fy', getQuantityValue(data,['material','Fy']));
+  setVal('profile_fu', getQuantityValue(data,['material','Fu']));
+  setVal('profile_e', getQuantityValue(data,['material','E']));
+  renderProfileMaterialErrors([]);
+  setStatus('Profile/material loaded from JSON.');
+}
+function applyProfileMaterialToJson() {
+  let data;
+  try { data = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot apply profile/material: invalid JSON.'); return; }
+  const validated = validateProfileMaterialInputs();
+  if (validated.errors.length > 0) { setStatus('Profile/material inputs contain errors.'); return; }
+  const baseShapeId = getSelectedBaseShapeId();
+  if (getNestedValue(data,['base_shape_id']) !== undefined) setNestedValue(data,['base_shape_id'], baseShapeId);
+  if (getNestedValue(data,['section','base_shape_id']) !== undefined) setNestedValue(data,['section','base_shape_id'], baseShapeId);
+  if (getNestedValue(data,['base_shape_id']) === undefined && getNestedValue(data,['section','base_shape_id']) === undefined) setNestedValue(data,['base_shape_id'], baseShapeId);
+  setNestedValue(data,['material','material_id'], validated.materialId);
+  setQuantity(data,['material','Fy'], validated.fy, 'MPa');
+  setQuantity(data,['material','Fu'], validated.fu, 'MPa');
+  setQuantity(data,['material','E'], validated.e, 'MPa');
+  document.getElementById('case_json').value = JSON.stringify(data, null, 2);
+  if (typeof saveSession === 'function') saveSession();
+  if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
+  if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
+  if (typeof loadCommonInputsFromJson === 'function') loadCommonInputsFromJson();
+  setStatus('Profile/material applied to JSON.');
+}
+function resetProfileMaterial() {
+  setSelectedBaseShapeId('');
+  const preset = document.getElementById('profile_material_preset');
+  if (preset) preset.value = 'F24';
+  const ids = ['profile_material_id','profile_fy','profile_fu','profile_e'];
+  for (const id of ids) { const el = document.getElementById(id); if (el) el.value = ''; }
+  applyMaterialPreset();
+  renderProfileMaterialErrors([]);
+  setStatus('Profile/material inputs reset.');
 }
 
 

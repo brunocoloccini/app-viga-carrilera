@@ -420,3 +420,36 @@ Limitation in V1-072:
 - The simple table editor focuses on `wheel_id`, `position_x`, and `vertical_force`.
 - Extra per-wheel fields may be dropped when applying from the table.
 - Advanced users can still edit raw JSON directly for unsupported/extra fields.
+
+
+## Profile / Material Selector (V1-073)
+
+The local UI includes a **Profile / Material Selector** convenience panel to edit base shape and material fields without hand-editing raw JSON.
+
+Supported sample profile IDs:
+- `CIRSOC_IPN_180`
+- `CIRSOC_IPN_200`
+- `CIRSOC_IPN_240`
+- `CIRSOC_IPN_300`
+- `CIRSOC_IPB_200`
+
+Material presets:
+- `F24` -> `material_id=F24`, `Fy=235 MPa`, `Fu=370 MPa`, `E=200000 MPa`
+- `F36` -> `material_id=F36`, `Fy=355 MPa`, `Fu=470 MPa`, `E=200000 MPa`
+- `Custom` -> leaves manual values unless currently empty
+
+Actions:
+- **Load Profile/Material From JSON**: loads `base_shape_id` (`root` or `section.base_shape_id`) and `material` fields from the current JSON editor payload.
+- **Apply Profile/Material To JSON**: writes selected base shape and material values into schema-compatible paths, then pretty-prints JSON, autosaves (if available), and refreshes UI helpers.
+- **Reset Profile/Material**: resets selector values to defaults.
+
+Validation rules:
+- Base shape is required.
+- Material ID is required unless preset is `Custom` and all material fields are blank.
+- `Fy`, `Fu`, and `E` must be positive when provided.
+
+Warnings:
+- Profile sample data is manually curated and incomplete. Verify before design use.
+- Material presets are sample helpers and must be independently verified.
+- No official CIRSOC/CISC/AISC compliance checks are performed.
+- Engineering review is required before design use.

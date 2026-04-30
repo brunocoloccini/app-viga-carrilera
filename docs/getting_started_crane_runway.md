@@ -124,9 +124,10 @@ Important: this is a local beta tool. Results require engineering review.
 1. Load Template.
 2. Load Form From JSON.
 3. Edit Common Inputs.
-4. Click **Validate Common Inputs** and resolve any Common Inputs Errors.
-5. Apply Form To JSON.
-6. Click **Refresh Visual Preview** (or use the auto-refresh after template/import/apply) to inspect Beam/Section/Preview Summary schematic data.
+4. Optionally use **Profile / Material Selector** to choose base profile and material preset/value inputs before validation.
+5. Click **Validate Common Inputs** and resolve any Common Inputs Errors.
+6. Apply Form To JSON.
+7. Click **Refresh Visual Preview** (or use the auto-refresh after template/import/apply) to inspect Beam/Section/Preview Summary schematic data.
 6. Validate.
 7. Run.
 8. Download outputs.
