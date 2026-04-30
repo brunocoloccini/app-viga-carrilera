@@ -74,3 +74,12 @@ PYTHONPATH=src python scripts/init_crane_runway_project.py --name <project_name>
 - `--run`: implies validate and writes report package to `outputs/`.
 
 Exit codes: `0` success, `1` user/runtime error (for example unknown template, invalid project name, or non-empty target without `--overwrite`), `2` CLI argument error.
+
+## Editing guide example commands
+
+```bash
+PYTHONPATH=src python scripts/validate_crane_runway_case.py examples/editing_guide/ipn_with_cover_editing_example.json
+PYTHONPATH=src python scripts/validate_crane_runway_case.py examples/editing_guide/ipn_without_cover_editing_example.json
+PYTHONPATH=src python scripts/run_crane_runway_case.py examples/editing_guide/ipn_with_cover_editing_example.json --package-output out/editing_with_cover --overwrite-package
+PYTHONPATH=src python scripts/run_crane_runway_case.py examples/editing_guide/ipn_without_cover_editing_example.json --package-output out/editing_without_cover --overwrite-package
+```

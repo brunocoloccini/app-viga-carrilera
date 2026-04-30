@@ -165,3 +165,5 @@ Planned modules:
 - [x] V1-056 JSON case template generator for crane runway beta workflows.
 
 - [x] V1-057 Add crane runway project workspace initializer script, tests, and documentation.
+
+- [x] V1-058 Add user case editing guide and annotated editable JSON examples, with doc/example validation tests.

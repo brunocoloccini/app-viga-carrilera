@@ -1,0 +1,148 @@
+{
+  "schema_version": "1.0",
+  "case_id": "editing_example_ipn_with_cover",
+  "description": "Editable example: IPN with top cover plate.",
+  "shape_library_path": "data/shape_libraries/cirsoc_sample_shapes.json",
+  "base_shape_id": "CIRSOC_IPN_240",
+  "section": {
+    "section_id": "editing_ipn_240_with_cover_plate",
+    "base_component_id": "ipn_240",
+    "base_center_y": {
+      "value": 0,
+      "unit": "mm"
+    },
+    "base_center_z": {
+      "value": 120,
+      "unit": "mm"
+    },
+    "cover_plate": {
+      "enabled": true,
+      "element_id": "cover_plate",
+      "width": {
+        "value": 180,
+        "unit": "mm"
+      },
+      "thickness": {
+        "value": 12,
+        "unit": "mm"
+      },
+      "weld_size": {
+        "value": 6,
+        "unit": "mm"
+      },
+      "weld_type": "fillet"
+    }
+  },
+  "span": {
+    "value": 8,
+    "unit": "m"
+  },
+  "material": {
+    "material_id": "S355_demo",
+    "Fy": {
+      "value": 355,
+      "unit": "MPa"
+    },
+    "Fu": {
+      "value": 510,
+      "unit": "MPa"
+    },
+    "E": {
+      "value": 200000,
+      "unit": "MPa"
+    }
+  },
+  "analysis": {
+    "movement_step": {
+      "value": 250,
+      "unit": "mm"
+    },
+    "station_step": {
+      "value": 500,
+      "unit": "mm"
+    },
+    "E": {
+      "value": 200000,
+      "unit": "MPa"
+    }
+  },
+  "crane": {
+    "crane_id": "editing_demo_crane",
+    "name": "Editing demo crane",
+    "vertical_impact_factor": 0.25,
+    "lateral_force_factor": 0.1,
+    "longitudinal_force_factor": 0.0,
+    "wheels": [
+      {
+        "wheel_id": "W1",
+        "position_x": {
+          "value": 0,
+          "unit": "mm"
+        },
+        "vertical_force": {
+          "value": 120,
+          "unit": "kN"
+        }
+      },
+      {
+        "wheel_id": "W2",
+        "position_x": {
+          "value": 3,
+          "unit": "m"
+        },
+        "vertical_force": {
+          "value": 120,
+          "unit": "kN"
+        }
+      }
+    ]
+  },
+  "criteria_presets": {
+    "deflection": [
+      "deflection_L_over_600"
+    ],
+    "stress": [
+      "stress_0_90Fy"
+    ]
+  },
+  "serviceability_limits": [
+    {
+      "limit_id": "L_over_600",
+      "type": "span_over",
+      "divisor": 600
+    }
+  ],
+  "stress_limits": [
+    {
+      "limit_id": "0.90Fy",
+      "type": "fraction_of_Fy",
+      "Fy": {
+        "value": 355,
+        "unit": "MPa"
+      },
+      "factor": 0.9
+    }
+  ],
+  "rail_eccentricity": {
+    "enabled": true,
+    "model_id": "rail_eccentricity",
+    "vertical_eccentricity_y": {
+      "value": 25,
+      "unit": "mm"
+    },
+    "lateral_load_height_z": {
+      "value": 100,
+      "unit": "mm"
+    },
+    "include_vertical": true,
+    "include_lateral": true
+  },
+  "warnings": [
+    "Editable starter example only; not a design recommendation.",
+    "Sample profile/material values require independent verification."
+  ],
+  "metadata": {
+    "example": "editing_guide",
+    "revision": "v1-058"
+  }
+}
