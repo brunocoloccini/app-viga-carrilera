@@ -515,3 +515,23 @@ Important educational scope:
 - It is not official CIRSOC/CISC/AISC guidance.
 - No fatigue/torsion/warping/LTB checks are introduced by this UI help pack.
 - Sample profile/material data still requires independent verification.
+
+## Case Quality Warnings pack (V1-076)
+
+- Added **Case Quality Warnings** panel with browser-side setup guidance.
+- Added **Refresh Case Quality** action intended for use before Validate/Run.
+- Severity levels used in the warnings table: **Info**, **Warning**, **Caution**.
+- Table columns: **Severity**, **Area**, **Message**, **Suggested Action**.
+- Added checks for missing metadata, material, wheels, duplicate wheel IDs, missing criteria, sample CIRSOC profile IDs, rail eccentricity setup, and cover plate setup.
+- Added copy/export actions:
+  - **Copy Case Quality Warnings** (plain text list)
+  - **Download Case Quality Warnings JSON** (`case_quality_warnings.json`)
+
+Limitations:
+- Setup guidance only.
+- Not engineering design checks.
+- Not official CIRSOC/CISC/AISC compliance checks.
+- No fatigue checks.
+- No torsional/warping stress checks.
+- No LTB checks.
+- Engineering review is required before relying on results.

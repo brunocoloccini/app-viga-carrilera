@@ -206,3 +206,5 @@ Planned modules:
 
 
 - V1-075: Local UI field help, glossary, and tooltip pack.
+
+- V1-076: Local UI case quality warnings pack.

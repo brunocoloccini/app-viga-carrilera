@@ -201,6 +201,16 @@ th { background: #f9fafb; }
   <h4>Preview Summary</h4><div id="preview_summary_output"></div>
 </div>
 <div class="panel" style="margin-top: 1rem;">
+  <h3>Case Quality Warnings</h3>
+  <div class="toolbar" style="margin-top:0;">
+    <button onclick="refreshCaseQuality()">Refresh Case Quality</button>
+    <button onclick="copyCaseQualityWarnings()">Copy Case Quality Warnings</button>
+    <button onclick="downloadCaseQualityWarnings()">Download Case Quality Warnings JSON</button>
+  </div>
+  <div id="case_quality_status" style="margin-top:0.35rem;color:#4b5563;">Refresh case quality to see warnings.</div>
+  <table><thead><tr><th>Severity</th><th>Area</th><th>Message</th><th>Suggested Action</th></tr></thead><tbody id="case_quality_rows"></tbody></table>
+</div>
+<div class="panel" style="margin-top: 1rem;">
   <h3>Scenario Comparison</h3>
   <p style="margin-top:0.2rem;color:#4b5563;">Compare saved browser-local alternatives using existing run results.</p>
   <div class="toolbar" style="margin-top:0;">
@@ -419,7 +429,60 @@ function getRailEccentricityInfo(caseData) { return {enabled:Boolean(caseData?.r
 function renderBeamPreview(caseData) { const panel=document.getElementById('beam_preview_output'); if (!panel) return; const wheels=getWheelList(caseData); const spanValue=Number(caseData?.analysis?.span?.value); const spanLabel=getCaseSpan(caseData); if (!Number.isFinite(spanValue) || spanValue<=0) { panel.innerHTML='<p>Beam preview unavailable: span is N/A.</p>'; return; } if (wheels.length===0) { panel.innerHTML='<p>Beam preview unavailable: wheel list is N/A.</p>'; return; } const w=720,h=220,x0=70,x1=650,y=110; let svg='<svg viewBox="0 0 '+w+' '+h+'" style="width:100%;max-width:720px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;">'; svg += '<line x1="'+x0+'" y1="'+y+'" x2="'+x1+'" y2="'+y+'" stroke="#111827" stroke-width="3"/>'; svg += '<polygon points="'+(x0-14)+','+(y+26)+' '+(x0+14)+','+(y+26)+' '+x0+','+(y+4)+'" fill="#2563eb"/>'; svg += '<polygon points="'+(x1-14)+','+(y+26)+' '+(x1+14)+','+(y+26)+' '+x1+','+(y+4)+'" fill="#2563eb"/>'; for (const wheel of wheels) { const wx=Number(wheel?.position_x?.value); if (!Number.isFinite(wx)) continue; const px=x0 + Math.max(0, Math.min(1, wx / spanValue)) * (x1-x0); svg += '<line x1="'+px+'" y1="'+(y-60)+'" x2="'+px+'" y2="'+(y-8)+'" stroke="#dc2626" stroke-width="2"/>'; svg += '<polygon points="'+(px-6)+','+(y-16)+' '+(px+6)+','+(y-16)+' '+px+','+(y-2)+'" fill="#dc2626"/>'; svg += '<text x="'+(px+6)+'" y="'+(y-66)+'" font-size="11" fill="#111827">'+escapeHtml(String(wheel?.wheel_id ?? 'N/A'))+' | Fv '+escapeHtml(extractQuantityLabel(wheel?.vertical_force))+' | x '+escapeHtml(extractQuantityLabel(wheel?.position_x))+'</text>'; } panel.innerHTML = svg + '<text x="'+((x0+x1)/2-70)+'" y="'+(y+44)+'" font-size="12" fill="#111827">Span: '+escapeHtml(spanLabel)+'</text></svg>'; }
 function renderSectionPreview(caseData) { const panel=document.getElementById('section_preview_output'); if (!panel) return; const baseShapeId=getBaseShapeId(caseData); const cover=getCoverPlateInfo(caseData); const material=getMaterialInfo(caseData); const rail=getRailEccentricityInfo(caseData); let svg='<svg viewBox="0 0 620 240" style="width:100%;max-width:620px;border:1px solid #e5e7eb;border-radius:6px;background:#fff;">'; svg += '<rect x="220" y="90" width="180" height="100" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>'; svg += '<text x="230" y="145" font-size="13" fill="#111827">Base shape: '+escapeHtml(String(baseShapeId))+'</text>'; if (cover.enabled) { svg += '<rect x="205" y="68" width="210" height="18" fill="#fde68a" stroke="#b45309" stroke-width="2"/>'; svg += '<text x="20" y="42" font-size="12" fill="#111827">Cover plate enabled: true</text>'; svg += '<text x="20" y="60" font-size="12" fill="#111827">width='+escapeHtml(cover.width)+', thickness='+escapeHtml(cover.thickness)+'</text>'; } else { svg += '<text x="20" y="42" font-size="12" fill="#111827">Cover plate enabled: false</text>'; } svg += '<text x="20" y="208" font-size="12" fill="#111827">Material: '+escapeHtml(String(material.material_id))+', Fy: '+escapeHtml(material.fy_label)+'</text>'; svg += '<text x="20" y="224" font-size="12" fill="#111827">Rail eccentricity enabled: '+escapeHtml(String(rail.enabled))+'</text>'; panel.innerHTML = svg + '</svg>'; }
 function renderPreviewSummary(caseData) { const panel=document.getElementById('preview_summary_output'); if (!panel) return; const wheels=getWheelList(caseData); const cover=getCoverPlateInfo(caseData); const material=getMaterialInfo(caseData); const rail=getRailEccentricityInfo(caseData); const criteriaLabel = caseData?.criteria_presets && typeof caseData.criteria_presets==='object' ? JSON.stringify(caseData.criteria_presets) : 'N/A'; const rows=[['case_id',caseData?.case_id ?? 'N/A'],['base_shape_id',getBaseShapeId(caseData)],['span',getCaseSpan(caseData)],['number of wheels',wheels.length>0?wheels.length:'N/A'],['cover plate enabled',String(cover.enabled)],['material_id',material.material_id],['rail eccentricity enabled',String(rail.enabled)],['criteria presets',criteriaLabel]]; let html='<table><tbody>'; for (const row of rows) html += '<tr><th>'+escapeHtml(row[0])+'</th><td>'+escapeHtml(String(row[1]))+'</td></tr>'; panel.innerHTML = html + '</tbody></table>'; }
-function refreshVisualPreview() { let caseData; try { caseData = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot refresh visual preview: invalid JSON.'); return; } renderBeamPreview(caseData); renderSectionPreview(caseData); renderPreviewSummary(caseData); setStatus('Visual preview refreshed.'); markWorkflowStepDone(3); }
+function refreshVisualPreview() { let caseData; try { caseData = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot refresh visual preview: invalid JSON.'); return; } renderBeamPreview(caseData); renderSectionPreview(caseData); renderPreviewSummary(caseData); setStatus('Visual preview refreshed.'); if (typeof refreshCaseQuality === 'function') refreshCaseQuality(); markWorkflowStepDone(3); }
+
+function hasQuantityValue(value) { return Boolean(value && typeof value === 'object' && value.value !== undefined && value.value !== null && String(value.value).trim() !== ''); }
+function getRootOrSectionBaseShapeId(caseData) { if (!caseData || typeof caseData !== 'object') return ''; const root=caseData.base_shape_id; const section=caseData.section && caseData.section.base_shape_id; const picked = root !== undefined && root !== null && String(root).trim() !== '' ? root : section; return picked === undefined || picked === null ? '' : String(picked).trim(); }
+function addCaseQualityWarning(rows, severity, area, message, suggestedAction) { rows.push({severity:String(severity || 'Info'), area:String(area || 'general'), message:String(message || ''), suggested_action:String(suggestedAction || '')}); }
+function getCaseQualityRows() { return Array.isArray(lastCaseQualityWarnings) ? lastCaseQualityWarnings.slice() : []; }
+function buildCaseQualityWarnings(caseData) {
+  const rows = [];
+  if (!caseData || typeof caseData !== 'object') return rows;
+  if (!caseData.case_id) addCaseQualityWarning(rows,'Warning','metadata','case_id is missing.','Add a unique case_id.');
+  if (!caseData.description) addCaseQualityWarning(rows,'Info','metadata','description is missing.','Add a short description for traceability.');
+  const baseShapeId = getRootOrSectionBaseShapeId(caseData);
+  if (!baseShapeId) addCaseQualityWarning(rows,'Warning','section','base_shape_id is missing.','Select or enter a base profile.');
+  if (baseShapeId.startsWith('CIRSOC_')) addCaseQualityWarning(rows,'Caution','section','Sample CIRSOC profile data must be independently verified.','Check source tables before design use.');
+  const material = caseData.material;
+  if (!material || typeof material !== 'object') addCaseQualityWarning(rows,'Warning','material','material block is missing.','Add material Fy/Fu/E or select a material preset.');
+  if (!hasQuantityValue(material && material.Fy)) addCaseQualityWarning(rows,'Warning','material','material Fy is missing.','Add Fy before checking stress criteria.');
+  if (!hasQuantityValue(material && material.E)) addCaseQualityWarning(rows,'Warning','material','material E is missing.','Add E before checking deflection.');
+  if (!hasQuantityValue(caseData.analysis && caseData.analysis.span)) addCaseQualityWarning(rows,'Warning','analysis','span is missing.','Add the runway beam span.');
+  if (!hasQuantityValue(caseData.analysis && caseData.analysis.movement_step)) addCaseQualityWarning(rows,'Info','analysis','movement_step is missing.','Add movement_step for moving-load scans.');
+  if (!hasQuantityValue(caseData.analysis && caseData.analysis.station_step)) addCaseQualityWarning(rows,'Info','analysis','station_step is missing.','Add station_step for envelope curves.');
+  if (!caseData.crane || typeof caseData.crane !== 'object') addCaseQualityWarning(rows,'Warning','crane','crane block is missing.','Add crane load data.');
+  const wheels = Array.isArray(caseData.crane && caseData.crane.wheels) ? caseData.crane.wheels : [];
+  if (wheels.length === 0) addCaseQualityWarning(rows,'Warning','wheels','No crane wheels are defined.','Use Wheel Table Editor to add wheels.');
+  if (wheels.length === 1) addCaseQualityWarning(rows,'Caution','wheels','Only one wheel is defined.','Confirm this is intentional.');
+  const wheelIds = wheels.map((w)=>String(w && w.wheel_id ? w.wheel_id : '').trim()).filter((x)=>x!=='');
+  if (wheelIds.length > 0 && wheelIds.length !== new Set(wheelIds).size) addCaseQualityWarning(rows,'Warning','wheels','Duplicate wheel IDs found.','Use unique wheel IDs.');
+  if (wheels.some((w)=>!hasQuantityValue(w && w.position_x))) addCaseQualityWarning(rows,'Warning','wheels','A wheel is missing position_x.','Add wheel position.');
+  if (wheels.some((w)=>!hasQuantityValue(w && w.vertical_force))) addCaseQualityWarning(rows,'Warning','wheels','A wheel is missing vertical_force.','Add vertical wheel force.');
+  const cover = caseData.section && caseData.section.cover_plate;
+  if (cover && cover.enabled === true) {
+    if (!hasQuantityValue(cover.width)) addCaseQualityWarning(rows,'Warning','cover_plate','Cover plate is enabled but width is missing.','Add cover plate width.');
+    if (!hasQuantityValue(cover.thickness)) addCaseQualityWarning(rows,'Warning','cover_plate','Cover plate is enabled but thickness is missing.','Add cover plate thickness.');
+    if (!hasQuantityValue(cover.weld_size)) addCaseQualityWarning(rows,'Caution','cover_plate','Cover plate is enabled but weld_size is missing.','Add weld size or confirm connection assumptions.');
+  }
+  const cp = caseData.criteria_presets;
+  const serviceabilityMissing = !caseData.serviceability_limits;
+  const stressMissing = !caseData.stress_limits;
+  if (!cp && serviceabilityMissing && stressMissing) addCaseQualityWarning(rows,'Caution','criteria','No criteria presets or explicit limits are configured.','Add generic criteria before interpreting pass/fail results.');
+  if (!Array.isArray(cp && cp.deflection) || (cp && cp.deflection && cp.deflection.length===0)) addCaseQualityWarning(rows,'Warning','criteria','No deflection criterion is configured.','Add a deflection preset or explicit serviceability limit.');
+  if (!Array.isArray(cp && cp.stress) || (cp && cp.stress && cp.stress.length===0)) addCaseQualityWarning(rows,'Warning','criteria','No stress criterion is configured.','Add a stress preset or explicit stress limit.');
+  const rail = caseData.rail_eccentricity;
+  if (rail && rail.enabled === true) {
+    if (!hasQuantityValue(rail.vertical_eccentricity_y)) addCaseQualityWarning(rows,'Warning','rail_eccentricity','Rail eccentricity is enabled but vertical_eccentricity_y is missing.','Add vertical eccentricity or disable rail eccentricity.');
+    if (!hasQuantityValue(rail.lateral_load_height_z)) addCaseQualityWarning(rows,'Warning','rail_eccentricity','Rail eccentricity is enabled but lateral_load_height_z is missing.','Add lateral load height or disable rail eccentricity.');
+  }
+  if (!Array.isArray(caseData.warnings) || caseData.warnings.length === 0) addCaseQualityWarning(rows,'Info','warnings','warnings list is missing or empty.','Add project-specific warnings and data-source assumptions.');
+  addCaseQualityWarning(rows,'Info','beta','Case quality warnings are setup checks only, not design-code checks.','Use engineering review before relying on results.');
+  return rows;
+}
+function renderCaseQualityWarnings(rows, statusMessage) { const body=document.getElementById('case_quality_rows'); const status=document.getElementById('case_quality_status'); if (!body || !status) return; const safeRows = Array.isArray(rows) ? rows : []; if (safeRows.length===0) body.innerHTML=''; else body.innerHTML=safeRows.map((row)=>'<tr><td>'+escapeHtml(row.severity)+'</td><td>'+escapeHtml(row.area)+'</td><td>'+escapeHtml(row.message)+'</td><td>'+escapeHtml(row.suggested_action)+'</td></tr>').join(''); status.textContent = statusMessage || (safeRows.length===0 ? 'No case quality warnings found.' : ('Case quality warnings: ' + safeRows.length)); }
+function refreshCaseQuality() { let caseData; try { caseData = JSON.parse(getCurrentCaseJsonText()); } catch (err) { lastCaseQualityWarnings = null; renderCaseQualityWarnings([], 'Cannot check case quality: invalid JSON.'); return; } const rows = buildCaseQualityWarnings(caseData); lastCaseQualityWarnings = rows; renderCaseQualityWarnings(rows, rows.length===0 ? 'No case quality warnings found.' : ('Case quality warnings: ' + rows.length)); }
+async function copyCaseQualityWarnings() { const rows=getCaseQualityRows(); if (rows.length===0) { setStatus('No case quality warnings available. Refresh case quality first.'); return; } const lines=rows.map((row,idx)=>(idx+1)+'. ['+row.severity+'] '+row.area+' | '+row.message+' | Suggested Action: '+row.suggested_action); await copyText(lines.join('\\n'),'Case quality warnings copied.','Could not copy case quality warnings.'); }
+function downloadCaseQualityWarnings() { const rows=getCaseQualityRows(); if (rows.length===0) { setStatus('No case quality warnings available. Refresh case quality first.'); return; } downloadText('case_quality_warnings.json', prettyJson(rows), 'application/json;charset=utf-8'); setStatus('Case quality warnings downloaded.'); }
 
 async function importJsonFile() {
   const fileInput = document.getElementById('import_json_file');
@@ -434,6 +497,7 @@ async function importJsonFile() {
     saveSession();
     setStatus('Imported JSON file: ' + file.name); markWorkflowStepDone(1); updateBetaReadiness('json_loaded', true);
     if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
+    if (typeof refreshCaseQuality === 'function') refreshCaseQuality();
     if (validateAfterImport && validateAfterImport.checked) {
       await validateCase();
     }
@@ -733,6 +797,7 @@ function applyCommonInputsToJson() {
   if (typeof saveSession === 'function') saveSession();
   if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
   if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
+    if (typeof refreshCaseQuality === 'function') refreshCaseQuality();
   setStatus('Common inputs applied to JSON.'); markWorkflowStepDone(2); updateBetaReadiness('json_loaded', true);
 }
 
@@ -808,7 +873,9 @@ function applyProfileMaterialToJson() {
   if (typeof saveSession === 'function') saveSession();
   if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
   if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
+    if (typeof refreshCaseQuality === 'function') refreshCaseQuality();
   if (typeof loadCommonInputsFromJson === 'function') loadCommonInputsFromJson();
+  if (typeof refreshCaseQuality === 'function') refreshCaseQuality();
   setStatus('Profile/material applied to JSON.'); markWorkflowStepDone(2); updateBetaReadiness('json_loaded', true);
 }
 function resetProfileMaterial() {
@@ -892,7 +959,8 @@ function loadWheelsFromJson() {
   let data;
   try { data = JSON.parse(getCurrentCaseJsonText()); } catch (err) { setStatus('Cannot load wheels: invalid JSON.'); return; }
   const wheels = Array.isArray(data?.crane?.wheels) ? data.crane.wheels : [];
-  if (wheels.length === 0) { setWheelRows([]); setStatus('No wheels found in JSON.'); return; }
+  if (wheels.length === 0) { setWheelRows([]);
+refreshCaseQuality(); setStatus('No wheels found in JSON.'); return; }
   const rows = wheels.map((wheel, idx) => ({
     wheel_id: String(wheel?.wheel_id ?? ('W' + (idx + 1))),
     position_x: wheel?.position_x?.value ?? '',
@@ -919,7 +987,9 @@ function applyWheelsToJson() {
   document.getElementById('case_json').value = prettyJson(data);
   if (typeof saveSession === 'function') saveSession();
   if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
+    if (typeof refreshCaseQuality === 'function') refreshCaseQuality();
   if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
+  if (typeof refreshCaseQuality === 'function') refreshCaseQuality();
   setStatus('Wheel table applied to JSON.'); markWorkflowStepDone(2); updateBetaReadiness('json_loaded', true);
 }
 
@@ -1206,6 +1276,7 @@ async function loadTemplate() {
     saveSession();
     setStatus('Template loaded: ' + id); markWorkflowStepDone(1); updateBetaReadiness('json_loaded', true);
     if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
+    if (typeof refreshCaseQuality === 'function') refreshCaseQuality();
   } catch (err) { setStatus('Network/error while loading template.'); }
 }
 async function validateCase() {
