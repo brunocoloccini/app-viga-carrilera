@@ -210,3 +210,5 @@ Planned modules:
 - V1-076: Local UI case quality warnings pack.
 
 - **V1-077**: Local UI navigation and collapsible panels pack.
+
+- **V1-078**: Local UI beta release-candidate hardening pack (Local UI Diagnostics panel, smoke-check script, and beta-status clarity updates).

@@ -92,3 +92,5 @@ Start local crane runway browser UI.
 ```bash
 PYTHONPATH=src python scripts/serve_crane_runway_ui.py [--host 127.0.0.1] [--port 8765] [--open]
 ```
+
+- `PYTHONPATH=src python scripts/check_local_ui_smoke.py --url http://127.0.0.1:8765`

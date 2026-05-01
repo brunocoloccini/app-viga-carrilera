@@ -144,3 +144,12 @@ Important: this is a local beta tool. Results require engineering review.
 6. Edit your own case and rerun Validate/Run.
 
 - Start in **Show Beginner View** and use **UI Navigation** to jump directly to key sections.
+
+## Recommended local UI startup flow (beta)
+1. Start server.
+2. Open UI.
+3. Run UI Diagnostics.
+4. Run Demo Workflow.
+5. Use Common Inputs / Wheel Table / Presets.
+6. Validate and Run.
+7. Export results.

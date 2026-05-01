@@ -542,3 +542,10 @@ Limitations:
 - Panel layout state persists in browser localStorage key `craneRunway.panelState` and restores on reload.
 - Limitation: browser-local layout only; no server-side user preferences or authentication.
 - Beta UI remains a helper and still requires engineering review.
+
+## V1-078 Local UI Diagnostics hardening
+
+- Added **Local UI Diagnostics** panel with **Run UI Diagnostics** button.
+- Diagnostics run lightweight endpoint checks for `/api/health`, `/api/templates`, `/api/template/ipn-with-cover`, `/api/validate`, and `/api/run`.
+- Diagnostics indicate UI/server connectivity only and do not prove engineering correctness.
+- Use the beta health check, manual QA checklist, and engineering review before relying on outputs.
