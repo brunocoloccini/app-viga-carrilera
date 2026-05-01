@@ -573,3 +573,14 @@ def test_inline_script_node_syntax_check() -> None:
     script = match.group(1)
     result = subprocess.run([node_path, "--check"], input=script, capture_output=True, text=True, check=False)
     assert result.returncode == 0, result.stderr
+
+
+def test_render_index_html_contains_panel_navigation_controls() -> None:
+    html = CraneRunwayLocalWebUi().render_index_html()
+    for token in [
+        'UI Navigation','Start','JSON Editor','Quick Selectors','Common Inputs','Wheel Table','Visual Preview','Case Quality','Validation','Run Results','Report','Scenario Comparison','Export','Help',
+        'Expand All Panels','Collapse All Panels','Show Beginner View','Show Advanced View','Reset Panel Layout','Collapse','Expand',
+        'All panels expanded.','All panels collapsed.','Beginner view enabled.','Advanced view enabled.','Panel layout saved locally.','Panel layout restored.','Panel layout reset.',
+        'craneRunway.panelState','scrollToPanel','togglePanel','expandAllPanels','collapseAllPanels','showBeginnerView','showAdvancedView','savePanelState','restorePanelState','resetPanelLayout','applyPanelState','getDefaultPanelState'
+    ]:
+        assert token in html
