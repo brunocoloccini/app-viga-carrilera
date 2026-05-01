@@ -125,6 +125,7 @@ th { background: #f9fafb; }
 </div>
 <div class=\"panel\" style=\"margin-top: 1rem;\">
   <h3>Package Export</h3>
+  <p style="margin-top:0.2rem;color:#4b5563;">Downloads browser-side artifacts; files are not saved to the server.</p>
   <div class=\"toolbar\" style=\"margin-top:0;\">
     <button onclick=\"downloadPackageMetadata()\">Download Package Metadata</button>
     <button onclick=\"downloadPackageCaseJson()\">Download Case JSON</button>
@@ -137,6 +138,7 @@ th { background: #f9fafb; }
 </div>
 <div class="panel" style="margin-top: 1rem;">
   <h3>Common Inputs</h3>
+  <p style="margin-top:0.2rem;color:#4b5563;">Use this form for frequent edits. Advanced fields remain editable in JSON.</p>
   <p style="margin-top:0;">Common Inputs edits the JSON below. Review generated JSON before running.</p>
   <p style="margin-top:0.2rem;">Advanced fields remain editable directly in JSON.</p>
   <p style="margin-top:0.2rem;"><strong>For more than two wheels, use Wheel Table Editor.</strong></p>
@@ -146,16 +148,20 @@ th { background: #f9fafb; }
     <button onclick="applyCommonInputsToJson()">Apply Form To JSON</button>
     <button onclick="resetCommonInputs()">Reset Form</button>
   </div>
-  <table><tbody><tr><td>Case ID</td><td><input id="common_case_id"/></td><td>Description</td><td><input id="common_description"/></td></tr>
-  <tr><td>Base Shape ID</td><td><input id="common_base_shape_id"/></td><td>Cover Plate Enabled</td><td><input id="common_cover_plate_enabled" type="checkbox"/></td></tr>
-  <tr><td>Cover Plate Width</td><td><input id="common_cover_plate_width"/><select id="common_cover_plate_width_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Cover Plate Thickness</td><td><input id="common_cover_plate_thickness"/><select id="common_cover_plate_thickness_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr>
+  <table><tbody><tr><td><span title="Unique local label for the case configuration.">Case ID</span></td><td><input id="common_case_id"/></td><td>Description</td><td><input id="common_description"/></td></tr>
+  <tr><td><span title="Section profile identifier used by the case JSON.">Base Shape ID</span></td><td><input id="common_base_shape_id"/></td><td>Cover Plate Enabled</td><td><input id="common_cover_plate_enabled" type="checkbox"/></td></tr>
+  <tr><td><span title="Top cover plate width dimension.">Cover Plate Width</span></td><td><input id="common_cover_plate_width"/><select id="common_cover_plate_width_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td><span title="Top cover plate thickness dimension.">Cover Plate Thickness</span></td><td><input id="common_cover_plate_thickness"/><select id="common_cover_plate_thickness_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr>
   <tr><td>Cover Plate Weld Size</td><td><input id="common_cover_plate_weld_size"/><select id="common_cover_plate_weld_size_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Material ID</td><td><input id="common_material_id"/></td></tr>
-  <tr><td>Fy</td><td><input id="common_fy"/><select id="common_fy_unit"><option>MPa</option><option>ksi</option><option>psi</option></select></td><td>Fu</td><td><input id="common_fu"/><select id="common_fu_unit"><option>MPa</option><option>ksi</option><option>psi</option></select></td></tr><tr><td>E</td><td><input id="common_e"/><select id="common_e_unit"><option>MPa</option><option>ksi</option><option>psi</option></select></td><td>Span</td><td><input id="common_span"/><select id="common_span_unit"><option>m</option><option>mm</option><option>ft</option></select></td></tr>
+  <tr><td><span title="Yield strength input for the selected material.">Fy</span></td><td><input id="common_fy"/><select id="common_fy_unit"><option>MPa</option><option>ksi</option><option>psi</option></select></td><td>Fu</td><td><input id="common_fu"/><select id="common_fu_unit"><option>MPa</option><option>ksi</option><option>psi</option></select></td></tr><tr><td><span title="Elastic modulus input for the selected material.">E</span></td><td><input id="common_e"/><select id="common_e_unit"><option>MPa</option><option>ksi</option><option>psi</option></select></td><td><span title="Runway span used for wheel travel and demand envelopes.">Span</span></td><td><input id="common_span"/><select id="common_span_unit"><option>m</option><option>mm</option><option>ft</option></select></td></tr>
   <tr><td>Movement Step</td><td><input id="common_movement_step"/><select id="common_movement_step_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Station Step</td><td><input id="common_station_step"/><select id="common_station_step_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr><tr><td>Crane ID</td><td><input id="common_crane_id"/></td><td>Vertical Impact Factor</td><td><input id="common_vertical_impact_factor"/></td></tr>
-  <tr><td>Lateral Force Factor</td><td><input id="common_lateral_force_factor"/></td><td>Wheel 1 Load</td><td><input id="common_wheel_1_load"/><select id="common_wheel_1_load_unit"><option>kN</option><option>N</option><option>kip</option></select></td></tr><tr><td>Wheel 2 Load</td><td><input id="common_wheel_2_load"/><select id="common_wheel_2_load_unit"><option>kN</option><option>N</option><option>kip</option></select></td><td>Wheel Spacing</td><td><input id="common_wheel_spacing"/><select id="common_wheel_spacing_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr>
-  <tr><td>Rail Eccentricity Enabled</td><td><input id="common_rail_eccentricity_enabled" type="checkbox"/></td><td>Vertical Eccentricity Y</td><td><input id="common_vertical_eccentricity_y"/><select id="common_vertical_eccentricity_y_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr><tr><td>Lateral Load Height Z</td><td><input id="common_lateral_load_height_z"/><select id="common_lateral_load_height_z_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Deflection Preset</td><td><input id="common_deflection_preset"/></td></tr><tr><td>Stress Preset</td><td><input id="common_stress_preset"/></td><td></td><td></td></tr></tbody></table>
+  <tr><td>Lateral Force Factor</td><td><input id="common_lateral_force_factor"/></td><td>Wheel 1 Load</td><td><input id="common_wheel_1_load"/><select id="common_wheel_1_load_unit"><option>kN</option><option>N</option><option>kip</option></select></td></tr><tr><td>Wheel 2 Load</td><td><input id="common_wheel_2_load"/><select id="common_wheel_2_load_unit"><option>kN</option><option>N</option><option>kip</option></select></td><td><span title="Center-to-center spacing between wheel loads.">Wheel Spacing</span></td><td><input id="common_wheel_spacing"/><select id="common_wheel_spacing_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr>
+  <tr><td><span title="Enable or disable rail eccentricity inputs in this case.">Rail Eccentricity Enabled</span></td><td><input id="common_rail_eccentricity_enabled" type="checkbox"/></td><td><span title="Vertical eccentricity offset (Y) for rail load application.">Vertical Eccentricity Y</span></td><td><input id="common_vertical_eccentricity_y"/><select id="common_vertical_eccentricity_y_unit"><option>mm</option><option>cm</option><option>in</option></select></td></tr><tr><td><span title="Height (Z) where lateral load is applied.">Lateral Load Height Z</span></td><td><input id="common_lateral_load_height_z"/><select id="common_lateral_load_height_z_unit"><option>mm</option><option>cm</option><option>in</option></select></td><td>Deflection Preset</td><td><input id="common_deflection_preset"/></td></tr><tr><td>Stress Preset</td><td><input id="common_stress_preset"/></td><td></td><td></td></tr></tbody></table>
   <h4>Common Inputs Errors</h4><div id="common_inputs_errors">No common input errors.</div>
 </div>
+</div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Quick Selectors / Presets</h3>
+  <p style="margin-top:0.2rem;color:#4b5563;">Presets are convenience helpers, not design recommendations.</p>
 </div>
 <div class="panel" style="margin-top: 1rem;">
   <h3>Profile / Material Selector</h3>
@@ -175,17 +181,19 @@ th { background: #f9fafb; }
 </div>
 <div class="panel" style="margin-top: 1rem;">
   <h3>Wheel Table Editor</h3>
+  <p style="margin-top:0.2rem;color:#4b5563;">Use this table for crane wheel positions and vertical wheel loads.</p>
   <div class="toolbar" style="margin-top:0;">
     <button id="load_wheels_from_json_btn">Load Wheels From JSON</button>
     <button id="apply_wheels_to_json_btn">Apply Wheels To JSON</button>
     <button id="add_wheel_row_btn">Add Wheel</button>
     <button id="clear_wheel_table_btn">Clear Wheel Table</button>
   </div>
-  <table><thead><tr><th>Wheel ID</th><th>Position X</th><th>Position Unit</th><th>Vertical Force</th><th>Force Unit</th><th>Remove</th></tr></thead><tbody id="wheel_table_body"></tbody></table>
+  <table><thead><tr><th>Wheel ID</th><th title="Wheel Spacing location along runway span.">Position X</th><th>Position Unit</th><th title="Wheel Load applied vertically at the wheel location.">Vertical Force</th><th>Force Unit</th><th>Remove</th></tr></thead><tbody id="wheel_table_body"></tbody></table>
   <h4>Wheel Table Errors</h4><div id="wheel_table_errors">No wheel table errors.</div>
 </div>
 <div class="panel" style="margin-top: 1rem;">
   <h3>Visual Preview</h3>
+  <p style="margin-top:0.2rem;color:#4b5563;">Schematic preview only; not to scale.</p>
   <div class="toolbar" style="margin-top:0;"><button onclick="refreshVisualPreview()">Refresh Visual Preview</button></div>
   <p style="margin-top:0.35rem;color:#4b5563;">Preview is schematic only and not to scale.</p>
   <h4>Beam Preview</h4><div id="beam_preview_output"></div>
@@ -194,6 +202,7 @@ th { background: #f9fafb; }
 </div>
 <div class="panel" style="margin-top: 1rem;">
   <h3>Scenario Comparison</h3>
+  <p style="margin-top:0.2rem;color:#4b5563;">Compare saved browser-local alternatives using existing run results.</p>
   <div class="toolbar" style="margin-top:0;">
     <label for="scenario_name">Scenario Name</label>
     <input id="scenario_name" type="text"/>
@@ -225,6 +234,43 @@ th { background: #f9fafb; }
   <h3>Troubleshooting</h3>
   <ul><li>If buttons do not respond, refresh the page.</li><li>If the server is unreachable, start scripts/serve_crane_runway_ui.py.</li><li>If JSON validation fails, review the Validation panel.</li><li>If results show FAIL, review configured criteria and engineering assumptions.</li><li>This local UI is a beta tool and requires engineering review.</li></ul>
 </div>
+<div class="panel" id="field_help_panel" style="margin-top: 1rem;">
+  <h3>Field Help / Glossary</h3>
+  <div class="toolbar" style="margin-top:0;">
+    <button onclick="toggleFieldHelp()">Toggle Help</button>
+    <label for="glossary_search">Search glossary</label><input id="glossary_search" type="text" oninput="filterGlossary()"/>
+  </div>
+  <ul id="glossary_list">
+    <li class="glossary-item"><strong>span</strong>: Beam length considered for moving wheel demand envelopes.</li>
+    <li class="glossary-item"><strong>base_shape_id</strong>: Identifier for the baseline steel profile in the case.</li>
+    <li class="glossary-item"><strong>cover_plate</strong>: Optional added plate dimensions and enable flag.</li>
+    <li class="glossary-item"><strong>material Fy</strong>: Yield strength value used by configured stress criteria.</li>
+    <li class="glossary-item"><strong>material Fu</strong>: Ultimate strength reference stored with the material record.</li>
+    <li class="glossary-item"><strong>material E</strong>: Elastic modulus value used for stiffness-based response.</li>
+    <li class="glossary-item"><strong>crane wheels</strong>: Wheel positions and vertical loads applied to the runway.</li>
+    <li class="glossary-item"><strong>vertical impact factor</strong>: Multiplier applied to vertical wheel demand input.</li>
+    <li class="glossary-item"><strong>lateral force factor</strong>: Multiplier used for lateral load component input.</li>
+    <li class="glossary-item"><strong>rail eccentricity</strong>: Offset inputs controlling load application location.</li>
+    <li class="glossary-item"><strong>movement_step</strong>: Travel increment for moving load envelope sampling.</li>
+    <li class="glossary-item"><strong>station_step</strong>: Spacing between beam stations used in results.</li>
+    <li class="glossary-item"><strong>serviceability limit</strong>: Configured generic serviceability threshold reference.</li>
+    <li class="glossary-item"><strong>stress limit</strong>: Configured generic stress threshold reference.</li>
+    <li class="glossary-item"><strong>max vertical moment</strong>: Peak computed major-axis bending demand.</li>
+    <li class="glossary-item"><strong>max vertical shear</strong>: Peak computed vertical shear demand.</li>
+    <li class="glossary-item"><strong>max vertical deflection</strong>: Largest computed displacement response.</li>
+    <li class="glossary-item"><strong>max lateral moment</strong>: Peak computed lateral bending demand.</li>
+    <li class="glossary-item"><strong>max biaxial stress</strong>: Combined stress indicator from current run output.</li>
+    <li class="glossary-item"><strong>max torsional input</strong>: Reported torsional input quantity from case data.</li>
+    <li class="glossary-item"><strong>serviceability passed</strong>: Boolean status for configured serviceability check.</li>
+    <li class="glossary-item"><strong>stress criteria passed</strong>: Boolean status for configured stress check.</li>
+    <li class="glossary-item"><strong>overall passed</strong>: Overall boolean summary across configured checks.</li>
+    <li class="glossary-item"><strong>sample profile data</strong>: Example profile entries that require independent verification.</li>
+    <li class="glossary-item"><strong>sample material data</strong>: Example material presets that require independent verification.</li>
+    <li class="glossary-item"><strong>generic criteria</strong>: User-configured non-normative limits for quick screening.</li>
+    <li class="glossary-item"><strong>engineering review</strong>: Required independent technical review before decisions.</li>
+  </ul>
+  <div id="glossary_no_match" style="display:none;color:#92400e;">No glossary matches.</div>
+</div>
 <div id=\"status\" class=\"status\">Ready.</div>
 <div class=\"page\">
   <div class=\"left-col\">
@@ -238,9 +284,9 @@ th { background: #f9fafb; }
   <div class=\"right-col\">
   <div class=\"panel\"><h3>Help / Workflow</h3><div id=\"help_panel\"></div></div>
   <div class=\"panel\"><h3>Case Outline</h3><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"refreshCaseOutline()\">Refresh Case Outline</button></div><div id=\"case_outline_output\"></div></div>
-  <div class=\"panel\"><h3>Validation</h3><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"copyErrorList()\">Copy Error List</button></div><div id=\"validation_output\"></div></div>
+  <div class=\"panel\"><h3>Validation</h3><p style=\"margin-top:0.2rem;color:#4b5563;\">Validation checks JSON structure and supported units before calculation.</p><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"copyErrorList()\">Copy Error List</button></div><div id=\"validation_output\"></div></div>
   <div class=\"panel\"><h3>Summary</h3><div id=\"result_cards\"></div><div id=\"summary_output\"></div></div>
-  <div class=\"panel\"><h3>Result Interpretation</h3><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"copyInterpretation()\">Copy Interpretation</button></div><div id=\"interpretation_output\"><p>Run a case to see result interpretation.</p></div></div>
+  <div class=\"panel\"><h3>Result Interpretation</h3><p style=\"margin-top:0.2rem;color:#4b5563;\">Interpretation explains configured generic check results; it is not a code-compliance verdict.</p><div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"copyInterpretation()\">Copy Interpretation</button></div><div id=\"interpretation_output\"><p>Run a case to see result interpretation.</p></div></div>
   <div class=\"panel\">
     <h3>HTML Report</h3>
     <button id=\"open_report\" onclick=\"openReportInNewTab()\" style=\"display:none; margin-bottom: 0.6rem;\">Open report in new tab</button>
@@ -336,6 +382,8 @@ async function checkBackendHealth() { try { const r=await fetch('/api/health'); 
 async function runDemoWorkflow() { const panel=document.getElementById('demo_workflow_status'); if (panel) panel.textContent='Running demo workflow...'; try { document.getElementById('template').value='ipn-with-cover'; await loadTemplate(); markWorkflowStepDone(1); refreshVisualPreview(); markWorkflowStepDone(3); await validateCase(); if (lastValidationResponse && lastValidationResponse.valid===false) { markWorkflowStepNeedsAttention(4); throw new Error('Validation failed.'); } markWorkflowStepDone(4); await runCase(); if (!lastRunResponse || lastRunResponse.success===false) throw new Error('Run failed.'); markWorkflowStepDone(5); markWorkflowStepDone(6); if (panel) panel.textContent='Demo workflow complete.'; setStatus('Demo workflow complete.'); } catch (err) { if (panel) panel.textContent='Demo workflow failed.'; setStatus('Demo workflow failed.'); } }
 
 function setStatus(msg) { document.getElementById('status').textContent = msg; }
+function toggleFieldHelp() { const panel=document.getElementById('field_help_panel'); if (!panel) return; const hidden=panel.getAttribute('data-help-hidden')==='true'; if (hidden) { panel.style.display='block'; panel.setAttribute('data-help-hidden','false'); setStatus('Help shown.'); } else { panel.style.display='none'; panel.setAttribute('data-help-hidden','true'); setStatus('Help hidden.'); } }
+function filterGlossary() { const input=document.getElementById('glossary_search'); const list=document.getElementById('glossary_list'); if (!input || !list) return; const query=String(input.value || '').toLowerCase(); const items=list.querySelectorAll('.glossary-item'); let visible=0; for (const item of items) { const match=item.textContent.toLowerCase().includes(query); item.style.display=match?'':'none'; if (match) visible += 1; } const noMatch=document.getElementById('glossary_no_match'); if (noMatch) noMatch.style.display=visible===0?'block':'none'; }
 function prettyJson(value) { return JSON.stringify(value, null, 2); }
 function renderRaw(data) {
   lastRawResponse = data;
@@ -957,7 +1005,7 @@ function renderResultCards(summary) {
     ['Stress', statusText(summary.stress_criteria_passed), statusClass(summary.stress_criteria_passed)],
     ['Overall', statusText(summary.overall_passed), statusClass(summary.overall_passed)]
   ];
-  let html = '<h4>Result Cards</h4><div class=\"result-cards\">';
+  let html = '<h4>Result Cards</h4><p style=\"margin-top:0.2rem;color:#4b5563;\">Result cards summarize computed demands and configured generic check status.</p><div class=\"result-cards\">';
   for (const card of cards) {
     html += '<div class=\"result-card\"><div class=\"result-card-title\">' + escapeHtml(card[0]) + '</div><div class=\"result-card-value ' + card[2] + '\">' + escapeHtml(card[1]) + '</div></div>';
   }
