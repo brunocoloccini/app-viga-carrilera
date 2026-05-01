@@ -146,3 +146,12 @@ Expected:
 - Validate copy/download actions:
   - **Copy Case Quality Warnings**
   - **Download Case Quality Warnings JSON**
+
+- [ ] Use UI Navigation to jump to Visual Preview.
+- [ ] Collapse and expand at least one panel.
+- [ ] Click Collapse All Panels and verify collapse.
+- [ ] Click Expand All Panels and verify expansion.
+- [ ] Click Show Beginner View and verify focused layout.
+- [ ] Click Show Advanced View and verify all panels are expanded.
+- [ ] Refresh page and confirm panel state restores.
+- [ ] Click Reset Panel Layout and confirm default layout resets.

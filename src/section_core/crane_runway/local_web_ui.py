@@ -65,7 +65,11 @@ button:hover { background: #f3f4f6; }
 select, textarea { border: 1px solid #d1d5db; border-radius: 6px; }
 textarea { width: 100%; min-height: 300px; font-family: Consolas, monospace; padding: 0.6rem; box-sizing: border-box; }
 .status { margin-top: 0.8rem; padding: 0.7rem; background: #eff6ff; border: 2px solid #60a5fa; border-radius: 6px; font-weight: 600; }
-.panel { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.8rem; }
+.panel { background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 0.8rem; scroll-margin-top: 5rem; }
+.panel + .panel { margin-top: 1rem; }
+.panel-header { display:flex; align-items:center; justify-content:space-between; gap:0.5rem; }
+.panel-body.collapsed { display:none; }
+.ui-nav { position: sticky; top: 0.5rem; z-index: 5; }
 .panel h3 { margin-top: 0; }
 pre { white-space: pre-wrap; word-break: break-word; background: #f9fafb; border: 1px solid #e5e7eb; padding: 0.6rem; border-radius: 6px; min-height: 80px; }
 table { border-collapse: collapse; width: 100%; }
@@ -136,8 +140,8 @@ th { background: #f9fafb; }
     <button onclick=\"downloadAllPackageFiles()\">Download All Package Files</button>
   </div>
 </div>
-<div class="panel" style="margin-top: 1rem;">
-  <h3>Common Inputs</h3>
+<div class="panel collapsible-panel" id="panel-common-inputs" data-panel-key="common-inputs" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Common Inputs</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Use this form for frequent edits. Advanced fields remain editable in JSON.</p>
   <p style="margin-top:0;">Common Inputs edits the JSON below. Review generated JSON before running.</p>
   <p style="margin-top:0.2rem;">Advanced fields remain editable directly in JSON.</p>
@@ -159,8 +163,8 @@ th { background: #f9fafb; }
   <h4>Common Inputs Errors</h4><div id="common_inputs_errors">No common input errors.</div>
 </div>
 </div>
-<div class="panel" style="margin-top: 1rem;">
-  <h3>Quick Selectors / Presets</h3>
+<div class="panel collapsible-panel" id="panel-quick-selectors" data-panel-key="quick-selectors" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Quick Selectors / Presets</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Presets are convenience helpers, not design recommendations.</p>
 </div>
 <div class="panel" style="margin-top: 1rem;">
@@ -179,8 +183,8 @@ th { background: #f9fafb; }
   </tbody></table>
   <h4>Profile / Material Errors</h4><div id="profile_material_errors">No profile/material errors.</div>
 </div>
-<div class="panel" style="margin-top: 1rem;">
-  <h3>Wheel Table Editor</h3>
+<div class="panel collapsible-panel" id="panel-wheel-table" data-panel-key="wheel-table-editor" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Wheel Table Editor</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Use this table for crane wheel positions and vertical wheel loads.</p>
   <div class="toolbar" style="margin-top:0;">
     <button id="load_wheels_from_json_btn">Load Wheels From JSON</button>
@@ -191,8 +195,8 @@ th { background: #f9fafb; }
   <table><thead><tr><th>Wheel ID</th><th title="Wheel Spacing location along runway span.">Position X</th><th>Position Unit</th><th title="Wheel Load applied vertically at the wheel location.">Vertical Force</th><th>Force Unit</th><th>Remove</th></tr></thead><tbody id="wheel_table_body"></tbody></table>
   <h4>Wheel Table Errors</h4><div id="wheel_table_errors">No wheel table errors.</div>
 </div>
-<div class="panel" style="margin-top: 1rem;">
-  <h3>Visual Preview</h3>
+<div class="panel collapsible-panel" id="panel-visual-preview" data-panel-key="visual-preview" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Visual Preview</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Schematic preview only; not to scale.</p>
   <div class="toolbar" style="margin-top:0;"><button onclick="refreshVisualPreview()">Refresh Visual Preview</button></div>
   <p style="margin-top:0.35rem;color:#4b5563;">Preview is schematic only and not to scale.</p>
@@ -200,8 +204,8 @@ th { background: #f9fafb; }
   <h4>Section Preview</h4><div id="section_preview_output"></div>
   <h4>Preview Summary</h4><div id="preview_summary_output"></div>
 </div>
-<div class="panel" style="margin-top: 1rem;">
-  <h3>Case Quality Warnings</h3>
+<div class="panel collapsible-panel" id="panel-case-quality" data-panel-key="case-quality-warnings" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Case Quality Warnings</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <div class="toolbar" style="margin-top:0;">
     <button onclick="refreshCaseQuality()">Refresh Case Quality</button>
     <button onclick="copyCaseQualityWarnings()">Copy Case Quality Warnings</button>
@@ -210,8 +214,8 @@ th { background: #f9fafb; }
   <div id="case_quality_status" style="margin-top:0.35rem;color:#4b5563;">Refresh case quality to see warnings.</div>
   <table><thead><tr><th>Severity</th><th>Area</th><th>Message</th><th>Suggested Action</th></tr></thead><tbody id="case_quality_rows"></tbody></table>
 </div>
-<div class="panel" style="margin-top: 1rem;">
-  <h3>Scenario Comparison</h3>
+<div class="panel collapsible-panel" id="panel-scenario-comparison" data-panel-key="scenario-comparison" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Scenario Comparison</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Compare saved browser-local alternatives using existing run results.</p>
   <div class="toolbar" style="margin-top:0;">
     <label for="scenario_name">Scenario Name</label>
@@ -226,26 +230,26 @@ th { background: #f9fafb; }
   <table><thead><tr><th>Scenario</th><th>Saved At</th><th>Actions</th></tr></thead><tbody id="scenario_list_body"></tbody></table>
   <div id="scenario_comparison_output" style="margin-top:0.6rem;"></div>
 </div>
-<div class="panel" style="margin-top: 1rem;">
-  <h3>Guided Workflow</h3>
+<div class="panel collapsible-panel" id="panel-guided-workflow" data-panel-key="guided-workflow" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Guided Workflow</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <div class="toolbar" style="margin-top:0;"><button onclick="resetGuidedWorkflow()">Reset Workflow</button><button onclick="runDemoWorkflow()">Run Demo Workflow</button></div>
   <table><thead><tr><th>Step</th><th>Description</th><th>Status</th></tr></thead><tbody id="guided_workflow_body"></tbody></table>
   <div id="demo_workflow_status" style="margin-top:0.5rem;color:#374151;">Demo workflow complete.</div>
   <div style="margin-top:0.2rem;color:#374151;">Demo workflow failed.</div>
 </div>
-<div class="panel" style="margin-top: 1rem;">
-  <h3>Beta Readiness</h3>
+<div class="panel collapsible-panel" id="panel-beta-readiness" data-panel-key="beta-readiness" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Beta Readiness</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <div class="toolbar" style="margin-top:0;"><button onclick="checkBackendHealth()">Check Backend Health</button></div>
   <div id="backend_health_status" style="margin-top:0.35rem;">Backend health: OK.</div>
   <div style="margin-top:0.2rem;">Backend health: FAIL.</div>
   <div id="beta_readiness_output" style="margin-top:0.5rem;"></div>
 </div>
-<div class="panel" style="margin-top: 1rem;">
-  <h3>Troubleshooting</h3>
+<div class="panel collapsible-panel" id="panel-troubleshooting" data-panel-key="troubleshooting" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Troubleshooting</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <ul><li>If buttons do not respond, refresh the page.</li><li>If the server is unreachable, start scripts/serve_crane_runway_ui.py.</li><li>If JSON validation fails, review the Validation panel.</li><li>If results show FAIL, review configured criteria and engineering assumptions.</li><li>This local UI is a beta tool and requires engineering review.</li></ul>
 </div>
-<div class="panel" id="field_help_panel" style="margin-top: 1rem;">
-  <h3>Field Help / Glossary</h3>
+<div class="panel collapsible-panel" id="panel-help" data-panel-key="field-help-glossary" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Field Help / Glossary</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <div class="toolbar" style="margin-top:0;">
     <button onclick="toggleFieldHelp()">Toggle Help</button>
     <label for="glossary_search">Search glossary</label><input id="glossary_search" type="text" oninput="filterGlossary()"/>
@@ -280,6 +284,31 @@ th { background: #f9fafb; }
     <li class="glossary-item"><strong>engineering review</strong>: Required independent technical review before decisions.</li>
   </ul>
   <div id="glossary_no_match" style="display:none;color:#92400e;">No glossary matches.</div>
+</div>
+<div class="panel ui-nav" id="panel-start" style="margin-top: 1rem;">
+  <h3>UI Navigation</h3>
+  <div class="toolbar" style="margin-top:0;">
+    <button onclick="scrollToPanel('panel-start')">Start</button>
+    <button onclick="scrollToPanel('panel-json-editor')">JSON Editor</button>
+    <button onclick="scrollToPanel('panel-quick-selectors')">Quick Selectors</button>
+    <button onclick="scrollToPanel('panel-common-inputs')">Common Inputs</button>
+    <button onclick="scrollToPanel('panel-wheel-table')">Wheel Table</button>
+    <button onclick="scrollToPanel('panel-visual-preview')">Visual Preview</button>
+    <button onclick="scrollToPanel('panel-case-quality')">Case Quality</button>
+    <button onclick="scrollToPanel('panel-validation')">Validation</button>
+    <button onclick="scrollToPanel('panel-run-results')">Run Results</button>
+    <button onclick="scrollToPanel('panel-report')">Report</button>
+    <button onclick="scrollToPanel('panel-scenario-comparison')">Scenario Comparison</button>
+    <button onclick="scrollToPanel('panel-export')">Export</button>
+    <button onclick="scrollToPanel('panel-help')">Help</button>
+  </div>
+  <div class="toolbar" style="margin-top:0.5rem;">
+    <button onclick="expandAllPanels()">Expand All Panels</button>
+    <button onclick="collapseAllPanels()">Collapse All Panels</button>
+    <button onclick="showBeginnerView()">Show Beginner View</button>
+    <button onclick="showAdvancedView()">Show Advanced View</button>
+    <button onclick="resetPanelLayout()">Reset Panel Layout</button>
+  </div>
 </div>
 <div id=\"status\" class=\"status\">Ready.</div>
 <div class=\"page\">
@@ -319,6 +348,20 @@ const autosaveStorageKeys = {
 };
 let autosaveAvailable = true;
 let autosaveTimer = null;
+
+const panelStateStorageKey = 'craneRunway.panelState';
+function scrollToPanel(panelId){const panel=document.getElementById(panelId);if(panel){panel.scrollIntoView({behavior:'smooth',block:'start'});}}
+function getDefaultPanelState(){return {'guided-workflow':true,'beta-readiness':true,'quick-selectors':true,'common-inputs':true,'wheel-table-editor':true,'visual-preview':true,'case-quality-warnings':true,'validation':true,'result-cards':true,'result-interpretation':true,'html-report':true,'raw-response':false,'package-export':false,'scenario-comparison':false,'field-help-glossary':false,'troubleshooting':false};}
+function applyPanelState(state){document.querySelectorAll('.collapsible-panel').forEach((panel)=>{const key=panel.dataset.panelKey;const expanded=state[key]!==false;const body=panel.querySelector('.panel-body');const btn=panel.querySelector('[data-panel-toggle]');if(body){body.classList.toggle('collapsed',!expanded);}if(btn){btn.textContent=expanded?'Collapse':'Expand';}});}
+function savePanelState(){const state={};document.querySelectorAll('.collapsible-panel').forEach((panel)=>{const key=panel.dataset.panelKey;const body=panel.querySelector('.panel-body');state[key]=!(body&&body.classList.contains('collapsed'));});localStorage.setItem(panelStateStorageKey,JSON.stringify(state));setStatus('Panel layout saved locally.');}
+function restorePanelState(){const raw=localStorage.getItem(panelStateStorageKey);if(!raw){showBeginnerView(false);return;}try{applyPanelState(JSON.parse(raw));setStatus('Panel layout restored.');}catch(_){showBeginnerView(false);}}
+function togglePanel(button){const panel=button.closest('.collapsible-panel');if(!panel)return;const body=panel.querySelector('.panel-body');if(!body)return;body.classList.toggle('collapsed');button.textContent=body.classList.contains('collapsed')?'Expand':'Collapse';savePanelState();}
+function expandAllPanels(){const state={};document.querySelectorAll('.collapsible-panel').forEach((p)=>state[p.dataset.panelKey]=true);applyPanelState(state);savePanelState();setStatus('All panels expanded.');}
+function collapseAllPanels(){const state={};document.querySelectorAll('.collapsible-panel').forEach((p)=>state[p.dataset.panelKey]=false);applyPanelState(state);savePanelState();setStatus('All panels collapsed.');}
+function showBeginnerView(withStatus=true){const state=getDefaultPanelState();applyPanelState(state);savePanelState();if(withStatus)setStatus('Beginner view enabled.');}
+function showAdvancedView(){expandAllPanels();setStatus('Advanced view enabled.');}
+function resetPanelLayout(){localStorage.removeItem(panelStateStorageKey);showBeginnerView(false);setStatus('Panel layout reset.');}
+
 const workflowSteps = [{id:1,label:'Load Template or Import JSON',description:'Load built-in template or import local JSON file.'},{id:2,label:'Configure Inputs',description:'Apply Common Inputs, Wheels, or Quick Selectors.'},{id:3,label:'Refresh Preview',description:'Refresh visual preview for quick geometry/load checks.'},{id:4,label:'Validate',description:'Validate case JSON before running.'},{id:5,label:'Run',description:'Run the configured case.'},{id:6,label:'Review Results',description:'Review cards, interpretation, summary, and report.'},{id:7,label:'Export / Compare',description:'Download package artifacts or run scenario comparison.'}];
 const workflowState={1:'Pending',2:'Pending',3:'Pending',4:'Pending',5:'Pending',6:'Pending',7:'Pending'};
 const betaReadinessState={ui_js_loaded:true,backend_health:null,json_loaded:null,validation_status:null,run_status:null,autosave_available:true};

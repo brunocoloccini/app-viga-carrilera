@@ -535,3 +535,10 @@ Limitations:
 - No torsional/warping stress checks.
 - No LTB checks.
 - Engineering review is required before relying on results.
+
+## V1-077 UI navigation and panel layout
+- Added **UI Navigation** quick-jump panel and workflow focus buttons (Beginner/Advanced, Expand/Collapse all, Reset).
+- Major panels now support Collapse/Expand toggles.
+- Panel layout state persists in browser localStorage key `craneRunway.panelState` and restores on reload.
+- Limitation: browser-local layout only; no server-side user preferences or authentication.
+- Beta UI remains a helper and still requires engineering review.

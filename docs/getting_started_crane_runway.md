@@ -142,3 +142,5 @@ Important: this is a local beta tool. Results require engineering review.
 4. Inspect **Results**, **Result Interpretation**, and **HTML Report**.
 5. Then click **Refresh Case Quality** and review setup warnings.
 6. Edit your own case and rerun Validate/Run.
+
+- Start in **Show Beginner View** and use **UI Navigation** to jump directly to key sections.
