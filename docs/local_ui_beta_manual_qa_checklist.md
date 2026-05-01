@@ -126,3 +126,13 @@ Expected:
 4. Confirm demo status becomes `Demo workflow complete.` for healthy runs (or `Demo workflow failed.` on forced failure).
 5. Confirm **Guided Workflow** statuses update across load/configure/preview/validate/run/review/export-compare steps.
 6. Confirm **Beta Readiness** lines update for JSON loaded, validation status, and run status after demo and manual runs.
+
+
+## K) Field Help / Glossary QA (V1-075)
+
+1. Open **Field Help / Glossary** and confirm glossary items render.
+2. Search for `span` and confirm related items remain visible.
+3. Search for `stress` and confirm stress-related glossary items remain visible.
+4. Search for a random unmatched string and confirm `No glossary matches.` appears.
+5. Click **Toggle Help** once and confirm help panel hides with status `Help hidden.`
+6. Click **Toggle Help** again and confirm help panel shows with status `Help shown.`

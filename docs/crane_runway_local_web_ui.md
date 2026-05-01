@@ -500,3 +500,18 @@ Visible guidance:
 - No torsional/warping stress checks.
 - No LTB checks.
 - Engineering review is required.
+
+
+## Field Help / Glossary pack (V1-075)
+
+- Added **Field Help / Glossary** panel with short non-normative definitions for key inputs, outputs, and warnings.
+- Added **Toggle Help** to show/hide the glossary panel in-page.
+- Added **Search glossary** client-side filtering with `No glossary matches.` fallback text.
+- Added inline helper text under major panels and lightweight native tooltips (`title`) for common inputs and wheel-table fields.
+
+Important educational scope:
+- Help text is educational and non-normative.
+- It does not replace engineering judgment.
+- It is not official CIRSOC/CISC/AISC guidance.
+- No fatigue/torsion/warping/LTB checks are introduced by this UI help pack.
+- Sample profile/material data still requires independent verification.

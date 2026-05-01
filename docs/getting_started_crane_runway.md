@@ -81,6 +81,7 @@ Suggested quick flow:
 2. Select a built-in template and click **Load Template**.
 3. (Optional) Edit the JSON in **JSON Editor**.
 4. For multi-wheel edits (more than two wheels), use **Wheel Table Editor** instead of manual `crane.wheels` JSON edits.
+4a. Use **Field Help / Glossary** while editing inputs to review quick term definitions without leaving the page.
 5. Click **Format JSON** to normalize the payload formatting.
 6. Click **Validate** and review the **Validation** panel:
    - VALID/INVALID state.
