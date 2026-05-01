@@ -136,3 +136,13 @@ Expected:
 4. Search for a random unmatched string and confirm `No glossary matches.` appears.
 5. Click **Toggle Help** once and confirm help panel hides with status `Help hidden.`
 6. Click **Toggle Help** again and confirm help panel shows with status `Help shown.`
+
+## L) Case Quality Warnings QA (V1-076)
+
+- Remove `case_id` from JSON, click **Refresh Case Quality**, confirm `case_id is missing.` appears.
+- Remove one wheel `position_x`, click **Refresh Case Quality**, confirm `A wheel is missing position_x.` appears.
+- Set duplicate `wheel_id` values, click **Refresh Case Quality**, confirm `Duplicate wheel IDs found.` appears.
+- Fix the above inputs and refresh again to confirm warnings update.
+- Validate copy/download actions:
+  - **Copy Case Quality Warnings**
+  - **Download Case Quality Warnings JSON**

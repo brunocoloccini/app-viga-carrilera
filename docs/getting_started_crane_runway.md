@@ -140,4 +140,5 @@ Important: this is a local beta tool. Results require engineering review.
 2. Click **Check Backend Health**.
 3. Click **Run Demo Workflow**.
 4. Inspect **Results**, **Result Interpretation**, and **HTML Report**.
-5. Then edit your own case and rerun Validate/Run.
+5. Then click **Refresh Case Quality** and review setup warnings.
+6. Edit your own case and rerun Validate/Run.
