@@ -155,3 +155,9 @@ Expected:
 - [ ] Click Show Advanced View and verify all panels are expanded.
 - [ ] Refresh page and confirm panel state restores.
 - [ ] Click Reset Panel Layout and confirm default layout resets.
+
+## V1-078 diagnostics and smoke checks
+- Run UI Diagnostics.
+- Confirm all statuses are PASS or expected N/A.
+- If diagnostics fail, check the server terminal and refresh the browser.
+- Run `PYTHONPATH=src python scripts/check_local_ui_smoke.py --url http://127.0.0.1:8765` against the running server.

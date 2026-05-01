@@ -244,6 +244,16 @@ th { background: #f9fafb; }
   <div style="margin-top:0.2rem;">Backend health: FAIL.</div>
   <div id="beta_readiness_output" style="margin-top:0.5rem;"></div>
 </div>
+<div class="panel collapsible-panel" id="panel-ui-diagnostics" data-panel-key="local-ui-diagnostics" style="margin-top: 1rem;">
+  <div class="panel-header"><h3>Local UI Diagnostics</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
+  <p style="margin-top:0.2rem;color:#4b5563;">Diagnostics check UI/server connectivity only. They do not prove engineering correctness.</p>
+  <p style="margin-top:0.2rem;color:#4b5563;">Use beta health check and manual QA checklist before relying on beta UI output.</p>
+  <div class="toolbar" style="margin-top:0;"><button onclick="runUiDiagnostics()">Run UI Diagnostics</button></div>
+  <table><tbody id="ui_diagnostics_body"></tbody></table>
+  <div id="ui_diagnostics_timestamp" style="margin-top:0.35rem;color:#4b5563;">Last diagnostic run: N/A</div>
+  <div style="margin-top:0.2rem;color:#374151;">UI diagnostics complete.</div>
+  <div style="margin-top:0.2rem;color:#374151;">UI diagnostics found issues.</div>
+</div>
 <div class="panel collapsible-panel" id="panel-troubleshooting" data-panel-key="troubleshooting" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Troubleshooting</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <ul><li>If buttons do not respond, refresh the page.</li><li>If the server is unreachable, start scripts/serve_crane_runway_ui.py.</li><li>If JSON validation fails, review the Validation panel.</li><li>If results show FAIL, review configured criteria and engineering assumptions.</li><li>This local UI is a beta tool and requires engineering review.</li></ul>
@@ -341,6 +351,7 @@ let lastRunResponse = null;
 let lastRawResponse = null;
 let lastScenarioComparisonResults = null;
 const scenarioStorageKey = 'craneRunway.scenarios';
+const diagnosticsState = {ui_loaded:true, backend_health:null, templates_endpoint:null, validate_endpoint:null, run_endpoint:null, javascript_status:true, autosave_status:null};
 const autosaveStorageKeys = {
   caseJson: 'craneRunway.caseJson',
   selectedTemplate: 'craneRunway.selectedTemplate',
@@ -432,6 +443,12 @@ function resetGuidedWorkflow() { for (const step of workflowSteps) workflowState
 function renderBetaReadiness() { const panel=document.getElementById('beta_readiness_output'); if (!panel) return; const rows=[['UI JavaScript loaded', betaReadinessState.ui_js_loaded===true?'PASS':'FAIL'],['Backend health', betaReadinessState.backend_health===true?'PASS':(betaReadinessState.backend_health===false?'FAIL':'N/A')],['JSON loaded', betaReadinessState.json_loaded===true?'PASS':(betaReadinessState.json_loaded===false?'FAIL':'N/A')],['Validation status', betaReadinessState.validation_status===true?'PASS':(betaReadinessState.validation_status===false?'FAIL':'N/A')],['Run status', betaReadinessState.run_status===true?'PASS':(betaReadinessState.run_status===false?'FAIL':'N/A')],['Autosave available', betaReadinessState.autosave_available===true?'PASS':'FAIL']]; let html='<table><thead><tr><th>Check</th><th>Status</th></tr></thead><tbody>'; for (const row of rows) { const cls=row[1]==='PASS'?'status-pass':(row[1]==='FAIL'?'status-fail':'status-na'); html += '<tr><td>'+escapeHtml(row[0])+'</td><td class="'+cls+'">'+row[1]+'</td></tr>'; } panel.innerHTML=html+'</tbody></table>'; }
 function updateBetaReadiness(key, value) { betaReadinessState[key]=value; renderBetaReadiness(); }
 async function checkBackendHealth() { try { const r=await fetch('/api/health'); const data=await r.json(); const ok=Boolean(r.ok && data && data.ok===true); const panel=document.getElementById('backend_health_status'); if (panel) panel.textContent=ok?'Backend health: OK.':'Backend health: FAIL.'; updateBetaReadiness('backend_health', ok); setStatus(ok?'Backend health: OK.':'Backend health: FAIL.'); } catch (err) { const panel=document.getElementById('backend_health_status'); if (panel) panel.textContent='Backend health: FAIL.'; updateBetaReadiness('backend_health', false); setStatus('Backend health: FAIL.'); } }
+function setDiagnosticStatus(key, status) { diagnosticsState[key]=status; }
+function updateDiagnosticsTimestamp() { const panel=document.getElementById('ui_diagnostics_timestamp'); if (panel) panel.textContent='Last diagnostic run: ' + new Date().toISOString(); }
+function renderUiDiagnostics() { const body=document.getElementById('ui_diagnostics_body'); if (!body) return; const rows=[['UI loaded', diagnosticsState.ui_loaded],['Backend health', diagnosticsState.backend_health],['Templates endpoint', diagnosticsState.templates_endpoint],['Validate endpoint', diagnosticsState.validate_endpoint],['Run endpoint', diagnosticsState.run_endpoint],['JavaScript status', diagnosticsState.javascript_status],['Autosave status', diagnosticsState.autosave_status]]; let html=''; for (const row of rows) { const status=row[1]===true?'PASS':(row[1]===false?'FAIL':'N/A'); const cls=status==='PASS'?'status-pass':(status==='FAIL'?'status-fail':'status-na'); html += '<tr><th>'+escapeHtml(row[0])+'</th><td class="'+cls+'">'+status+'</td></tr>'; } body.innerHTML=html; }
+async function checkDiagnosticsEndpoint(path, options, validator) { try { const response = await fetch(path, options || {}); const data = await response.json(); if (!response.ok) return false; return Boolean(validator ? validator(data) : true); } catch (err) { return false; } }
+async function getDiagnosticTemplateCase() { return await checkDiagnosticsEndpoint('/api/template/ipn-with-cover', null, (data)=>Boolean(data && typeof data === 'object')) ? await (await fetch('/api/template/ipn-with-cover')).json() : null; }
+async function runUiDiagnostics() { setDiagnosticStatus('ui_loaded', true); setDiagnosticStatus('javascript_status', true); setDiagnosticStatus('autosave_status', autosaveAvailable ? true : null); setDiagnosticStatus('backend_health', await checkDiagnosticsEndpoint('/api/health', null, (data)=>Boolean(data && data.ok===true))); setDiagnosticStatus('templates_endpoint', await checkDiagnosticsEndpoint('/api/templates', null, (data)=>Array.isArray(data && data.templates))); const templateCase = await getDiagnosticTemplateCase(); const templateCaseJson = templateCase ? JSON.stringify(templateCase) : ''; setDiagnosticStatus('validate_endpoint', templateCase ? await checkDiagnosticsEndpoint('/api/validate', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({case_json: templateCaseJson})}, (data)=>Boolean(data && Object.prototype.hasOwnProperty.call(data, 'valid'))) : false); setDiagnosticStatus('run_endpoint', templateCase ? await checkDiagnosticsEndpoint('/api/run', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({case_json: templateCaseJson, output_formats:['summary']})}, (data)=>Boolean(data && Object.prototype.hasOwnProperty.call(data, 'success'))) : false); updateDiagnosticsTimestamp(); renderUiDiagnostics(); const failed=['backend_health','templates_endpoint','validate_endpoint','run_endpoint'].some((key)=>diagnosticsState[key]===false); setStatus(failed ? 'UI diagnostics found issues.' : 'UI diagnostics complete.'); }
 async function runDemoWorkflow() { const panel=document.getElementById('demo_workflow_status'); if (panel) panel.textContent='Running demo workflow...'; try { document.getElementById('template').value='ipn-with-cover'; await loadTemplate(); markWorkflowStepDone(1); refreshVisualPreview(); markWorkflowStepDone(3); await validateCase(); if (lastValidationResponse && lastValidationResponse.valid===false) { markWorkflowStepNeedsAttention(4); throw new Error('Validation failed.'); } markWorkflowStepDone(4); await runCase(); if (!lastRunResponse || lastRunResponse.success===false) throw new Error('Run failed.'); markWorkflowStepDone(5); markWorkflowStepDone(6); if (panel) panel.textContent='Demo workflow complete.'; setStatus('Demo workflow complete.'); } catch (err) { if (panel) panel.textContent='Demo workflow failed.'; setStatus('Demo workflow failed.'); } }
 
 function setStatus(msg) { document.getElementById('status').textContent = msg; }
@@ -1358,6 +1375,7 @@ async function runCase() {
 }
 renderGuidedWorkflow();
 renderBetaReadiness();
+renderUiDiagnostics();
 renderHelpPanel();
 restoreSession();
 updateBetaReadiness('autosave_available', autosaveAvailable);
