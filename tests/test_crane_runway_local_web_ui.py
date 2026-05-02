@@ -1000,3 +1000,11 @@ def test_render_index_html_references_asset_endpoints() -> None:
     html = CraneRunwayLocalWebUi().render_index_html()
     for token in ["/assets/local_ui.css", "/assets/local_ui.js", "App Viga Carrilera", "Crane Runway Local UI"]:
         assert token in html
+
+
+def test_frontend_contract_endpoint_and_self_test_markers() -> None:
+    ui=CraneRunwayLocalWebUi(); r=ui.handle_request("GET","/assets/frontend_contract.json"); assert r.status_code==200; c=json.loads(r.body); assert "Home" in c["required_tabs"]; assert "initializeLocalUi" in c["required_functions"]; h=ui.render_index_html();
+    for t in ["Frontend Self-Test","Run Frontend Self-Test","Copy Frontend Self-Test JSON","Download Frontend Self-Test JSON","Frontend self-test checks UI wiring only. It does not prove engineering correctness.","Frontend self-test complete.","Frontend self-test found issues.","No frontend self-test result available. Run self-test first.","Frontend self-test JSON copied.","Frontend self-test JSON downloaded."]:
+        assert t in h
+    j=ui.handle_request("GET","/assets/local_ui.js").body
+    for n in ["runFrontendSelfTest","buildFrontendSelfTestResult","renderFrontendSelfTest","copyFrontendSelfTestJson","downloadFrontendSelfTestJson","checkRequiredFunctions","checkRequiredTabs","checkRequiredPanels","checkRequiredActions","checkLocalStorageAvailability","Unknown UI action.","setupActionHandlers","handleUiAction"]: assert n in j

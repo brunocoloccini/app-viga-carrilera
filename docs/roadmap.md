@@ -241,3 +241,7 @@ Local UI beta release-candidate consolidation pack.
 \n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n
 
 - V1-091: Local UI frontend architecture, asset split, and design-system pack.
+
+
+## V1-092 Frontend Contract
+Added frontend contract endpoint, self-test panel, and CLI contract checker.

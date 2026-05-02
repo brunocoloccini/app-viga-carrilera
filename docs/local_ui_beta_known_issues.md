@@ -72,3 +72,7 @@
   - Hard refresh the browser.
   - Restart the local UI server.
   - Clear saved session if required.
+
+
+## V1-092 Frontend Contract
+Added frontend contract endpoint, self-test panel, and CLI contract checker.

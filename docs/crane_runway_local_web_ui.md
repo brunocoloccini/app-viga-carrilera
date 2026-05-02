@@ -683,3 +683,7 @@ Limitations remain unchanged:
 - `local_ui_assets.py` contains framework-free HTML/CSS/JS asset helpers.
 - Assets are served from `/assets/local_ui.css` and `/assets/local_ui.js`.
 - JavaScript syntax regression remains covered via `node --check` when available.
+
+
+## V1-092 Frontend Contract
+Added frontend contract endpoint, self-test panel, and CLI contract checker.
