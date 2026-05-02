@@ -120,3 +120,11 @@ Use the Local UI **Project Workspace** panel to create/open/save/run project cas
 - Local UI project workflow now includes **Project Run Comparison** for baseline-vs-history run review using saved run `summary.json` values.
 
 - Project archive export is available in the Local UI **Project Archive Export** panel (manifest refresh + ZIP download).
+
+## run_local_ui_rc_check.py
+
+```bash
+PYTHONPATH=src python scripts/run_local_ui_rc_check.py [--host 127.0.0.1] [--port 8765] [--timeout 15] [--project-name rc_check_project] [--template ipn-with-cover] [--skip-archive] [--keep-server] [--verbose]
+```
+
+Runs local UI release-candidate acceptance checks across server startup, core endpoints, template run, project workflow, history, archive export, and JavaScript syntax checks.
