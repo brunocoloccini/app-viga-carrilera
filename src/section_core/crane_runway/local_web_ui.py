@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 import json
 from pathlib import Path
 import re
@@ -45,6 +46,7 @@ class LocalWebUiResponse:
 
 
 INVALID_PROJECT_NAME_ERROR = "Invalid project name. Use only letters, numbers, dash, and underscore."
+INVALID_RUN_ID_ERROR = "Invalid run ID. Use only letters, numbers, dash, and underscore."
 
 
 class CraneRunwayLocalWebUi:
@@ -71,6 +73,16 @@ class CraneRunwayLocalWebUi:
         if self._projects_root not in project_dir.parents:
             raise InvalidLocalWebUiRequestError(INVALID_PROJECT_NAME_ERROR)
         return project_dir
+
+    def validate_run_id(self, run_id: str) -> str:
+        if not isinstance(run_id, str):
+            raise InvalidLocalWebUiRequestError(INVALID_RUN_ID_ERROR)
+        clean_run_id = run_id.strip()
+        if not clean_run_id or ".." in clean_run_id or "/" in clean_run_id or "\\" in clean_run_id or " " in clean_run_id:
+            raise InvalidLocalWebUiRequestError(INVALID_RUN_ID_ERROR)
+        if re.fullmatch(r"[A-Za-z0-9_-]+", clean_run_id) is None:
+            raise InvalidLocalWebUiRequestError(INVALID_RUN_ID_ERROR)
+        return clean_run_id
 
     def render_index_html(self) -> str:
         return """<!doctype html>
@@ -148,6 +160,20 @@ th { background: #f9fafb; }
   <div id=\"project_workspace_status\" style=\"margin-top:0.35rem;color:#374151;\">Project workspace ready.</div>
   <table><thead><tr><th>Project</th><th>Input Case</th><th>Outputs</th><th>Actions</th></tr></thead><tbody id=\"project_list_body\"></tbody></table>
   <pre id=\"project_outputs_info\">Select a project to view outputs path.</pre>
+</div>
+<div class=\"panel\" style=\"margin-top: 1rem;\">
+  <h3>Project Run History</h3>
+  <div class=\"toolbar\" style=\"margin-top:0;\">
+    <button onclick=\"refreshRunHistory()\">Refresh Run History</button>
+    <button onclick=\"runProjectHistorySnapshot()\">Run Project As History Snapshot</button>
+    <button onclick=\"loadRunSummary()\">Load Run Summary</button>
+    <button onclick=\"loadRunHtmlReport()\">Load Run HTML Report</button>
+    <button onclick=\"copyRunSummaryJson()\">Copy Run Summary JSON</button>
+    <button onclick=\"downloadRunSummaryJson()\">Download Run Summary JSON</button>
+    <button onclick=\"downloadRunHtmlReport()\">Download Run HTML Report</button>
+  </div>
+  <div id=\"run_history_status\" style=\"margin-top:0.35rem;color:#374151;\">Project run history ready.</div>
+  <table><thead><tr><th>Run ID</th><th>Created At</th><th>Summary</th><th>HTML Report</th><th>Actions</th></tr></thead><tbody id=\"run_history_body\"></tbody></table>
 </div>
 <div class=\"panel\" style=\"margin-top: 1rem;\">
   <h3>Import JSON File</h3>
@@ -1447,6 +1473,72 @@ function showProjectOutputsInfo() {
   const lines = ['Expected outputs directory: projects/' + projectName + '/outputs', '- summary.json', '- report.html', '- report.md', '- report.txt', '- validation_report.json', '- manifest.json'];
   document.getElementById('project_outputs_info').textContent = lines.join('\\n');
 }
+let selectedRunId = '';
+let latestRunSummary = null;
+let latestRunHtmlReport = '';
+function setRunHistoryStatus(message) {
+  const el = document.getElementById('run_history_status');
+  if (el) el.textContent = message;
+}
+function getSelectedRunId() { return selectedRunId; }
+function renderRunHistory(runs) {
+  const tbody = document.getElementById('run_history_body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  (runs || []).forEach((run) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + escapeHtml(run.run_id) + '</td><td>' + escapeHtml(run.created_at || run.run_id) + '</td><td>' + (run.has_summary ? 'Yes' : 'No') + '</td><td>' + (run.has_report_html ? 'Yes' : 'No') + '</td><td><button class="small-btn" data-run-action="summary">Load Summary</button> <button class="small-btn" data-run-action="html">Load Report</button></td>';
+    tr.addEventListener('click', () => { selectedRunId = run.run_id; });
+    const btns = tr.querySelectorAll('button');
+    if (btns[0]) btns[0].addEventListener('click', async () => { selectedRunId = run.run_id; await loadRunSummary(); });
+    if (btns[1]) btns[1].addEventListener('click', async () => { selectedRunId = run.run_id; await loadRunHtmlReport(); });
+    tbody.appendChild(tr);
+  });
+}
+async function refreshRunHistory() {
+  const projectName = getSelectedProjectName();
+  if (!validateProjectNameClient(projectName)) { setRunHistoryStatus('Select a project first.'); return; }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/runs');
+  const data = await r.json();
+  if (!r.ok) { setRunHistoryStatus(data.error || 'Could not refresh run history.'); return; }
+  renderRunHistory(data.runs || []);
+}
+async function runProjectHistorySnapshot() {
+  const projectName = getSelectedProjectName();
+  if (!validateProjectNameClient(projectName)) { setRunHistoryStatus('Select a project first.'); return; }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/run-history', {method:'POST'});
+  const data = await r.json();
+  if (!r.ok) { setRunHistoryStatus(data.error || 'Project run failed.'); return; }
+  if (data.summary) { latestRunSummary = data.summary; renderSummary(data.summary); renderResultCards(data.summary); renderResultInterpretation(data.summary, data); }
+  if (data.report_html) { latestRunHtmlReport = data.report_html; latestHtmlReport = data.report_html; document.getElementById('html_output').srcdoc = data.report_html; }
+  setRunHistoryStatus('Project history run complete.');
+  await refreshRunHistory();
+}
+async function loadRunSummary() {
+  const projectName = getSelectedProjectName();
+  const runId = getSelectedRunId();
+  if (!projectName || !runId) { setRunHistoryStatus('No run artifact selected.'); return; }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/runs/' + encodeURIComponent(runId) + '/summary');
+  const data = await r.json();
+  if (!r.ok) { setRunHistoryStatus(data.error || 'Could not load run summary.'); return; }
+  latestRunSummary = data;
+  renderSummary(data); renderResultCards(data);
+  setRunHistoryStatus('Run summary loaded.');
+}
+async function loadRunHtmlReport() {
+  const projectName = getSelectedProjectName();
+  const runId = getSelectedRunId();
+  if (!projectName || !runId) { setRunHistoryStatus('No run artifact selected.'); return; }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/runs/' + encodeURIComponent(runId) + '/report-html');
+  const data = await r.json();
+  if (!r.ok) { setRunHistoryStatus(data.error || 'Could not load run HTML report.'); return; }
+  latestRunHtmlReport = data.html_report || ''; latestHtmlReport = latestRunHtmlReport;
+  document.getElementById('html_output').srcdoc = latestRunHtmlReport || '<p>No HTML report.</p>';
+  setRunHistoryStatus('Run HTML report loaded.');
+}
+async function copyRunSummaryJson() { if (!latestRunSummary) { setRunHistoryStatus('No run artifact selected.'); return; } await copyText(prettyJson(latestRunSummary), 'Run summary copied.', 'Could not copy run summary.'); }
+function downloadRunSummaryJson() { if (!latestRunSummary) { setRunHistoryStatus('No run artifact selected.'); return; } downloadText('run_summary.json', prettyJson(latestRunSummary), 'application/json;charset=utf-8'); }
+function downloadRunHtmlReport() { if (!latestRunHtmlReport) { setRunHistoryStatus('No run artifact selected.'); return; } downloadText('run_report.html', latestRunHtmlReport, 'text/html;charset=utf-8'); }
 async function loadTemplate() {
   try {
     const id = document.getElementById('template').value;
@@ -1627,6 +1719,61 @@ if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clear
             {"success": payload.get("success", False), "summary": payload.get("summary"), "output_dir": str(outputs_dir), "report_html": payload.get("html_report")},
         )
 
+    def _run_dir(self, project_name: str, run_id: str) -> Path:
+        safe_run_id = self.validate_run_id(run_id)
+        run_dir = (self._project_dir(project_name) / "outputs" / "runs" / safe_run_id).resolve()
+        if self._projects_root not in run_dir.parents:
+            raise InvalidLocalWebUiRequestError(INVALID_RUN_ID_ERROR)
+        return run_dir
+
+    def handle_project_runs_list_request(self, project_name: str) -> LocalWebUiResponse:
+        runs_dir = self._project_dir(project_name) / "outputs" / "runs"
+        if not runs_dir.exists():
+            return self._json_response(200, {"project_name": project_name, "runs": []})
+        runs = []
+        for item in sorted(runs_dir.iterdir(), reverse=True):
+            if not item.is_dir():
+                continue
+            runs.append({"run_id": item.name, "created_at": item.name, "has_summary": (item / "summary.json").is_file(), "has_report_html": (item / "report.html").is_file(), "path": str(item)})
+        return self._json_response(200, {"project_name": project_name, "runs": runs})
+
+    def handle_project_run_history_request(self, project_name: str) -> LocalWebUiResponse:
+        project_dir = self._project_dir(project_name)
+        case_path = project_dir / "input_case.json"
+        if not case_path.is_file():
+            return self._json_response(404, {"error": "Project input_case.json was not found."})
+        run_id = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+        run_dir = self._run_dir(project_name, run_id)
+        run_dir.mkdir(parents=True, exist_ok=True)
+        latest_dir = project_dir / "outputs" / "latest"
+        latest_dir.mkdir(parents=True, exist_ok=True)
+        case_text = case_path.read_text(encoding="utf-8")
+        result = self._api.execute_case_json_text(case_text, output_formats=["summary", "html"])
+        payload = result.to_dict()
+        (run_dir / "input_case.json").write_text(case_text, encoding="utf-8")
+        (run_dir / "summary.json").write_text(f"{json.dumps(payload.get('summary'), indent=2)}\n", encoding="utf-8")
+        (run_dir / "report.html").write_text(payload.get("html_report") or "", encoding="utf-8")
+        (run_dir / "report.md").write_text(payload.get("markdown_report") or "", encoding="utf-8")
+        (run_dir / "report.txt").write_text(payload.get("text_report") or "", encoding="utf-8")
+        (run_dir / "validation_report.json").write_text(f"{json.dumps(payload.get('validation'), indent=2)}\n", encoding="utf-8")
+        (run_dir / "metadata.json").write_text(f"{json.dumps({'project_name': project_name, 'run_id': run_id}, indent=2)}\n", encoding="utf-8")
+        (run_dir / "manifest.json").write_text(f"{json.dumps({'project_name': project_name, 'run_id': run_id, 'output_dir': str(run_dir), 'success': payload.get('success', False)}, indent=2)}\n", encoding="utf-8")
+        for name in ["input_case.json", "summary.json", "report.html", "report.md", "report.txt", "validation_report.json", "metadata.json", "manifest.json"]:
+            (latest_dir / name).write_text((run_dir / name).read_text(encoding="utf-8"), encoding="utf-8")
+        return self._json_response(200, {"success": payload.get("success", False), "run_id": run_id, "output_dir": str(run_dir), "summary": payload.get("summary"), "report_html": payload.get("html_report")})
+
+    def handle_project_run_summary_request(self, project_name: str, run_id: str) -> LocalWebUiResponse:
+        summary_path = self._run_dir(project_name, run_id) / "summary.json"
+        if not summary_path.is_file():
+            return self._json_response(404, {"error": "Run summary was not found."})
+        return self._json_response(200, json.loads(summary_path.read_text(encoding="utf-8")))
+
+    def handle_project_run_report_html_request(self, project_name: str, run_id: str) -> LocalWebUiResponse:
+        html_path = self._run_dir(project_name, run_id) / "report.html"
+        if not html_path.is_file():
+            return self._json_response(404, {"error": "Run HTML report was not found."})
+        return self._json_response(200, {"run_id": run_id, "html_report": html_path.read_text(encoding="utf-8")})
+
     def handle_request(self, method: str, path: str, body: bytes | None = None) -> LocalWebUiResponse:
         try:
             if method == "GET" and path == "/":
@@ -1643,6 +1790,19 @@ if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clear
             if method == "GET" and path.startswith("/api/projects/") and path.endswith("/case"):
                 project_name = path.removeprefix("/api/projects/").removesuffix("/case")
                 return self.handle_project_case_request(project_name)
+            if method == "GET" and path.startswith("/api/projects/") and path.endswith("/runs"):
+                project_name = path.removeprefix("/api/projects/").removesuffix("/runs")
+                return self.handle_project_runs_list_request(project_name)
+            if method == "GET" and path.startswith("/api/projects/") and path.endswith("/summary") and "/runs/" in path:
+                parts = path.split("/")
+                if len(parts) < 7:
+                    return self._json_response(404, {"error": "Route not found."})
+                return self.handle_project_run_summary_request(parts[3], parts[5])
+            if method == "GET" and path.startswith("/api/projects/") and path.endswith("/report-html") and "/runs/" in path:
+                parts = path.split("/")
+                if len(parts) < 7:
+                    return self._json_response(404, {"error": "Route not found."})
+                return self.handle_project_run_report_html_request(parts[3], parts[5])
             if method == "POST" and path in {"/api/validate", "/api/run"}:
                 if body is None:
                     raise InvalidLocalWebUiRequestError("Request body is required.")
@@ -1671,6 +1831,9 @@ if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clear
             if method == "POST" and path.startswith("/api/projects/") and path.endswith("/run"):
                 project_name = path.removeprefix("/api/projects/").removesuffix("/run")
                 return self.handle_project_run_request(project_name)
+            if method == "POST" and path.startswith("/api/projects/") and path.endswith("/run-history"):
+                project_name = path.removeprefix("/api/projects/").removesuffix("/run-history")
+                return self.handle_project_run_history_request(project_name)
             return self._json_response(404, {"error": "Route not found."})
         except InvalidLocalWebUiRequestError as exc:
             return self._json_response(400, {"error": str(exc)})

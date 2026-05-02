@@ -171,3 +171,11 @@ Important: this is a local beta tool. Results require engineering review.
 5. Validate.
 6. Run project to outputs.
 7. Review `report.html` in `projects/<name>/outputs`.
+
+
+## Project Run History workflow (V1-081)
+1. Create/open project.
+2. Save `input_case.json`.
+3. Run **Run Project As History Snapshot**.
+4. Refresh and review run history.
+5. Load a previous run summary/report.
