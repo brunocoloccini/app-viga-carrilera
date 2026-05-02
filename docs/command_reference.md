@@ -111,3 +111,7 @@ Options:
 - `--check-only`
 - `--run-smoke-after-start`
 - `--timeout`
+
+## Local UI Project Workflow
+
+Use the Local UI **Project Workspace** panel to create/open/save/run project cases under `projects/`.

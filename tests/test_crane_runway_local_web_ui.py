@@ -148,6 +148,33 @@ def test_render_index_html_contains_expected_controls() -> None:
         "saveSession",
         "restoreSession",
         "clearSavedSession",
+        "Project Workspace",
+        "Project Name",
+        "Create Project",
+        "Refresh Project List",
+        "Open Project",
+        "Save JSON To Project",
+        "Run Project To Outputs",
+        "Open Project Outputs Info",
+        "Projects are stored locally under the repository projects/ directory.",
+        "This is a local-only beta feature. Do not expose the server publicly.",
+        "Project created.",
+        "Project opened.",
+        "Project input_case.json saved.",
+        "Cannot save project: invalid JSON.",
+        "Project run complete.",
+        "Project run failed.",
+        "Invalid project name. Use only letters, numbers, dash, and underscore.",
+        "refreshProjectList",
+        "renderProjectList",
+        "createProject",
+        "openProject",
+        "saveProjectCase",
+        "runProject",
+        "showProjectOutputsInfo",
+        "getSelectedProjectName",
+        "validateProjectNameClient",
+        "setProjectWorkspaceStatus",
         "updateAutosaveStatus",
         "Common Inputs",
         "Case Quality Warnings",
@@ -567,6 +594,38 @@ def test_handle_request_routes() -> None:
     assert run_resp.status_code == 200
 
     assert ui.handle_request("GET", "/missing").status_code == 404
+
+
+def test_project_workspace_routes(tmp_path) -> None:
+    ui = CraneRunwayLocalWebUi(projects_root=tmp_path / "projects")
+    list_resp = ui.handle_request("GET", "/api/projects")
+    assert list_resp.status_code == 200
+    assert json.loads(list_resp.body)["projects"] == []
+
+    create_payload = {"project_name": "qa_project", "template_id": "ipn-with-cover", "overwrite": False}
+    create_resp = ui.handle_request("POST", "/api/projects/create", body=json.dumps(create_payload).encode())
+    assert create_resp.status_code == 200
+
+    projects = json.loads(ui.handle_request("GET", "/api/projects").body)["projects"]
+    assert any(item["name"] == "qa_project" for item in projects)
+
+    case_resp = ui.handle_request("GET", "/api/projects/qa_project/case")
+    assert case_resp.status_code == 200
+    case_payload = json.loads(case_resp.body)
+    assert "case_data" in case_payload and "case_json" in case_payload
+
+    save_resp = ui.handle_request(
+        "POST", "/api/projects/qa_project/save", body=json.dumps({"case_data": case_payload["case_data"]}).encode()
+    )
+    assert save_resp.status_code == 200
+
+    run_resp = ui.handle_request("POST", "/api/projects/qa_project/run")
+    run_payload = json.loads(run_resp.body)
+    assert run_resp.status_code == 200
+    assert "summary" in run_payload
+
+    bad_resp = ui.handle_request("POST", "/api/projects/create", body=json.dumps({"project_name": "../bad"}).encode())
+    assert bad_resp.status_code == 400
 
 
 def test_inline_script_defines_critical_ui_functions() -> None:

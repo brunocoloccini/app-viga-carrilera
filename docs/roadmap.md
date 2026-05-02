@@ -215,3 +215,7 @@ Planned modules:
 
 
 - V1-079: Local UI one-command launcher and preflight pack.
+
+## V1-080
+
+- Local UI project workspace manager pack.
