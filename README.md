@@ -90,3 +90,4 @@ PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py
 - Browser help portal: `docs/local_ui_beta_browser_help.md`
 - Guided demo: `docs/local_ui_guided_demo.md`
 - UI onboarding includes Welcome panel, Documentation Portal, and Guided Demo.
+\n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n

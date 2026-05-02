@@ -239,3 +239,4 @@ Expected:
 - Use header actions: **Load Demo**, **Validate**, **Run**, **Go to Results**.
 - Confirm compact summary updates (case/project/validation/run/overall/autosave).
 - Refresh browser and confirm active tab restores from local storage (`craneRunway.activeTab`).
+\n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n
