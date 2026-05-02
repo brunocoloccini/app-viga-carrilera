@@ -161,3 +161,11 @@ Expected:
 - Confirm all statuses are PASS or expected N/A.
 - If diagnostics fail, check the server terminal and refresh the browser.
 - Run `PYTHONPATH=src python scripts/check_local_ui_smoke.py --url http://127.0.0.1:8765` against the running server.
+
+
+## Startup launcher QA
+
+1. Run `PYTHONPATH=src python scripts/launch_crane_runway_ui.py --check-only --no-open`.
+2. Run `PYTHONPATH=src python scripts/launch_crane_runway_ui.py`.
+3. Confirm browser opens automatically, or confirm URL is printed for manual open.
+4. Stop with `Ctrl+C` and confirm `Server stopped.` is shown.
