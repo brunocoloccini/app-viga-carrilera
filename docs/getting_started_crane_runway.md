@@ -217,3 +217,15 @@ Use launcher + Run Demo Workflow + Local UI RC Status as the primary path. See `
 1. Read **Welcome to the Local UI Beta**.
 2. Run **Guided Demo** steps before editing production cases.
 3. Use **Documentation Portal** when unsure.
+
+## Local UI first-use flow (V1-089)
+
+1. Launch UI.
+2. Start on **Home** tab.
+3. Click **Load Demo** or **Start Guided Demo**.
+4. Go to **Inputs** to configure common fields.
+5. Go to **Wheels** to edit wheel loads.
+6. Go to **Preview** to inspect setup.
+7. Go to **Validate & Run**.
+8. Go to **Results**.
+9. Use **Export** or **Project** tabs as needed.

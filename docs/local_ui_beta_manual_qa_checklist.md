@@ -230,3 +230,12 @@ Expected:
 2. Click **Dismiss Welcome** and confirm banner hides and status updates.
 3. Confirm **Documentation Portal** panel topic buttons render help and copy summary.
 4. Confirm **Guided Demo** panel start/next/reset/copy actions update status messages.
+
+## V1-089 tabbed shell checks
+
+- Confirm **Home** tab is default on first load.
+- Switch through all tabs (Home, Project, Inputs, Wheels, Preview, Validate & Run, Results, Compare, Export, Support, Advanced JSON).
+- Confirm **Advanced JSON** is not the initial focus.
+- Use header actions: **Load Demo**, **Validate**, **Run**, **Go to Results**.
+- Confirm compact summary updates (case/project/validation/run/overall/autosave).
+- Refresh browser and confirm active tab restores from local storage (`craneRunway.activeTab`).
