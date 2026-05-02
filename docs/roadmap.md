@@ -219,3 +219,5 @@ Planned modules:
 ## V1-080
 
 - Local UI project workspace manager pack.
+
+- V1-081: Local UI project run history pack (timestamped project run snapshots with run artifact loading in local UI).

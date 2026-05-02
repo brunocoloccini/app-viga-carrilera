@@ -179,3 +179,11 @@ Expected:
 - Run project to outputs.
 - Confirm outputs are listed for `projects/qa_project/outputs`.
 - Try invalid project name `../bad` and confirm rejection.
+
+- [ ] In Project Workspace, create/open a project and confirm `input_case.json` is available.
+- [ ] Click **Run Project As History Snapshot** and confirm success status.
+- [ ] Click **Refresh Run History** and verify new run row appears.
+- [ ] Load run summary and verify Summary/Result Cards update.
+- [ ] Load run HTML report and verify HTML preview updates.
+- [ ] Copy/download run summary/report artifacts.
+- [ ] Manually verify invalid project/run names are rejected.

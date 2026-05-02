@@ -115,3 +115,5 @@ Options:
 ## Local UI Project Workflow
 
 Use the Local UI **Project Workspace** panel to create/open/save/run project cases under `projects/`.
+
+- Local UI project workspaces include **Project Run History** actions for timestamped snapshots and run artifact review.

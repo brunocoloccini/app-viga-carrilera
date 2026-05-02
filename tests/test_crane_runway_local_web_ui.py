@@ -172,6 +172,32 @@ def test_render_index_html_contains_expected_controls() -> None:
         "saveProjectCase",
         "runProject",
         "showProjectOutputsInfo",
+        "Project Run History",
+        "Refresh Run History",
+        "Run Project As History Snapshot",
+        "Load Run Summary",
+        "Load Run HTML Report",
+        "Copy Run Summary JSON",
+        "Download Run Summary JSON",
+        "Download Run HTML Report",
+        "Run ID",
+        "Created At",
+        "Actions",
+        "Select a project first.",
+        "Project history run complete.",
+        "Run summary loaded.",
+        "Run HTML report loaded.",
+        "No run artifact selected.",
+        "refreshRunHistory",
+        "renderRunHistory",
+        "runProjectHistorySnapshot",
+        "loadRunSummary",
+        "loadRunHtmlReport",
+        "copyRunSummaryJson",
+        "downloadRunSummaryJson",
+        "downloadRunHtmlReport",
+        "getSelectedRunId",
+        "setRunHistoryStatus",
         "getSelectedProjectName",
         "validateProjectNameClient",
         "setProjectWorkspaceStatus",
@@ -626,6 +652,27 @@ def test_project_workspace_routes(tmp_path) -> None:
 
     bad_resp = ui.handle_request("POST", "/api/projects/create", body=json.dumps({"project_name": "../bad"}).encode())
     assert bad_resp.status_code == 400
+
+    runs_empty = ui.handle_request("GET", "/api/projects/qa_project/runs")
+    assert runs_empty.status_code == 200
+
+    history_resp = ui.handle_request("POST", "/api/projects/qa_project/run-history")
+    assert history_resp.status_code == 200
+    history_payload = json.loads(history_resp.body)
+    run_id = history_payload["run_id"]
+
+    runs_resp = ui.handle_request("GET", "/api/projects/qa_project/runs")
+    runs_payload = json.loads(runs_resp.body)
+    assert any(item["run_id"] == run_id for item in runs_payload["runs"])
+
+    summary_resp = ui.handle_request("GET", f"/api/projects/qa_project/runs/{run_id}/summary")
+    assert summary_resp.status_code == 200
+
+    html_resp = ui.handle_request("GET", f"/api/projects/qa_project/runs/{run_id}/report-html")
+    assert html_resp.status_code == 200
+
+    assert ui.handle_request("GET", "/api/projects/../bad/runs").status_code == 400
+    assert ui.handle_request("GET", "/api/projects/qa_project/runs/../bad/summary").status_code == 400
 
 
 def test_inline_script_defines_critical_ui_functions() -> None:

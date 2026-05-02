@@ -580,3 +580,9 @@ The Local UI now includes a **Project Workspace** panel for local project-file w
 - Safe project names are required: letters, numbers, `_`, `-` only.
 - Local-only warning: no authentication, no database, no multi-user workflow, no public deployment.
 - This UI does **not** implement official CIRSOC/CISC/AISC checks; engineering review is required.
+
+
+## V1-081 Project Run History
+- Added **Project Run History** panel with refresh, snapshot run, load summary/report, and copy/download run artifacts.
+- History snapshots are saved under `projects/<project_name>/outputs/runs/<run_id>` with timestamp run IDs (`YYYYMMDD_HHMMSS`), and `outputs/latest` is updated.
+- Local-only workflow; no DB, no multi-user locking, no public deployment support, no official CIRSOC/CISC/AISC checks; engineering review required.
