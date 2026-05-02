@@ -660,3 +660,18 @@ See also: `docs/local_ui_beta_feature_map.md`, `docs/local_ui_beta_rc_release_no
 - **Welcome to the Local UI Beta** panel explains local-beta scope and engineering-review requirements.
 - **Documentation Portal** panel provides quick help topics and troubleshooting with copyable summary text.
 - **Guided Demo** panel provides a seven-step sample workflow with browser-local progress state.
+
+## V1-089 tabbed app-shell redesign
+
+The local UI is now organized as an app-style tabbed shell:
+
+- Header: **App Viga Carrilera**, **Crane Runway Local UI**, **Internal Beta** badge, primary actions (**Load Demo**, **Validate**, **Run**, **Go to Results**), and status bar.
+- Main tabs: Home, Project, Inputs, Wheels, Preview, Validate & Run, Results, Compare, Export, Support, Advanced JSON.
+- Home-first workflow: first load opens Home; Advanced JSON is available but not the default focus.
+- Compact summary column (wide screens): Current case, Current project, Validation status, Run status, Overall status, Autosave status.
+- Advanced JSON tab is the place for raw JSON editing/import/raw response + autosave details.
+
+Limitations remain unchanged:
+- local beta UI only
+- no official code checks
+- engineering review required

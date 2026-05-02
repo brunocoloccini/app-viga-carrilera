@@ -130,9 +130,45 @@ th { background: #f9fafb; }
 .interpretation-fail { color: #991b1b; font-weight: 600; }
 .interpretation-warning { color: #9a3412; font-weight: 600; }
 .interpretation-na { color: #374151; font-weight: 600; }
+.app-shell{max-width:1400px;margin:0 auto;}
+.app-header{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:0.8rem;}
+.app-header-top{display:flex;justify-content:space-between;gap:0.8rem;flex-wrap:wrap;align-items:center;}
+.beta-badge{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;border-radius:999px;padding:0.1rem 0.55rem;font-weight:700;font-size:.8rem;}
+.main-tabs{display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.7rem;}
+.main-tab-btn.active{background:#1d4ed8;color:#fff;border-color:#1d4ed8;}
+.main-layout{display:grid;grid-template-columns:1fr;gap:1rem;margin-top:1rem;}
+@media (min-width:1200px){.main-layout{grid-template-columns:minmax(0,1fr) 300px;}}
+.tab-panel[hidden]{display:none!important;}
+.summary-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:0.7rem;position:sticky;top:0.7rem;}
 </style>
 </head>
 <body>
+<div class="app-header panel">
+  <div class="app-header-top">
+    <div><h1 style="margin:0;">App Viga Carrilera</h1><p style="margin:0.2rem 0 0;"><strong>Crane Runway Local UI</strong> <span class="beta-badge">Internal Beta</span></p></div>
+    <div class="toolbar" style="margin-top:0;">
+      <button onclick="loadTemplate('ipn-with-cover')">Load Demo</button>
+      <button onclick="validateCase()">Validate</button>
+      <button onclick="runCase()">Run</button>
+      <button onclick="switchMainTab('results')">Go to Results</button>
+    </div>
+  </div>
+  <p class="warning">Results require engineering review. No official CIRSOC/CISC/AISC compliance checks are performed.</p>
+  <div id="app_shell_status" class="status">App shell ready.</div>
+  <div class="main-tabs">
+    <button class="main-tab-btn" data-tab-btn="home" onclick="switchMainTab('home')">Home</button>
+    <button class="main-tab-btn" data-tab-btn="project" onclick="switchMainTab('project')">Project</button>
+    <button class="main-tab-btn" data-tab-btn="inputs" onclick="switchMainTab('inputs')">Inputs</button>
+    <button class="main-tab-btn" data-tab-btn="wheels" onclick="switchMainTab('wheels')">Wheels</button>
+    <button class="main-tab-btn" data-tab-btn="preview" onclick="switchMainTab('preview')">Preview</button>
+    <button class="main-tab-btn" data-tab-btn="validate-run" onclick="switchMainTab('validate-run')">Validate & Run</button>
+    <button class="main-tab-btn" data-tab-btn="results" onclick="switchMainTab('results')">Results</button>
+    <button class="main-tab-btn" data-tab-btn="compare" onclick="switchMainTab('compare')">Compare</button>
+    <button class="main-tab-btn" data-tab-btn="export" onclick="switchMainTab('export')">Export</button>
+    <button class="main-tab-btn" data-tab-btn="support" onclick="switchMainTab('support')">Support</button>
+    <button class="main-tab-btn" data-tab-btn="advanced-json" onclick="switchMainTab('advanced-json')">Advanced JSON</button>
+  </div>
+</div>
 <h1>Crane Runway Local UI</h1>
 <p class=\"warning\">Local beta tool. Results require engineering review.</p>
 <div class=\"panel\" id=\"welcome_panel\" style=\"margin-top:1rem;\">
@@ -314,7 +350,7 @@ th { background: #f9fafb; }
   </div>
   <pre id="issue_report_output">Generate Issue Report Text to prepare a handoff note.</pre>
 </div>
-<div class="panel collapsible-panel" id="panel-common-inputs" data-panel-key="common-inputs" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-common-inputs" class="tab-panel" data-main-tab="inputs" data-panel-key="common-inputs" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Common Inputs</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Use this form for frequent edits. Advanced fields remain editable in JSON.</p>
   <p style="margin-top:0;">Common Inputs edits the JSON below. Review generated JSON before running.</p>
@@ -337,7 +373,7 @@ th { background: #f9fafb; }
   <h4>Common Inputs Errors</h4><div id="common_inputs_errors">No common input errors.</div>
 </div>
 </div>
-<div class="panel collapsible-panel" id="panel-quick-selectors" data-panel-key="quick-selectors" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-quick-selectors" class="tab-panel" data-main-tab="inputs" data-panel-key="quick-selectors" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Quick Selectors / Presets</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Presets are convenience helpers, not design recommendations.</p>
 </div>
@@ -357,7 +393,7 @@ th { background: #f9fafb; }
   </tbody></table>
   <h4>Profile / Material Errors</h4><div id="profile_material_errors">No profile/material errors.</div>
 </div>
-<div class="panel collapsible-panel" id="panel-wheel-table" data-panel-key="wheel-table-editor" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-wheel-table" class="tab-panel" data-main-tab="wheels" data-panel-key="wheel-table-editor" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Wheel Table Editor</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Use this table for crane wheel positions and vertical wheel loads.</p>
   <div class="toolbar" style="margin-top:0;">
@@ -369,7 +405,7 @@ th { background: #f9fafb; }
   <table><thead><tr><th>Wheel ID</th><th title="Wheel Spacing location along runway span.">Position X</th><th>Position Unit</th><th title="Wheel Load applied vertically at the wheel location.">Vertical Force</th><th>Force Unit</th><th>Remove</th></tr></thead><tbody id="wheel_table_body"></tbody></table>
   <h4>Wheel Table Errors</h4><div id="wheel_table_errors">No wheel table errors.</div>
 </div>
-<div class="panel collapsible-panel" id="panel-visual-preview" data-panel-key="visual-preview" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-visual-preview" class="tab-panel" data-main-tab="preview" data-panel-key="visual-preview" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Visual Preview</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Schematic preview only; not to scale.</p>
   <div class="toolbar" style="margin-top:0;"><button onclick="refreshVisualPreview()">Refresh Visual Preview</button></div>
@@ -378,7 +414,7 @@ th { background: #f9fafb; }
   <h4>Section Preview</h4><div id="section_preview_output"></div>
   <h4>Preview Summary</h4><div id="preview_summary_output"></div>
 </div>
-<div class="panel collapsible-panel" id="panel-case-quality" data-panel-key="case-quality-warnings" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-case-quality" class="tab-panel" data-main-tab="preview" data-panel-key="case-quality-warnings" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Case Quality Warnings</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <div class="toolbar" style="margin-top:0;">
     <button onclick="refreshCaseQuality()">Refresh Case Quality</button>
@@ -388,7 +424,7 @@ th { background: #f9fafb; }
   <div id="case_quality_status" style="margin-top:0.35rem;color:#4b5563;">Refresh case quality to see warnings.</div>
   <table><thead><tr><th>Severity</th><th>Area</th><th>Message</th><th>Suggested Action</th></tr></thead><tbody id="case_quality_rows"></tbody></table>
 </div>
-<div class="panel collapsible-panel" id="panel-scenario-comparison" data-panel-key="scenario-comparison" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-scenario-comparison" class="tab-panel" data-main-tab="compare" data-panel-key="scenario-comparison" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Scenario Comparison</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Compare saved browser-local alternatives using existing run results.</p>
   <div class="toolbar" style="margin-top:0;">
@@ -404,21 +440,21 @@ th { background: #f9fafb; }
   <table><thead><tr><th>Scenario</th><th>Saved At</th><th>Actions</th></tr></thead><tbody id="scenario_list_body"></tbody></table>
   <div id="scenario_comparison_output" style="margin-top:0.6rem;"></div>
 </div>
-<div class="panel collapsible-panel" id="panel-guided-workflow" data-panel-key="guided-workflow" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-guided-workflow" class="tab-panel" data-main-tab="home" data-panel-key="guided-workflow" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Guided Workflow</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <div class="toolbar" style="margin-top:0;"><button onclick="resetGuidedWorkflow()">Reset Workflow</button><button onclick="runDemoWorkflow()">Run Demo Workflow</button></div>
   <table><thead><tr><th>Step</th><th>Description</th><th>Status</th></tr></thead><tbody id="guided_workflow_body"></tbody></table>
   <div id="demo_workflow_status" style="margin-top:0.5rem;color:#374151;">Demo workflow complete.</div>
   <div style="margin-top:0.2rem;color:#374151;">Demo workflow failed.</div>
 </div>
-<div class="panel collapsible-panel" id="panel-beta-readiness" data-panel-key="beta-readiness" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-beta-readiness" class="tab-panel" data-main-tab="home" data-panel-key="beta-readiness" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Beta Readiness</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <div class="toolbar" style="margin-top:0;"><button onclick="checkBackendHealth()">Check Backend Health</button></div>
   <div id="backend_health_status" style="margin-top:0.35rem;">Backend health: OK.</div>
   <div style="margin-top:0.2rem;">Backend health: FAIL.</div>
   <div id="beta_readiness_output" style="margin-top:0.5rem;"></div>
 </div>
-<div class="panel collapsible-panel" id="panel-ui-diagnostics" data-panel-key="local-ui-diagnostics" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-ui-diagnostics" class="tab-panel" data-main-tab="support" data-panel-key="local-ui-diagnostics" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Local UI Diagnostics</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Diagnostics check UI/server connectivity only. They do not prove engineering correctness.</p>
   <p style="margin-top:0.2rem;color:#4b5563;">Use beta health check and manual QA checklist before relying on beta UI output.</p>
@@ -428,25 +464,25 @@ th { background: #f9fafb; }
   <div style="margin-top:0.2rem;color:#374151;">UI diagnostics complete.</div>
   <div style="margin-top:0.2rem;color:#374151;">UI diagnostics found issues.</div>
 </div>
-<div class="panel" id="panel-documentation-portal" style="margin-top: 1rem;">
+<div class="panel" id="panel-documentation-portal" class="tab-panel" data-main-tab="home" style="margin-top: 1rem;">
   <h3>Documentation Portal</h3>
   <p style="margin-top:0.2rem;color:#92400e;">This help is educational and does not replace engineering review.</p>
   <ul id="documentation_topics"><li>Start here</li><li>Basic workflow</li><li>Project workflow</li><li>Common inputs</li><li>Wheel table</li><li>Quick selectors</li><li>Validation</li><li>Results</li><li>Project history</li><li>Project archive</li><li>Support bundle</li><li>Known limitations</li><li>Troubleshooting</li></ul>
   <div class="toolbar" style="margin-top:0;"><button onclick="showHelpTopic('Start here')">Show Start Here</button><button onclick="showHelpTopic('Basic workflow')">Show Basic Workflow</button><button onclick="showHelpTopic('Project workflow')">Show Project Workflow</button><button onclick="showHelpTopic('Troubleshooting')">Show Troubleshooting</button><button onclick="copyHelpSummary()">Copy Help Summary</button></div>
   <pre id="documentation_portal_output">Select a help topic.</pre>
 </div>
-<div class="panel" id="panel-guided-demo" style="margin-top: 1rem;">
+<div class="panel" id="panel-guided-demo" class="tab-panel" data-main-tab="home" style="margin-top: 1rem;">
   <h3>Guided Demo</h3>
   <p style="margin-top:0.2rem;color:#92400e;">The guided demo uses sample data and is not a design recommendation.</p>
   <ol id="guided_demo_steps"><li>Load demo template</li><li>Review preview</li><li>Check case quality</li><li>Validate demo</li><li>Run demo</li><li>Review interpretation</li><li>Export demo results</li></ol>
   <div class="toolbar" style="margin-top:0;"><button onclick="startGuidedDemo()">Start Guided Demo</button><button onclick="nextGuidedDemoStep()">Next Demo Step</button><button onclick="resetGuidedDemo()">Reset Guided Demo</button><button onclick="copyDemoInstructions()">Copy Demo Instructions</button></div>
   <pre id="guided_demo_output">Guided demo ready.</pre>
 </div>
-<div class="panel collapsible-panel" id="panel-troubleshooting" data-panel-key="troubleshooting" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-troubleshooting" class="tab-panel" data-main-tab="home" data-panel-key="troubleshooting" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Troubleshooting</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <ul><li>If buttons do not respond, refresh the page.</li><li>If the server is unreachable, start scripts/serve_crane_runway_ui.py.</li><li>If JSON validation fails, review the Validation panel.</li><li>If results show FAIL, review configured criteria and engineering assumptions.</li><li>This local UI is a beta tool and requires engineering review.</li></ul>
 </div>
-<div class="panel collapsible-panel" id="panel-help" data-panel-key="field-help-glossary" style="margin-top: 1rem;">
+<div class="panel collapsible-panel" id="panel-help" class="tab-panel" data-main-tab="inputs" data-panel-key="field-help-glossary" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Field Help / Glossary</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <div class="toolbar" style="margin-top:0;">
     <button onclick="toggleFieldHelp()">Toggle Help</button>
@@ -545,6 +581,18 @@ const scenarioStorageKey = 'craneRunway.scenarios';
 const LOCAL_UI_BETA_VERSION = "V1-086";
 const LOCAL_UI_SCHEMA_VERSION = "1.0";
 const RC_CHECKLIST_STATUS_KEY = "craneRunway.rcChecklistStatus";
+
+const ACTIVE_TAB_STORAGE_KEY = "craneRunway.activeTab";
+const TAB_STATUS_MESSAGES = {"home":"Switched to Home.","project":"Switched to Project.","inputs":"Switched to Inputs.","wheels":"Switched to Wheels.","preview":"Switched to Preview.","validate-run":"Switched to Validate & Run.","results":"Switched to Results.","compare":"Switched to Compare.","export":"Switched to Export.","support":"Switched to Support.","advanced-json":"Switched to Advanced JSON."};
+const TAB_PANEL_SELECTORS={"home":["welcome_panel","panel-guided-workflow","panel-beta-readiness","panel-documentation-portal","panel-guided-demo","panel-troubleshooting"],"project":["project_workspace_status","run_history_status","run_comparison_status"],"inputs":["panel-quick-selectors","panel-common-inputs","panel-help"],"wheels":["panel-wheel-table"],"preview":["panel-visual-preview","panel-case-quality"],"validate-run":["panel-validation"],"results":["panel-run-results","panel-report"],"compare":["panel-scenario-comparison"],"export":["panel-export"],"support":["panel-ui-diagnostics"],"advanced-json":["panel-json-editor","raw_output"]};
+function saveActiveTab(tabId){localStorage.setItem(ACTIVE_TAB_STORAGE_KEY,tabId);}
+function getActiveTab(){return localStorage.getItem(ACTIVE_TAB_STORAGE_KEY)||'home';}
+function setActiveTabButton(tabId){document.querySelectorAll('.main-tab-btn').forEach((b)=>b.classList.toggle('active',b.dataset.tabBtn===tabId));}
+function switchMainTab(tabId){setActiveTabButton(tabId);saveActiveTab(tabId);document.querySelectorAll('.tab-panel').forEach((p)=>{p.hidden=p.dataset.mainTab!==tabId;});if(TAB_STATUS_MESSAGES[tabId]) setStatus(TAB_STATUS_MESSAGES[tabId]);updateCompactCaseSummary();refreshAppShellStatus();}
+function restoreActiveTab(){const t=getActiveTab();switchMainTab(TAB_STATUS_MESSAGES[t]?t:'home');}
+function updateCompactCaseSummary(){const sid=document.getElementById('summary_case_id');const sp=document.getElementById('summary_project');const sa=document.getElementById('summary_autosave');if(sid){try{const parsed=JSON.parse(document.getElementById('input').value||'{}');sid.textContent=parsed.case_id||'-';}catch(_){sid.textContent='(invalid json)';}}if(sp){const el=document.getElementById('project_name');sp.textContent=(el&&el.value)||'-';}if(sa){sa.textContent=(document.getElementById('autosave_status')||{textContent:'Unknown'}).textContent;}}
+function refreshAppShellStatus(){const el=document.getElementById('app_shell_status');if(el){el.textContent='Active tab: '+getActiveTab()+'.';}}
+
 const WELCOME_DISMISSED_KEY = 'craneRunway.welcomeDismissed';
 const GUIDED_DEMO_STATE_KEY = 'craneRunway.guidedDemoState';
 const diagnosticsState = {ui_loaded:true, backend_health:null, templates_endpoint:null, validate_endpoint:null, run_endpoint:null, javascript_status:true, autosave_status:null};
@@ -2012,6 +2060,7 @@ if (addWheelButton) addWheelButton.addEventListener('click', () => addWheelRow()
 const clearWheelTableButton = document.getElementById('clear_wheel_table_btn');
 if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clearWheelTable);
 </script>
+</div><aside class="summary-card"><h3>Compact Summary</h3><table><tbody><tr><td>Current case</td><td id="summary_case_id">-</td></tr><tr><td>Current project</td><td id="summary_project">-</td></tr><tr><td>Validation status</td><td id="summary_validation">Unknown</td></tr><tr><td>Run status</td><td id="summary_run">Unknown</td></tr><tr><td>Overall status</td><td id="summary_overall">Idle</td></tr><tr><td>Autosave status</td><td id="summary_autosave">Unknown</td></tr></tbody></table></aside></div></div>
 </body></html>"""
 
     def template_case_data(self, template_id: str = "ipn-with-cover") -> dict[str, Any]:

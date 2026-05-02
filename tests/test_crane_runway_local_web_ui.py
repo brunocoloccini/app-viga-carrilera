@@ -895,3 +895,18 @@ def test_render_index_html_contains_panel_navigation_controls() -> None:
         'craneRunway.panelState','scrollToPanel','togglePanel','expandAllPanels','collapseAllPanels','showBeginnerView','showAdvancedView','savePanelState','restorePanelState','resetPanelLayout','applyPanelState','getDefaultPanelState'
     ]:
         assert token in html
+
+def test_render_index_html_tabbed_app_shell_v1_089() -> None:
+    html = CraneRunwayLocalWebUi().render_index_html()
+    required = [
+        'App Viga Carrilera','Crane Runway Local UI','Internal Beta',
+        'Results require engineering review','No official CIRSOC/CISC/AISC compliance checks are performed',
+        'Home','Project','Inputs','Wheels','Preview','Validate & Run','Results','Compare','Export','Support','Advanced JSON',
+        'switchMainTab','setActiveTabButton','getActiveTab','restoreActiveTab','saveActiveTab','updateCompactCaseSummary','refreshAppShellStatus','craneRunway.activeTab',
+        'Switched to Home.','Switched to Project.','Switched to Inputs.','Switched to Wheels.','Switched to Preview.','Switched to Validate & Run.','Switched to Results.','Switched to Compare.','Switched to Export.','Switched to Support.','Switched to Advanced JSON.',
+        'Load Demo','Go to Results',
+        'Current case','Current project','Validation status','Run status','Overall status','Autosave status',
+        'Project Workspace','Common Inputs','Wheel Table Editor','Visual Preview','Case Quality Warnings','Validation','Result Cards','Result Interpretation','HTML Report','Scenario Comparison','Package Export','Support Bundle','Issue Report Helper','Local UI Diagnostics','JSON Editor','Raw Response',
+    ]
+    for token in required:
+        assert token in html

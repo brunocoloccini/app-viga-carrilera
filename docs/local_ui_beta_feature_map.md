@@ -28,3 +28,17 @@
 - no LTB
 - sample data requires independent verification
 - engineering review required
+
+## V1-089 tab grouping
+
+- **Home**: Welcome, Guided Demo, Documentation Portal, Guided Workflow, Beta Readiness, RC status, Troubleshooting.
+- **Project**: Workspace, Run History, Run Comparison, Archive Export.
+- **Inputs**: Quick Selectors, Profile/Material selector, Common Inputs, Input help/glossary.
+- **Wheels**: Wheel Table Editor.
+- **Preview**: Visual Preview, Case Outline, Case Quality Warnings.
+- **Validate & Run**: Validation + run controls.
+- **Results**: Result Cards, Summary, Interpretation, HTML Report.
+- **Compare**: Scenario Comparison.
+- **Export**: Download/Copy + Package Export + archive shortcuts.
+- **Support**: About/Beta status, Support Bundle, Issue Report Helper, Diagnostics, shortcuts/limitations.
+- **Advanced JSON**: JSON editor/import/format/clear/raw response/autosave.
