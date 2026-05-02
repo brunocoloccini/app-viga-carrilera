@@ -569,3 +569,14 @@ Useful options:
 - `--run-smoke-after-start`
 
 The launcher runs preflight checks first, then starts the local-only server and prints the URL. Use `Ctrl+C` to stop the server.
+
+## V1-080 Local Project Workspace Manager
+
+The Local UI now includes a **Project Workspace** panel for local project-file workflows under `projects/`.
+
+- Create/open/save/run project cases from the browser.
+- Projects are stored at `projects/<project_name>/`.
+- Run outputs are written under `projects/<project_name>/outputs/`.
+- Safe project names are required: letters, numbers, `_`, `-` only.
+- Local-only warning: no authentication, no database, no multi-user workflow, no public deployment.
+- This UI does **not** implement official CIRSOC/CISC/AISC checks; engineering review is required.

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import json
+from pathlib import Path
+import re
 from typing import Any
 
 from .api_service import CraneRunwayApiService
@@ -42,12 +44,33 @@ class LocalWebUiResponse:
         return self.body.encode("utf-8") if isinstance(self.body, str) else self.body
 
 
+INVALID_PROJECT_NAME_ERROR = "Invalid project name. Use only letters, numbers, dash, and underscore."
+
+
 class CraneRunwayLocalWebUi:
     """Route handler for local crane runway browser workflows."""
 
-    def __init__(self) -> None:
+    def __init__(self, projects_root: Path | None = None) -> None:
         self._api = CraneRunwayApiService()
         self._template_registry = build_default_crane_runway_case_template_registry()
+        self._projects_root = (projects_root or (Path.cwd() / "projects")).resolve()
+
+    def validate_project_name(self, name: str) -> str:
+        if not isinstance(name, str):
+            raise InvalidLocalWebUiRequestError(INVALID_PROJECT_NAME_ERROR)
+        clean_name = name.strip()
+        if not clean_name or ".." in clean_name or "/" in clean_name or "\\" in clean_name or " " in clean_name:
+            raise InvalidLocalWebUiRequestError(INVALID_PROJECT_NAME_ERROR)
+        if re.fullmatch(r"[A-Za-z0-9_-]+", clean_name) is None:
+            raise InvalidLocalWebUiRequestError(INVALID_PROJECT_NAME_ERROR)
+        return clean_name
+
+    def _project_dir(self, project_name: str) -> Path:
+        safe_name = self.validate_project_name(project_name)
+        project_dir = (self._projects_root / safe_name).resolve()
+        if self._projects_root not in project_dir.parents:
+            raise InvalidLocalWebUiRequestError(INVALID_PROJECT_NAME_ERROR)
+        return project_dir
 
     def render_index_html(self) -> str:
         return """<!doctype html>
@@ -106,6 +129,25 @@ th { background: #f9fafb; }
   <button onclick=\"formatJson()\">Format JSON</button>
   <button onclick=\"clearJson()\">Clear JSON</button>
   <button onclick=\"clearSavedSession()\">Clear Saved Session</button>
+</div>
+<div class=\"panel\" style=\"margin-top: 1rem;\">
+  <h3>Project Workspace</h3>
+  <p style=\"margin-top:0.2rem;color:#4b5563;\">Projects are stored locally under the repository projects/ directory.</p>
+  <p style=\"margin-top:0.2rem;color:#92400e;\">This is a local-only beta feature. Do not expose the server publicly.</p>
+  <table><tbody>
+    <tr><td>Project Name</td><td><input id=\"project_name\" type=\"text\"/></td><td>Template</td><td><select id=\"project_template\"><option value=\"ipn-with-cover\">ipn-with-cover</option><option value=\"ipn-without-cover\">ipn-without-cover</option><option value=\"ipn-no-rail-eccentricity\">ipn-no-rail-eccentricity</option></select></td></tr>
+  </tbody></table>
+  <div class=\"toolbar\" style=\"margin-top:0;\">
+    <button onclick=\"createProject()\">Create Project</button>
+    <button onclick=\"refreshProjectList()\">Refresh Project List</button>
+    <button onclick=\"openProject()\">Open Project</button>
+    <button onclick=\"saveProjectCase()\">Save JSON To Project</button>
+    <button onclick=\"runProject()\">Run Project To Outputs</button>
+    <button onclick=\"showProjectOutputsInfo()\">Open Project Outputs Info</button>
+  </div>
+  <div id=\"project_workspace_status\" style=\"margin-top:0.35rem;color:#374151;\">Project workspace ready.</div>
+  <table><thead><tr><th>Project</th><th>Input Case</th><th>Outputs</th><th>Actions</th></tr></thead><tbody id=\"project_list_body\"></tbody></table>
+  <pre id=\"project_outputs_info\">Select a project to view outputs path.</pre>
 </div>
 <div class=\"panel\" style=\"margin-top: 1rem;\">
   <h3>Import JSON File</h3>
@@ -1326,6 +1368,85 @@ function openReportInNewTab() {
   win.document.write(latestHtmlReport);
   win.document.close();
 }
+function setProjectWorkspaceStatus(message) {
+  const el = document.getElementById('project_workspace_status');
+  if (el) el.textContent = message;
+}
+function validateProjectNameClient(name) {
+  return /^[A-Za-z0-9_-]+$/.test(name || '');
+}
+function getSelectedProjectName() {
+  const input = document.getElementById('project_name');
+  return input ? input.value.trim() : '';
+}
+function renderProjectList(projects) {
+  const tbody = document.getElementById('project_list_body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  (projects || []).forEach((project) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + project.name + '</td><td>' + (project.has_input_case ? 'Yes' : 'No') + '</td><td>' + (project.has_outputs ? 'Yes' : 'No') + '</td><td><button class="small-btn" data-project-name="' + project.name + '">Use</button></td>';
+    const btn = tr.querySelector('button');
+    if (btn) btn.addEventListener('click', () => { document.getElementById('project_name').value = project.name; });
+    tbody.appendChild(tr);
+  });
+}
+async function refreshProjectList() {
+  const r = await fetch('/api/projects');
+  const data = await r.json();
+  if (!r.ok) { setProjectWorkspaceStatus(data.error || 'Could not refresh project list.'); return; }
+  renderProjectList(data.projects || []);
+}
+async function createProject() {
+  const projectName = getSelectedProjectName();
+  if (!validateProjectNameClient(projectName)) { setProjectWorkspaceStatus('Invalid project name. Use only letters, numbers, dash, and underscore.'); return; }
+  const payload = {project_name: projectName, template_id: document.getElementById('project_template').value, overwrite: false};
+  const r = await fetch('/api/projects/create', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+  const data = await r.json();
+  if (!r.ok) { setProjectWorkspaceStatus(data.error || 'Could not create project.'); return; }
+  setProjectWorkspaceStatus('Project created.');
+  await refreshProjectList();
+}
+async function openProject() {
+  const projectName = getSelectedProjectName();
+  if (!validateProjectNameClient(projectName)) { setProjectWorkspaceStatus('Invalid project name. Use only letters, numbers, dash, and underscore.'); return; }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/case');
+  const data = await r.json();
+  if (!r.ok) { setProjectWorkspaceStatus(data.error || 'Could not open project.'); return; }
+  document.getElementById('case_json').value = data.case_json || JSON.stringify(data.case_data || {}, null, 2);
+  clearOutput();
+  if (typeof refreshCaseOutline === 'function') refreshCaseOutline();
+  if (typeof refreshVisualPreview === 'function') refreshVisualPreview();
+  if (typeof refreshCaseQuality === 'function') refreshCaseQuality();
+  setProjectWorkspaceStatus('Project opened.');
+}
+async function saveProjectCase() {
+  const projectName = getSelectedProjectName();
+  if (!validateProjectNameClient(projectName)) { setProjectWorkspaceStatus('Invalid project name. Use only letters, numbers, dash, and underscore.'); return; }
+  try { JSON.parse(document.getElementById('case_json').value); } catch (err) { setProjectWorkspaceStatus('Cannot save project: invalid JSON.'); return; }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/save', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({case_json: document.getElementById('case_json').value})});
+  const data = await r.json();
+  if (!r.ok) { setProjectWorkspaceStatus(data.error || 'Could not save project case.'); return; }
+  setProjectWorkspaceStatus('Project input_case.json saved.');
+}
+async function runProject() {
+  const projectName = getSelectedProjectName();
+  if (!validateProjectNameClient(projectName)) { setProjectWorkspaceStatus('Invalid project name. Use only letters, numbers, dash, and underscore.'); return; }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/run', {method:'POST'});
+  const data = await r.json();
+  if (!r.ok || !data.success) { setProjectWorkspaceStatus('Project run failed.'); return; }
+  renderSummary(data.summary || null);
+  renderResultCards(data.summary || null);
+  renderResultInterpretation(data.summary || null, data);
+  if (data.report_html) { latestHtmlReport = data.report_html; document.getElementById('html_output').srcdoc = latestHtmlReport; }
+  setProjectWorkspaceStatus('Project run complete.');
+}
+function showProjectOutputsInfo() {
+  const projectName = getSelectedProjectName();
+  if (!validateProjectNameClient(projectName)) { setProjectWorkspaceStatus('Invalid project name. Use only letters, numbers, dash, and underscore.'); return; }
+  const lines = ['Expected outputs directory: projects/' + projectName + '/outputs', '- summary.json', '- report.html', '- report.md', '- report.txt', '- validation_report.json', '- manifest.json'];
+  document.getElementById('project_outputs_info').textContent = lines.join('\\n');
+}
 async function loadTemplate() {
   try {
     const id = document.getElementById('template').value;
@@ -1380,6 +1501,7 @@ renderHelpPanel();
 restoreSession();
 updateBetaReadiness('autosave_available', autosaveAvailable);
 loadScenarios();
+refreshProjectList();
 document.getElementById('case_json').addEventListener('input', scheduleSessionSave);
 document.getElementById('template').addEventListener('change', saveSession);
 const loadWheelsButton = document.getElementById('load_wheels_from_json_btn');
@@ -1432,6 +1554,79 @@ if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clear
     def handle_health_request(self) -> LocalWebUiResponse:
         return self._json_response(200, {"ok": True})
 
+    def handle_projects_list_request(self) -> LocalWebUiResponse:
+        self._projects_root.mkdir(parents=True, exist_ok=True)
+        projects: list[dict[str, Any]] = []
+        for item in sorted(self._projects_root.iterdir()):
+            if not item.is_dir():
+                continue
+            projects.append(
+                {
+                    "name": item.name,
+                    "has_input_case": (item / "input_case.json").is_file(),
+                    "has_outputs": (item / "outputs").is_dir(),
+                }
+            )
+        return self._json_response(200, {"projects": projects})
+
+    def handle_project_create_request(self, payload: dict[str, Any]) -> LocalWebUiResponse:
+        project_name = self.validate_project_name(payload.get("project_name", ""))
+        template_id = payload.get("template_id", "ipn-with-cover")
+        overwrite = bool(payload.get("overwrite", False))
+        case_data = self.template_case_data(template_id)
+        project_dir = self._project_dir(project_name)
+        self._projects_root.mkdir(parents=True, exist_ok=True)
+        if project_dir.exists() and any(project_dir.iterdir()) and not overwrite:
+            raise InvalidLocalWebUiRequestError("Project exists and is not empty. Use overwrite=true to replace.")
+        project_dir.mkdir(parents=True, exist_ok=True)
+        input_case_path = project_dir / "input_case.json"
+        outputs_dir = project_dir / "outputs"
+        outputs_dir.mkdir(parents=True, exist_ok=True)
+        input_case_path.write_text(f"{json.dumps(case_data, indent=2)}\n", encoding="utf-8")
+        (project_dir / "README.md").write_text(f"# {project_name}\n\nLocal project workspace.\n", encoding="utf-8")
+        return self._json_response(200, {"project_path": str(project_dir), "input_case_path": str(input_case_path)})
+
+    def handle_project_case_request(self, project_name: str) -> LocalWebUiResponse:
+        case_path = self._project_dir(project_name) / "input_case.json"
+        if not case_path.is_file():
+            raise InvalidLocalWebUiRequestError("Project input_case.json was not found.")
+        raw = case_path.read_text(encoding="utf-8")
+        return self._json_response(200, {"case_data": json.loads(raw), "case_json": raw})
+
+    def handle_project_save_request(self, project_name: str, payload: dict[str, Any]) -> LocalWebUiResponse:
+        if "case_json" in payload:
+            case_data = json.loads(payload["case_json"])
+        elif "case_data" in payload:
+            case_data = payload["case_data"]
+        else:
+            raise InvalidLocalWebUiRequestError("Request must include case_json or case_data.")
+        case_path = self._project_dir(project_name) / "input_case.json"
+        case_path.parent.mkdir(parents=True, exist_ok=True)
+        case_path.write_text(f"{json.dumps(case_data, indent=2)}\n", encoding="utf-8")
+        return self._json_response(200, {"saved_path": str(case_path)})
+
+    def handle_project_run_request(self, project_name: str) -> LocalWebUiResponse:
+        project_dir = self._project_dir(project_name)
+        case_path = project_dir / "input_case.json"
+        outputs_dir = project_dir / "outputs"
+        outputs_dir.mkdir(parents=True, exist_ok=True)
+        case_text = case_path.read_text(encoding="utf-8")
+        result = self._api.execute_case_json_text(case_text, output_formats=["summary", "html"])
+        payload = result.to_dict()
+        (outputs_dir / "summary.json").write_text(f"{json.dumps(payload.get('summary'), indent=2)}\n", encoding="utf-8")
+        (outputs_dir / "report.html").write_text(payload.get("html_report") or "", encoding="utf-8")
+        (outputs_dir / "report.md").write_text(payload.get("markdown_report") or "", encoding="utf-8")
+        (outputs_dir / "report.txt").write_text(payload.get("text_report") or "", encoding="utf-8")
+        (outputs_dir / "validation_report.json").write_text(
+            f"{json.dumps(payload.get('validation'), indent=2)}\n", encoding="utf-8"
+        )
+        manifest = {"project_name": project_name, "output_dir": str(outputs_dir), "success": payload.get("success", False)}
+        (outputs_dir / "manifest.json").write_text(f"{json.dumps(manifest, indent=2)}\n", encoding="utf-8")
+        return self._json_response(
+            200,
+            {"success": payload.get("success", False), "summary": payload.get("summary"), "output_dir": str(outputs_dir), "report_html": payload.get("html_report")},
+        )
+
     def handle_request(self, method: str, path: str, body: bytes | None = None) -> LocalWebUiResponse:
         try:
             if method == "GET" and path == "/":
@@ -1440,9 +1635,14 @@ if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clear
                 return self.handle_health_request()
             if method == "GET" and path == "/api/templates":
                 return self.handle_templates_request()
+            if method == "GET" and path == "/api/projects":
+                return self.handle_projects_list_request()
             if method == "GET" and path.startswith("/api/template/"):
                 template_id = path.removeprefix("/api/template/")
                 return self._json_response(200, self.template_case_data(template_id))
+            if method == "GET" and path.startswith("/api/projects/") and path.endswith("/case"):
+                project_name = path.removeprefix("/api/projects/").removesuffix("/case")
+                return self.handle_project_case_request(project_name)
             if method == "POST" and path in {"/api/validate", "/api/run"}:
                 if body is None:
                     raise InvalidLocalWebUiRequestError("Request body is required.")
@@ -1453,6 +1653,24 @@ if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clear
                 if not isinstance(payload, dict):
                     raise InvalidLocalWebUiRequestError("Request JSON must be an object.")
                 return self.handle_validate_request(payload) if path.endswith("validate") else self.handle_run_request(payload)
+            if method == "POST" and path == "/api/projects/create":
+                if body is None:
+                    raise InvalidLocalWebUiRequestError("Request body is required.")
+                payload = json.loads(body.decode("utf-8"))
+                if not isinstance(payload, dict):
+                    raise InvalidLocalWebUiRequestError("Request JSON must be an object.")
+                return self.handle_project_create_request(payload)
+            if method == "POST" and path.startswith("/api/projects/") and path.endswith("/save"):
+                if body is None:
+                    raise InvalidLocalWebUiRequestError("Request body is required.")
+                payload = json.loads(body.decode("utf-8"))
+                if not isinstance(payload, dict):
+                    raise InvalidLocalWebUiRequestError("Request JSON must be an object.")
+                project_name = path.removeprefix("/api/projects/").removesuffix("/save")
+                return self.handle_project_save_request(project_name, payload)
+            if method == "POST" and path.startswith("/api/projects/") and path.endswith("/run"):
+                project_name = path.removeprefix("/api/projects/").removesuffix("/run")
+                return self.handle_project_run_request(project_name)
             return self._json_response(404, {"error": "Route not found."})
         except InvalidLocalWebUiRequestError as exc:
             return self._json_response(400, {"error": str(exc)})

@@ -161,3 +161,13 @@ Important: this is a local beta tool. Results require engineering review.
 5. Use Common Inputs / Wheel Table / Presets.
 6. Validate and Run.
 7. Export results.
+
+## Recommended Local UI Project Workflow
+
+1. Launch UI.
+2. Create project.
+3. Configure inputs.
+4. Save JSON to project.
+5. Validate.
+6. Run project to outputs.
+7. Review `report.html` in `projects/<name>/outputs`.

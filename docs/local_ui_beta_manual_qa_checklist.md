@@ -169,3 +169,13 @@ Expected:
 2. Run `PYTHONPATH=src python scripts/launch_crane_runway_ui.py`.
 3. Confirm browser opens automatically, or confirm URL is printed for manual open.
 4. Stop with `Ctrl+C` and confirm `Server stopped.` is shown.
+
+## V1-080 Project Workspace QA
+
+- Create project `qa_project`.
+- Open project.
+- Edit JSON.
+- Save JSON to project.
+- Run project to outputs.
+- Confirm outputs are listed for `projects/qa_project/outputs`.
+- Try invalid project name `../bad` and confirm rejection.
