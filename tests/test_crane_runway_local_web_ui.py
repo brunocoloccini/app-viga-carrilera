@@ -1013,3 +1013,19 @@ def test_frontend_contract_endpoint_and_self_test_markers() -> None:
 def test_v1093_beginner_dashboard_and_wizard_tokens() -> None:
     html=CraneRunwayLocalWebUi().render_index_html()
     for t in ["Beginner Dashboard","Start New Case","Open Project","Continue Autosaved Case","Run Demo","Validate Current Case","Run Current Case","Review Results","Export / Share","Ready","Needs input","Complete","Not available","Case Wizard","Start Case Wizard","Previous Wizard Step","Next Wizard Step","Save Wizard Step","Reset Case Wizard","Finish Wizard","Case wizard started.","Wizard step saved.","Wizard advanced.","Wizard moved back.","Case wizard reset.","Case wizard complete.","Wizard step needs attention.","craneRunway.caseWizardState","Wizard Beam Step","Wizard Material Step","Wizard Wheels Step","Wizard Criteria Step","Wizard Rail Step","Wizard Review Step","Wizard Calculate Step","Wizard Results Step","Wizard Export Step","Material sample values require independent verification.","These are generic configured checks, not official CIRSOC/CISC/AISC compliance checks.","Current workflow reports torsional input but does not perform torsional/warping stress checks.","Case Readiness","Not ready","Needs review","Ready to validate","Ready to run","Results available","Wizard Change Summary","Updated base profile.","Updated span.","Updated material.","Updated wheel table.","Updated criteria.","Updated rail eccentricity.","Open Advanced JSON","openAdvancedJson"]: assert t in html
+
+def test_v1094_visual_workflow_and_modes_tokens() -> None:
+    html = CraneRunwayLocalWebUi().render_index_html()
+    for token in [
+        "Visual Workflow Map","Start","Case Setup","Loads","Review","Validate","Run","Results","Export",
+        "Start Setup","Edit Case Setup","Edit Loads","Review Case","Validate Case","Run Case","View Results","Export Outputs",
+        "Visual workflow updated.","Workflow action started.","Workflow action completed.","Workflow action needs attention.",
+        "Simple Mode","Expert Mode","Simple mode enabled.","Expert mode enabled.","craneRunway.uiMode",
+        "New Demo Case","Open Project","Validate & Run","View Results","Top action started.",
+        "Start with the visual workflow or case wizard. Advanced JSON is optional.",
+        "Status Legend","Pending: not started yet.","Ready: enough information is available to continue.","Complete: step has been completed.","Needs attention: review errors or warnings before continuing.",
+        "What should I do now?","Start by loading a demo template or creating/opening a project.","Review the setup, then validate the case.","Fix validation errors before running.","Run the calculation.","Review results and export outputs.",
+        "For advanced users and debugging.","Technical API output for troubleshooting.","Developer check for UI wiring.","Setup warnings before validation/run.","Plain-language explanation of configured generic check results.",
+        "renderVisualWorkflowMap","updateVisualWorkflowMap","getVisualWorkflowStatus","setVisualWorkflowStatus","handleWorkflowCardAction","setUiMode","getUiMode","applyUiMode","toggleSimpleMode","toggleExpertMode","handleTopAction","computeNextUserAction","renderNextUserAction","updateNextUserAction"
+    ]:
+        assert token in html

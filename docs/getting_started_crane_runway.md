@@ -241,3 +241,4 @@ Use launcher + Run Demo Workflow + Local UI RC Status as the primary path. See `
 7. Review Results.
 8. Export outputs.
 9. Use Advanced JSON only if needed.
+\n## V1-094 Update\n- Local UI visual workflow builder, simplified landing flow, and user-facing polish pack.\n- First-time users should stay in Simple Mode and follow Visual Workflow Map; Advanced JSON is optional.\n- Added Top action bar, What should I do now?, and Status Legend.\n
