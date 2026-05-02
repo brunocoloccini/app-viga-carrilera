@@ -655,3 +655,8 @@ See also: `docs/local_ui_beta_feature_map.md`, `docs/local_ui_beta_rc_release_no
 - Onboarding guide: `docs/local_ui_beta_onboarding.md`
 - Distribution guide: `docs/local_ui_beta_distribution.md`
 - Release manifest: `docs/local_ui_beta_release_manifest.md`
+
+## First-time beta onboarding
+- **Welcome to the Local UI Beta** panel explains local-beta scope and engineering-review requirements.
+- **Documentation Portal** panel provides quick help topics and troubleshooting with copyable summary text.
+- **Guided Demo** panel provides a seven-step sample workflow with browser-local progress state.

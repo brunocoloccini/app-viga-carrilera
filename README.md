@@ -86,3 +86,7 @@ PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py
 2. `PYTHONPATH=src python scripts/create_local_ui_demo_project.py --overwrite --run`
 3. `PYTHONPATH=src python scripts/launch_crane_runway_ui.py`
 4. Open **Project Workspace** in the UI.
+
+- Browser help portal: `docs/local_ui_beta_browser_help.md`
+- Guided demo: `docs/local_ui_guided_demo.md`
+- UI onboarding includes Welcome panel, Documentation Portal, and Guided Demo.

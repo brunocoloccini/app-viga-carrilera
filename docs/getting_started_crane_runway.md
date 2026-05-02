@@ -212,3 +212,8 @@ Use launcher + Run Demo Workflow + Local UI RC Status as the primary path. See `
 2. `PYTHONPATH=src python scripts/create_local_ui_demo_project.py --overwrite --run`
 3. `PYTHONPATH=src python scripts/launch_crane_runway_ui.py`
 4. Open Project Workspace.
+
+## Local UI first-time flow
+1. Read **Welcome to the Local UI Beta**.
+2. Run **Guided Demo** steps before editing production cases.
+3. Use **Documentation Portal** when unsure.

@@ -24,6 +24,9 @@ def test_local_ui_beta_smoke_contains_expected_workflow_sections() -> None:
         "Local UI RC Status",
         "Keyboard Shortcuts",
         "Known limitations",
+        "Documentation Portal",
+        "Guided Demo",
+        "Welcome to the Local UI Beta",
         "Scenario Comparison",
         # Persistence / export
         "Autosave",

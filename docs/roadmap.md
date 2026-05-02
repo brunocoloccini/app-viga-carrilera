@@ -234,3 +234,5 @@ Planned modules:
 Local UI beta release-candidate consolidation pack.
 
 - V1-087: Local UI beta distribution and onboarding pack.
+
+- V1-088: Local UI onboarding improvements: Welcome panel, Documentation Portal, Guided Demo, and troubleshooting checklist text.

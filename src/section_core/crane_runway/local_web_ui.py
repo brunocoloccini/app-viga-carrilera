@@ -135,6 +135,13 @@ th { background: #f9fafb; }
 <body>
 <h1>Crane Runway Local UI</h1>
 <p class=\"warning\">Local beta tool. Results require engineering review.</p>
+<div class=\"panel\" id=\"welcome_panel\" style=\"margin-top:1rem;\">
+  <h3>Welcome to the Local UI Beta</h3>
+  <p>This is a local browser beta for crane runway workflows.</p>
+  <p>Start with Guided Demo and use Documentation Portal if you are unsure about a step.</p>
+  <p>Results require engineering review, and no official CIRSOC/CISC/AISC compliance checks are performed.</p>
+  <div class=\"toolbar\" style=\"margin-top:0;\"><button onclick=\"dismissWelcomeBanner()\">Dismiss Welcome</button></div>
+</div>
 <label for=\"template\">Template:</label>
 <select id=\"template\">
   <option value=\"ipn-with-cover\">ipn-with-cover</option>
@@ -421,6 +428,20 @@ th { background: #f9fafb; }
   <div style="margin-top:0.2rem;color:#374151;">UI diagnostics complete.</div>
   <div style="margin-top:0.2rem;color:#374151;">UI diagnostics found issues.</div>
 </div>
+<div class="panel" id="panel-documentation-portal" style="margin-top: 1rem;">
+  <h3>Documentation Portal</h3>
+  <p style="margin-top:0.2rem;color:#92400e;">This help is educational and does not replace engineering review.</p>
+  <ul id="documentation_topics"><li>Start here</li><li>Basic workflow</li><li>Project workflow</li><li>Common inputs</li><li>Wheel table</li><li>Quick selectors</li><li>Validation</li><li>Results</li><li>Project history</li><li>Project archive</li><li>Support bundle</li><li>Known limitations</li><li>Troubleshooting</li></ul>
+  <div class="toolbar" style="margin-top:0;"><button onclick="showHelpTopic('Start here')">Show Start Here</button><button onclick="showHelpTopic('Basic workflow')">Show Basic Workflow</button><button onclick="showHelpTopic('Project workflow')">Show Project Workflow</button><button onclick="showHelpTopic('Troubleshooting')">Show Troubleshooting</button><button onclick="copyHelpSummary()">Copy Help Summary</button></div>
+  <pre id="documentation_portal_output">Select a help topic.</pre>
+</div>
+<div class="panel" id="panel-guided-demo" style="margin-top: 1rem;">
+  <h3>Guided Demo</h3>
+  <p style="margin-top:0.2rem;color:#92400e;">The guided demo uses sample data and is not a design recommendation.</p>
+  <ol id="guided_demo_steps"><li>Load demo template</li><li>Review preview</li><li>Check case quality</li><li>Validate demo</li><li>Run demo</li><li>Review interpretation</li><li>Export demo results</li></ol>
+  <div class="toolbar" style="margin-top:0;"><button onclick="startGuidedDemo()">Start Guided Demo</button><button onclick="nextGuidedDemoStep()">Next Demo Step</button><button onclick="resetGuidedDemo()">Reset Guided Demo</button><button onclick="copyDemoInstructions()">Copy Demo Instructions</button></div>
+  <pre id="guided_demo_output">Guided demo ready.</pre>
+</div>
 <div class="panel collapsible-panel" id="panel-troubleshooting" data-panel-key="troubleshooting" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Troubleshooting</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <ul><li>If buttons do not respond, refresh the page.</li><li>If the server is unreachable, start scripts/serve_crane_runway_ui.py.</li><li>If JSON validation fails, review the Validation panel.</li><li>If results show FAIL, review configured criteria and engineering assumptions.</li><li>This local UI is a beta tool and requires engineering review.</li></ul>
@@ -524,6 +545,8 @@ const scenarioStorageKey = 'craneRunway.scenarios';
 const LOCAL_UI_BETA_VERSION = "V1-086";
 const LOCAL_UI_SCHEMA_VERSION = "1.0";
 const RC_CHECKLIST_STATUS_KEY = "craneRunway.rcChecklistStatus";
+const WELCOME_DISMISSED_KEY = 'craneRunway.welcomeDismissed';
+const GUIDED_DEMO_STATE_KEY = 'craneRunway.guidedDemoState';
 const diagnosticsState = {ui_loaded:true, backend_health:null, templates_endpoint:null, validate_endpoint:null, run_endpoint:null, javascript_status:true, autosave_status:null};
 const autosaveStorageKeys = {
   caseJson: 'craneRunway.caseJson',
@@ -609,10 +632,16 @@ function clearSavedSession() {
 }
 
 function renderGuidedWorkflow() { const body=document.getElementById('guided_workflow_body'); if (!body) return; let html=''; for (const step of workflowSteps) { const status=workflowState[step.id] || 'Pending'; const cls=status==='Done'?'status-pass':(status==='Needs attention'?'status-fail':'status-na'); html += '<tr><td>'+step.id+'. '+escapeHtml(step.label)+'</td><td>'+escapeHtml(step.description)+'</td><td class="'+cls+'">'+escapeHtml(status)+'</td></tr>'; } body.innerHTML=html; }
-function updateWorkflowStep(stepId, status) { if (!workflowState[stepId]) return; workflowState[stepId]=status; renderGuidedWorkflow(); }
+function updateWorkflowStep(stepId, status) { if (!workflowState[stepId]) return; workflowState[stepId]=status; renderGuidedWorkflow();
+renderDocumentationPortal();
+renderGuidedDemo();
+if (localStorage.getItem(WELCOME_DISMISSED_KEY)==='true'){ const panel=document.getElementById('welcome_panel'); if(panel) panel.style.display='none'; } }
 function markWorkflowStepDone(stepId) { updateWorkflowStep(stepId, 'Done'); }
 function markWorkflowStepNeedsAttention(stepId) { updateWorkflowStep(stepId, 'Needs attention'); }
-function resetGuidedWorkflow() { for (const step of workflowSteps) workflowState[step.id]='Pending'; renderGuidedWorkflow(); const demo=document.getElementById('demo_workflow_status'); if (demo) demo.textContent='Ready for demo workflow.'; }
+function resetGuidedWorkflow() { for (const step of workflowSteps) workflowState[step.id]='Pending'; renderGuidedWorkflow();
+renderDocumentationPortal();
+renderGuidedDemo();
+if (localStorage.getItem(WELCOME_DISMISSED_KEY)==='true'){ const panel=document.getElementById('welcome_panel'); if(panel) panel.style.display='none'; } const demo=document.getElementById('demo_workflow_status'); if (demo) demo.textContent='Ready for demo workflow.'; }
 function renderBetaReadiness() { const panel=document.getElementById('beta_readiness_output'); if (!panel) return; const rows=[['UI JavaScript loaded', betaReadinessState.ui_js_loaded===true?'PASS':'FAIL'],['Backend health', betaReadinessState.backend_health===true?'PASS':(betaReadinessState.backend_health===false?'FAIL':'N/A')],['JSON loaded', betaReadinessState.json_loaded===true?'PASS':(betaReadinessState.json_loaded===false?'FAIL':'N/A')],['Validation status', betaReadinessState.validation_status===true?'PASS':(betaReadinessState.validation_status===false?'FAIL':'N/A')],['Run status', betaReadinessState.run_status===true?'PASS':(betaReadinessState.run_status===false?'FAIL':'N/A')],['Autosave available', betaReadinessState.autosave_available===true?'PASS':'FAIL']]; let html='<table><thead><tr><th>Check</th><th>Status</th></tr></thead><tbody>'; for (const row of rows) { const cls=row[1]==='PASS'?'status-pass':(row[1]==='FAIL'?'status-fail':'status-na'); html += '<tr><td>'+escapeHtml(row[0])+'</td><td class="'+cls+'">'+row[1]+'</td></tr>'; } panel.innerHTML=html+'</tbody></table>'; }
 function updateBetaReadiness(key, value) { betaReadinessState[key]=value; renderBetaReadiness(); renderRcStatus(); setupKeyboardShortcuts(); }
 
@@ -1555,6 +1584,27 @@ function refreshCaseOutline() {
     panel.innerHTML = html + '</tbody></table>';
   } catch (err) { panel.innerHTML = '<p>Cannot build outline: invalid JSON.</p>'; }
 }
+function dismissWelcomeBanner(){ localStorage.setItem(WELCOME_DISMISSED_KEY,'true'); const panel=document.getElementById('welcome_panel'); if(panel) panel.style.display='none'; setStatus('Welcome banner dismissed.'); }
+function renderDocumentationPortal(){ const out=document.getElementById('documentation_portal_output'); if(!out) return; out.textContent='Use the topic buttons to load concise help content.'; }
+function showHelpTopic(topic){ const out=document.getElementById('documentation_portal_output'); if(!out) return; const topics={'Start here':'Start here: begin with Guided Demo, then load a template and validate before run.','Basic workflow':'Basic workflow: load/import case, review preview, validate, run, then review results.','Project workflow':'Project workflow: create project, save JSON, run to outputs, and use run history for comparisons.','Troubleshooting':buildHelpSummary()}; out.textContent=topics[topic]||'Topic unavailable.'; setStatus('Help topic shown.'); }
+function buildHelpSummary(){ return `If buttons do not respond: refresh page; run UI Diagnostics; run local UI smoke check; check browser console; clear saved session; restart server.
+If 127.0.0.1 refuses connection: confirm server is running; if using remote/Codex, open forwarded port instead of local 127.0.0.1.
+If validation fails: inspect Validation table; inspect Case Quality Warnings; check quantity units.
+If run fails: validate first; review Raw Response; create Support Bundle.`; }
+async function copyHelpSummary(){ await copyText(buildHelpSummary()); setStatus('Help summary copied.'); }
+function markGuidedDemoStep(activeIndex){ const items=document.querySelectorAll('#guided_demo_steps li'); items.forEach((item,idx)=>{ item.style.fontWeight = idx===activeIndex ? '700' : '400'; }); }
+function renderGuidedDemo(){ const out=document.getElementById('guided_demo_output'); if(!out) return; let state={step:0,started:false}; try{ const raw=localStorage.getItem(GUIDED_DEMO_STATE_KEY); if(raw) state=JSON.parse(raw);}catch(_){ state={step:0,started:false}; } markGuidedDemoStep(Math.max(0, Math.min(6, Number(state.step)||0))); out.textContent=state.started ? ('Current demo step: '+String((Number(state.step)||0)+1)) : 'Guided demo ready.'; }
+function startGuidedDemo(){ const state={step:0,started:true}; localStorage.setItem(GUIDED_DEMO_STATE_KEY,JSON.stringify(state)); renderGuidedDemo(); setStatus('Guided demo started.'); }
+function nextGuidedDemoStep(){ try{ const state=JSON.parse(localStorage.getItem(GUIDED_DEMO_STATE_KEY)||'{"step":0,"started":false}'); if(!state.started){ setStatus('Guided demo step failed.'); return; } state.step = Math.min(6, (Number(state.step)||0)+1); localStorage.setItem(GUIDED_DEMO_STATE_KEY,JSON.stringify(state)); renderGuidedDemo(); setStatus('Guided demo advanced.'); }catch(_){ setStatus('Guided demo step failed.'); } }
+function resetGuidedDemo(){ localStorage.setItem(GUIDED_DEMO_STATE_KEY,JSON.stringify({step:0,started:false})); renderGuidedDemo(); setStatus('Guided demo reset.'); }
+async function copyDemoInstructions(){ const text=`Guided Demo Steps:
+1. Load demo template
+2. Review preview
+3. Check case quality
+4. Validate demo
+5. Run demo
+6. Review interpretation
+7. Export demo results`; await copyText(text); setStatus('Guided demo instructions copied.'); }
 function renderHelpPanel() {
   document.getElementById('help_panel').innerHTML = '<ol><li>Load a template or import JSON.</li><li>Edit JSON.</li><li>Click Validate.</li><li>Fix validation errors.</li><li>Click Run.</li><li>Review Summary and HTML Report.</li><li>Download JSON / Summary / Report.</li></ol><p><strong>Warnings:</strong> Local beta tool; Results require engineering review; Generic checks only; no official CIRSOC/CISC/AISC checks; no fatigue; no torsional/warping stress; no LTB.</p><p><strong>API:</strong> /api/health, /api/templates, /api/validate, /api/run</p>';
 }
@@ -1941,6 +1991,9 @@ async function runCase() {
   } catch (err) { setStatus('Network/error during run.'); }
 }
 renderGuidedWorkflow();
+renderDocumentationPortal();
+renderGuidedDemo();
+if (localStorage.getItem(WELCOME_DISMISSED_KEY)==='true'){ const panel=document.getElementById('welcome_panel'); if(panel) panel.style.display='none'; }
 renderBetaReadiness(); renderRcStatus(); setupKeyboardShortcuts();
 renderUiDiagnostics();
 renderHelpPanel();
