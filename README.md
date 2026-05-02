@@ -79,3 +79,10 @@ PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py
 - RC release notes: `docs/local_ui_beta_rc_release_notes.md`
 - Known issues: `docs/local_ui_beta_known_issues.md`
 - Manual QA checklist: `docs/local_ui_beta_manual_qa_checklist.md`
+
+## Try the local UI beta
+
+1. `PYTHONPATH=src python scripts/print_local_ui_beta_info.py`
+2. `PYTHONPATH=src python scripts/create_local_ui_demo_project.py --overwrite --run`
+3. `PYTHONPATH=src python scripts/launch_crane_runway_ui.py`
+4. Open **Project Workspace** in the UI.

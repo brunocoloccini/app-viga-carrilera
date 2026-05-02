@@ -649,3 +649,9 @@ Use the **Local UI RC Status** panel to review health check, UI diagnostics, RC 
 Accessibility support is basic and will be improved in future versions.
 
 See also: `docs/local_ui_beta_feature_map.md`, `docs/local_ui_beta_rc_release_notes.md`, `docs/local_ui_beta_known_issues.md`.
+
+## Distribution and onboarding
+
+- Onboarding guide: `docs/local_ui_beta_onboarding.md`
+- Distribution guide: `docs/local_ui_beta_distribution.md`
+- Release manifest: `docs/local_ui_beta_release_manifest.md`

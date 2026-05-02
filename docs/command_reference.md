@@ -137,3 +137,26 @@ Runs local UI release-candidate acceptance checks across server startup, core en
 ## RC release-candidate commands
 - `PYTHONPATH=src python scripts/run_beta_health_check.py --skip-pytest`
 - `PYTHONPATH=src python scripts/run_local_ui_rc_check.py --skip-archive`
+
+## print_local_ui_beta_info.py
+
+```bash
+PYTHONPATH=src python scripts/print_local_ui_beta_info.py
+PYTHONPATH=src python scripts/print_local_ui_beta_info.py --json
+PYTHONPATH=src python scripts/print_local_ui_beta_info.py --check-files
+```
+
+## create_local_ui_demo_project.py
+
+```bash
+PYTHONPATH=src python scripts/create_local_ui_demo_project.py
+PYTHONPATH=src python scripts/create_local_ui_demo_project.py --overwrite --run
+```
+
+## Local UI beta wrappers
+
+```bash
+bash scripts/start_local_ui_beta.sh
+# PowerShell
+scripts/start_local_ui_beta.ps1
+```

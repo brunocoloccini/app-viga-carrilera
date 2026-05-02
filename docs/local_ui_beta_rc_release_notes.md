@@ -36,3 +36,9 @@
 
 ## Known limitations
 `docs/local_ui_beta_known_issues.md`
+
+## V1-087: Local UI beta distribution and onboarding pack
+
+- Added `scripts/create_local_ui_demo_project.py` for one-command demo workspace setup.
+- Added convenience launch wrappers: `scripts/start_local_ui_beta.sh` and `scripts/start_local_ui_beta.ps1`.
+- Added onboarding/distribution/release-manifest docs for beta handoff.

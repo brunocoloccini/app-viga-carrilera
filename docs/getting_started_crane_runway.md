@@ -205,3 +205,10 @@ Important: this is a local beta tool. Results require engineering review.
 
 ## Recommended beta path
 Use launcher + Run Demo Workflow + Local UI RC Status as the primary path. See `docs/local_ui_beta_feature_map.md` and `docs/local_ui_beta_known_issues.md`.
+
+## Local UI beta quick-start recommendation
+
+1. `PYTHONPATH=src python scripts/print_local_ui_beta_info.py`
+2. `PYTHONPATH=src python scripts/create_local_ui_demo_project.py --overwrite --run`
+3. `PYTHONPATH=src python scripts/launch_crane_runway_ui.py`
+4. Open Project Workspace.

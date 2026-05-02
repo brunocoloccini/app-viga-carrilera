@@ -55,3 +55,11 @@
 - support bundle generated
 - known issues reviewed
 - release notes reviewed
+
+## Distribution readiness
+
+- [ ] Run `PYTHONPATH=src python scripts/print_local_ui_beta_info.py`
+- [ ] Run `PYTHONPATH=src python scripts/create_local_ui_demo_project.py --overwrite --run`
+- [ ] Review `docs/local_ui_beta_release_manifest.md`
+- [ ] Review `docs/local_ui_beta_onboarding.md`
+- [ ] Review `docs/local_ui_beta_distribution.md`

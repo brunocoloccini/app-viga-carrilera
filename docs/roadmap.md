@@ -232,3 +232,5 @@ Planned modules:
 
 ## V1-086
 Local UI beta release-candidate consolidation pack.
+
+- V1-087: Local UI beta distribution and onboarding pack.
