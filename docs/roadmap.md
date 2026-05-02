@@ -227,3 +227,5 @@ Planned modules:
 - V1-083: Local UI project archive export pack.
 
 - V1-084: Local UI release-candidate acceptance pack.
+
+- **V1-085**: Local UI support bundle, about/version, and beta handoff pack.

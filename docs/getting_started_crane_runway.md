@@ -198,3 +198,7 @@ Important: this is a local beta tool. Results require engineering review.
 3. Refresh archive manifest.
 4. Download project archive.
 5. Store archive outside repo if desired.
+
+## If something goes wrong
+- Use **Issue Report Helper** to copy issue report text.
+- Use **Support Bundle** to download support_bundle.json for debugging.
