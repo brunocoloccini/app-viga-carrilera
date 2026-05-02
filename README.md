@@ -94,3 +94,7 @@ PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py
 
 
 - Local UI uses framework-free HTML/CSS/JS assets served by the local Python server.
+
+
+## V1-092 Frontend Contract
+Added frontend contract endpoint, self-test panel, and CLI contract checker.

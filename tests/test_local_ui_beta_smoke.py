@@ -70,3 +70,8 @@ def test_local_ui_beta_smoke_contains_expected_workflow_sections() -> None:
     ]
     for token in tokens:
         assert token in html
+
+
+def test_local_ui_frontend_contract_smoke_tokens() -> None:
+    html=CraneRunwayLocalWebUi().render_index_html();
+    for t in ["Frontend Self-Test","/assets/frontend_contract.json","Run Frontend Self-Test","LOCAL_UI_BETA_VERSION","initializeLocalUi"]: assert t in html

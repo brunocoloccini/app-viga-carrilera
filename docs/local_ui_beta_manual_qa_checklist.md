@@ -249,3 +249,7 @@ Expected:
 - Confirm Validate/Run still works.
 - Confirm Advanced JSON remains available.
 - Confirm no JavaScript console errors (manual browser check).
+
+
+## V1-092 Frontend Contract
+Added frontend contract endpoint, self-test panel, and CLI contract checker.

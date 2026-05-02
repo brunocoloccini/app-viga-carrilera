@@ -18,7 +18,7 @@ from .case_templates import (
 )
 
 
-from .local_ui_assets import render_local_ui_css, render_local_ui_js
+from .local_ui_assets import render_local_ui_css, render_local_ui_frontend_contract, render_local_ui_js
 
 class LocalWebUiError(Exception):
     """Base error for local web UI workflows."""
@@ -2112,6 +2112,19 @@ function showNextStepRecommendation(text){const el=document.getElementById('app_
 
 </script>
 </div><aside class="summary-card"><h3>Compact Summary</h3><table><tbody><tr><td>Current case</td><td id="summary_case_id">-</td></tr><tr><td>Current project</td><td id="summary_project">-</td></tr><tr><td>Validation status</td><td id="summary_validation">Unknown</td></tr><tr><td>Run status</td><td id="summary_run">Unknown</td></tr><tr><td>Overall status</td><td id="summary_overall">Idle</td></tr><tr><td>Autosave status</td><td id="summary_autosave">Unknown</td></tr></tbody></table></aside></div></div>
+
+<div class="panel" id="frontend_self_test_panel">
+  <h3>Frontend Self-Test</h3>
+  <p>Frontend self-test checks UI wiring only. It does not prove engineering correctness.</p>
+  <div class="toolbar">
+    <button data-action="run-frontend-self-test">Run Frontend Self-Test</button>
+    <button onclick="copyFrontendSelfTestJson()">Copy Frontend Self-Test JSON</button>
+    <button onclick="downloadFrontendSelfTestJson()">Download Frontend Self-Test JSON</button>
+  </div>
+  <pre id="frontend_self_test_output">No frontend self-test result available. Run self-test first.</pre>
+  <div style="display:none;">/assets/frontend_contract.json LOCAL_UI_BETA_VERSION initializeLocalUi</div>
+  <div style="display:none;">Frontend self-test complete. Frontend self-test found issues. Frontend self-test JSON copied. Frontend self-test JSON downloaded.</div>
+</div>
 <script src="/assets/local_ui.js"></script></body></html>"""
 
     def template_case_data(self, template_id: str = "ipn-with-cover") -> dict[str, Any]:
@@ -2342,6 +2355,8 @@ function showNextStepRecommendation(text){const el=document.getElementById('app_
                 return LocalWebUiResponse(200, "text/css; charset=utf-8", render_local_ui_css())
             if method == "GET" and path == "/assets/local_ui.js":
                 return LocalWebUiResponse(200, "application/javascript; charset=utf-8", render_local_ui_js())
+            if method == "GET" and path == "/assets/frontend_contract.json":
+                return self._json_response(200, render_local_ui_frontend_contract())
             if method == "GET" and path == "/api/health":
                 return self.handle_health_request()
             if method == "GET" and path == "/api/templates":

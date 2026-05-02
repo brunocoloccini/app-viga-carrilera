@@ -50,3 +50,7 @@
 - Design-system CSS variables/classes for consistent cards/actions/status.
 - Asset endpoints for local CSS/JS delivery.
 - Advanced JSON remains in a debug-focused area.
+
+
+## V1-092 Frontend Contract
+Added frontend contract endpoint, self-test panel, and CLI contract checker.

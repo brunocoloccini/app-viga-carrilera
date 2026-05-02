@@ -160,3 +160,7 @@ bash scripts/start_local_ui_beta.sh
 # PowerShell
 scripts/start_local_ui_beta.ps1
 ```
+
+
+## V1-092 Frontend Contract
+Added frontend contract endpoint, self-test panel, and CLI contract checker.
