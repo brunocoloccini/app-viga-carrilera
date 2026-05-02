@@ -676,3 +676,10 @@ Limitations remain unchanged:
 - no official code checks
 - engineering review required
 \n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n
+
+
+## Frontend architecture
+- `local_web_ui.py` handles routing and backend local UI APIs.
+- `local_ui_assets.py` contains framework-free HTML/CSS/JS asset helpers.
+- Assets are served from `/assets/local_ui.css` and `/assets/local_ui.js`.
+- JavaScript syntax regression remains covered via `node --check` when available.

@@ -974,3 +974,29 @@ def test_render_index_html_tabbed_app_shell_v1_089() -> None:
     ]
     for token in required:
         assert token in html
+
+
+def test_local_ui_asset_css_endpoint() -> None:
+    ui = CraneRunwayLocalWebUi()
+    response = ui.handle_request("GET", "/assets/local_ui.css")
+    assert response.status_code == 200
+    assert "text/css" in response.content_type
+    body = response.body if isinstance(response.body, str) else response.body.decode("utf-8")
+    for token in ["--color-bg", ".app-shell", ".app-card", ".tab-button", ".primary-action"]:
+        assert token in body
+
+
+def test_local_ui_asset_js_endpoint() -> None:
+    ui = CraneRunwayLocalWebUi()
+    response = ui.handle_request("GET", "/assets/local_ui.js")
+    assert response.status_code == 200
+    assert "application/javascript" in response.content_type
+    body = response.body if isinstance(response.body, str) else response.body.decode("utf-8")
+    for token in ["LOCAL_UI_BETA_VERSION", "initializeLocalUi", "setupActionHandlers", "handleUiAction", "validateCase", "runCase"]:
+        assert token in body
+
+
+def test_render_index_html_references_asset_endpoints() -> None:
+    html = CraneRunwayLocalWebUi().render_index_html()
+    for token in ["/assets/local_ui.css", "/assets/local_ui.js", "App Viga Carrilera", "Crane Runway Local UI"]:
+        assert token in html

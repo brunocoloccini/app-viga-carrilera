@@ -18,6 +18,8 @@ from .case_templates import (
 )
 
 
+from .local_ui_assets import render_local_ui_css, render_local_ui_js
+
 class LocalWebUiError(Exception):
     """Base error for local web UI workflows."""
 
@@ -94,7 +96,7 @@ class CraneRunwayLocalWebUi:
 
     def render_index_html(self) -> str:
         return """<!doctype html>
-<html lang=\"en\"><head><meta charset=\"utf-8\"/><title>Crane Runway Local UI</title>
+<html lang=\"en\"><head><meta charset=\"utf-8\"/><title>Crane Runway Local UI</title><link rel=\"stylesheet\" href=\"/assets/local_ui.css\"/>
 <style>
 body { font-family: Arial, sans-serif; margin: 1rem; background: #f8fafc; color: #111827; }
 h1 { margin-bottom: 0.3rem; }
@@ -2110,7 +2112,7 @@ function showNextStepRecommendation(text){const el=document.getElementById('app_
 
 </script>
 </div><aside class="summary-card"><h3>Compact Summary</h3><table><tbody><tr><td>Current case</td><td id="summary_case_id">-</td></tr><tr><td>Current project</td><td id="summary_project">-</td></tr><tr><td>Validation status</td><td id="summary_validation">Unknown</td></tr><tr><td>Run status</td><td id="summary_run">Unknown</td></tr><tr><td>Overall status</td><td id="summary_overall">Idle</td></tr><tr><td>Autosave status</td><td id="summary_autosave">Unknown</td></tr></tbody></table></aside></div></div>
-</body></html>"""
+<script src="/assets/local_ui.js"></script></body></html>"""
 
     def template_case_data(self, template_id: str = "ipn-with-cover") -> dict[str, Any]:
         try:
@@ -2336,6 +2338,10 @@ function showNextStepRecommendation(text){const el=document.getElementById('app_
         try:
             if method == "GET" and path == "/":
                 return LocalWebUiResponse(200, "text/html; charset=utf-8", self.render_index_html())
+            if method == "GET" and path == "/assets/local_ui.css":
+                return LocalWebUiResponse(200, "text/css; charset=utf-8", render_local_ui_css())
+            if method == "GET" and path == "/assets/local_ui.js":
+                return LocalWebUiResponse(200, "application/javascript; charset=utf-8", render_local_ui_js())
             if method == "GET" and path == "/api/health":
                 return self.handle_health_request()
             if method == "GET" and path == "/api/templates":

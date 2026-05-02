@@ -43,3 +43,10 @@
 - **Support**: About/Beta status, Support Bundle, Issue Report Helper, Diagnostics, shortcuts/limitations.
 - **Advanced JSON**: JSON editor/import/format/clear/raw response/autosave.
 \n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n
+
+
+## UI architecture
+- App shell and tabbed workflow layout.
+- Design-system CSS variables/classes for consistent cards/actions/status.
+- Asset endpoints for local CSS/JS delivery.
+- Advanced JSON remains in a debug-focused area.

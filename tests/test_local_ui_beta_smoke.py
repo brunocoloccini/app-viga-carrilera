@@ -65,6 +65,8 @@ def test_local_ui_beta_smoke_contains_expected_workflow_sections() -> None:
         "/api/templates",
         "/api/validate",
         "/api/run",
+        "/assets/local_ui.css",
+        "/assets/local_ui.js",
     ]
     for token in tokens:
         assert token in html

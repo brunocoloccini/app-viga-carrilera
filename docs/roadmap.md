@@ -239,3 +239,5 @@ Local UI beta release-candidate consolidation pack.
 
 - V1-089: Local UI tabbed app-shell redesign for crane runway beta workflows.
 \n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n
+
+- V1-091: Local UI frontend architecture, asset split, and design-system pack.

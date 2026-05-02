@@ -240,3 +240,12 @@ Expected:
 - Confirm compact summary updates (case/project/validation/run/overall/autosave).
 - Refresh browser and confirm active tab restores from local storage (`craneRunway.activeTab`).
 \n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n
+
+
+## UI asset split checks
+- Hard refresh the UI.
+- Confirm tabs still switch correctly.
+- Confirm styling from `/assets/local_ui.css` is applied.
+- Confirm Validate/Run still works.
+- Confirm Advanced JSON remains available.
+- Confirm no JavaScript console errors (manual browser check).
