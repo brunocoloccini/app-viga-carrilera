@@ -687,3 +687,12 @@ Limitations remain unchanged:
 
 ## V1-092 Frontend Contract
 Added frontend contract endpoint, self-test panel, and CLI contract checker.
+
+## Beginner Dashboard
+Includes a focused landing area and Case Readiness plus Wizard Change Summary.
+
+## Case Wizard
+Wizard is a convenience layer that writes JSON. Raw JSON remains the source exchanged with backend validation/run.
+
+## Open Advanced JSON
+Use Open Advanced JSON to switch to advanced editing when needed.

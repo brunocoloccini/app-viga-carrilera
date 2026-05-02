@@ -54,3 +54,7 @@
 
 ## V1-092 Frontend Contract
 Added frontend contract endpoint, self-test panel, and CLI contract checker.
+
+- Home: Beginner Dashboard, Wizard Change Summary.
+- Home/Form-first workflow: Case Wizard.
+- Home/Review: Case Readiness.

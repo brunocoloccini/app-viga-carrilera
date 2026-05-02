@@ -98,3 +98,5 @@ PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py
 
 ## V1-092 Frontend Contract
 Added frontend contract endpoint, self-test panel, and CLI contract checker.
+
+- First-time users should start with Beginner Dashboard and Case Wizard in the local UI.

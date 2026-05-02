@@ -76,3 +76,6 @@
 
 ## V1-092 Frontend Contract
 Added frontend contract endpoint, self-test panel, and CLI contract checker.
+
+- Wizard is a convenience editor and may not expose every advanced JSON field.
+- Suggested action: Use Advanced JSON for advanced fields.

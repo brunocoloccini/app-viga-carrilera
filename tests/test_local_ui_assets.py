@@ -62,3 +62,12 @@ def test_js_and_css_cover_contract_tokens() -> None:
     c=render_local_ui_frontend_contract(); js=render_local_ui_js(); css=render_local_ui_css();
     for fn in c["required_functions"]: assert fn in js
     for tok in ["--color-bg",".app-shell",".app-card",".tab-button",".primary-action"]: assert tok in css
+
+
+def test_v1093_contract_and_js_tokens() -> None:
+    c=render_local_ui_frontend_contract(); js=render_local_ui_js()
+    for token in ["Beginner Dashboard","Case Wizard","Case Readiness","Wizard Change Summary"]: assert token in c["required_panels"]
+    assert "start-case-wizard" in c["required_actions"]
+    assert "startCaseWizard" in c["required_functions"]
+    assert "craneRunway.caseWizardState" in c["required_storage_keys"]
+    for token in ["startCaseWizard","nextWizardStep","validateWizardStep","computeCaseReadiness","updateCaseReadiness"]: assert token in js
