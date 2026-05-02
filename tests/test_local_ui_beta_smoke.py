@@ -21,6 +21,9 @@ def test_local_ui_beta_smoke_contains_expected_workflow_sections() -> None:
         "Result Interpretation",
         "HTML Report",
         "Package Export",
+        "Local UI RC Status",
+        "Keyboard Shortcuts",
+        "Known limitations",
         "Scenario Comparison",
         # Persistence / export
         "Autosave",

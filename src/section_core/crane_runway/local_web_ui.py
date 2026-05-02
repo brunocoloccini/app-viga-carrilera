@@ -235,6 +235,28 @@ th { background: #f9fafb; }
   </div>
 </div>
 <div class=\"panel\" style=\"margin-top: 1rem;\">
+  <h3>Local UI RC Status</h3>
+  <p style=\"margin-top:0.2rem;color:#92400e;\">Release-candidate status means the local UI workflow is ready for beta testing; it does not mean engineering results are independently verified.</p>
+  <table><tbody id=\"rc_status_body\"></tbody></table>
+  <div class=\"toolbar\" style=\"margin-top:0;\">
+    <button aria-label=\"Copy RC checklist summary\" onclick=\"copyRcChecklistSummary()\">Copy RC Checklist Summary</button>
+    <button aria-label=\"Mark manual QA completed\" onclick=\"markManualQaCompleted()\">Mark Manual QA Completed</button>
+    <button aria-label=\"Reset RC checklist status\" onclick=\"resetRcChecklistStatus()\">Reset RC Checklist Status</button>
+  </div>
+</div>
+<div class=\"panel\" style=\"margin-top: 1rem;\">
+  <h3>Keyboard Shortcuts</h3>
+  <ul>
+    <li>Ctrl+Enter: Validate</li>
+    <li>Ctrl+Shift+Enter: Run</li>
+    <li>Ctrl+S: Save current JSON locally/autosave trigger only</li>
+    <li>Ctrl+Shift+F: Format JSON</li>
+    <li>Ctrl+Shift+H: Toggle Help</li>
+    <li>Escape: Clear transient status message if practical</li>
+  </ul>
+  <p style=\"margin-top:0.2rem;color:#4b5563;\">Accessibility support is basic and will be improved in future versions.</p>
+</div>
+<div class=\"panel\" style=\"margin-top: 1rem;\">
   <h3>Project Archive Export</h3>
   <p style=\"margin-top:0.2rem;color:#4b5563;\">Project archives are generated locally from the repository projects/ directory.</p>
   <p style=\"margin-top:0.2rem;color:#92400e;\">Archive export is for backup/sharing only and does not prove engineering correctness.</p>
@@ -253,6 +275,7 @@ th { background: #f9fafb; }
     <tr><td>App</td><td>App Viga Carrilera</td></tr>
     <tr><td>Module</td><td>Crane Runway Local UI</td></tr>
     <tr><td>Beta status</td><td>Internal beta</td></tr>
+    <tr><td>Local UI beta version</td><td>V1-086</td></tr>
     <tr><td>Schema version</td><td>Schema version: 1.0</td></tr>
     <tr><td>Calculation scope</td><td>generic crane runway elastic demand workflow</td></tr>
     <tr><td>Compliance scope</td><td>not official CIRSOC/CISC/AISC compliance checks</td></tr>
@@ -464,7 +487,7 @@ th { background: #f9fafb; }
     <button onclick="resetPanelLayout()">Reset Panel Layout</button>
   </div>
 </div>
-<div id=\"status\" class=\"status\">Ready.</div>
+<div id=\"status\" class=\"status\" role=\"status\" aria-live=\"polite\">Ready.</div>
 <div class=\"page\">
   <div class=\"left-col\">
     <div class=\"panel\">
@@ -498,6 +521,9 @@ let lastIssueReportText = "";
 let lastRawResponse = null;
 let lastScenarioComparisonResults = null;
 const scenarioStorageKey = 'craneRunway.scenarios';
+const LOCAL_UI_BETA_VERSION = "V1-086";
+const LOCAL_UI_SCHEMA_VERSION = "1.0";
+const RC_CHECKLIST_STATUS_KEY = "craneRunway.rcChecklistStatus";
 const diagnosticsState = {ui_loaded:true, backend_health:null, templates_endpoint:null, validate_endpoint:null, run_endpoint:null, javascript_status:true, autosave_status:null};
 const autosaveStorageKeys = {
   caseJson: 'craneRunway.caseJson',
@@ -588,7 +614,7 @@ function markWorkflowStepDone(stepId) { updateWorkflowStep(stepId, 'Done'); }
 function markWorkflowStepNeedsAttention(stepId) { updateWorkflowStep(stepId, 'Needs attention'); }
 function resetGuidedWorkflow() { for (const step of workflowSteps) workflowState[step.id]='Pending'; renderGuidedWorkflow(); const demo=document.getElementById('demo_workflow_status'); if (demo) demo.textContent='Ready for demo workflow.'; }
 function renderBetaReadiness() { const panel=document.getElementById('beta_readiness_output'); if (!panel) return; const rows=[['UI JavaScript loaded', betaReadinessState.ui_js_loaded===true?'PASS':'FAIL'],['Backend health', betaReadinessState.backend_health===true?'PASS':(betaReadinessState.backend_health===false?'FAIL':'N/A')],['JSON loaded', betaReadinessState.json_loaded===true?'PASS':(betaReadinessState.json_loaded===false?'FAIL':'N/A')],['Validation status', betaReadinessState.validation_status===true?'PASS':(betaReadinessState.validation_status===false?'FAIL':'N/A')],['Run status', betaReadinessState.run_status===true?'PASS':(betaReadinessState.run_status===false?'FAIL':'N/A')],['Autosave available', betaReadinessState.autosave_available===true?'PASS':'FAIL']]; let html='<table><thead><tr><th>Check</th><th>Status</th></tr></thead><tbody>'; for (const row of rows) { const cls=row[1]==='PASS'?'status-pass':(row[1]==='FAIL'?'status-fail':'status-na'); html += '<tr><td>'+escapeHtml(row[0])+'</td><td class="'+cls+'">'+row[1]+'</td></tr>'; } panel.innerHTML=html+'</tbody></table>'; }
-function updateBetaReadiness(key, value) { betaReadinessState[key]=value; renderBetaReadiness(); }
+function updateBetaReadiness(key, value) { betaReadinessState[key]=value; renderBetaReadiness(); renderRcStatus(); setupKeyboardShortcuts(); }
 
 function getCurrentCaseSummaryFromJsonText(){
   try { const data = JSON.parse(getCurrentCaseJsonText()); return {parse_ok:true,data,summary:{case_id:data?.meta?.case_id||'',base_shape_id:data?.section?.base_shape_id||'',material_id:data?.material?.id||'',wheel_count:Array.isArray(data?.loads?.wheels)?data.loads.wheels.length:0}}; }
@@ -646,6 +672,16 @@ Attach support_bundle.json if available.
 This is an internal beta tool. Results require engineering review and are not official CIRSOC/CISC/AISC compliance checks.`; renderIssueReportText(lastIssueReportText); setStatus('Issue report text generated.'); }
 async function copyIssueReportText(){ if(!lastIssueReportText){ generateIssueReportText(); } await copyText(lastIssueReportText,'Issue report text copied.','Could not copy issue report text.'); }
 
+
+async function safeUiAction(actionName, fn) {
+  try { return await fn(); }
+  catch (err) { console.error('Unexpected UI error in ' + actionName, err); setStatus('Unexpected UI error in ' + actionName + '. See raw response or browser console.'); return null; }
+}
+function renderRcStatus() { const body=document.getElementById('rc_status_body'); if (!body) return; const manual=localStorage.getItem(RC_CHECKLIST_STATUS_KEY)==='manual-qa-complete'; const rows=[['Health check','Required'],['UI diagnostics','Required'],['RC acceptance check','Required'],['Manual QA checklist',manual?'Required (completed)':'Required'],['Support bundle','Recommended'],['Project archive export','Available'],['Known limitations','Recommended'],['Engineering review','Not a substitute for engineering review']]; body.innerHTML=rows.map((r)=>'<tr><td>'+escapeHtml(r[0])+'</td><td>'+escapeHtml(r[1])+'</td></tr>').join(''); }
+async function copyRcChecklistSummary(){ return safeUiAction('copyRcChecklistSummary', async ()=>{ await navigator.clipboard.writeText(`Local UI RC Status\nHealth check: Required\nUI diagnostics: Required\nRC acceptance check: Required\nManual QA checklist: Required\nSupport bundle: Recommended\nProject archive export: Available\nKnown limitations: Recommended\nEngineering review: Not a substitute for engineering review`); setStatus('RC checklist summary copied.');});}
+function markManualQaCompleted(){ localStorage.setItem(RC_CHECKLIST_STATUS_KEY,'manual-qa-complete'); renderRcStatus(); setStatus('Manual QA marked complete.'); }
+function resetRcChecklistStatus(){ localStorage.removeItem(RC_CHECKLIST_STATUS_KEY); renderRcStatus(); setStatus('RC checklist status reset.'); }
+function setupKeyboardShortcuts(){ document.addEventListener('keydown', (event)=>{ if (event.ctrlKey && event.key==='Enter' && !event.shiftKey) { event.preventDefault(); safeUiAction('validateCase', ()=>validateCase()); return; } if (event.ctrlKey && event.shiftKey && event.key==='Enter') { event.preventDefault(); safeUiAction('runCase', ()=>runCase()); return; } if (event.ctrlKey && event.shiftKey && event.key.toLowerCase()==='f') { event.preventDefault(); safeUiAction('formatJson', ()=>formatJson()); return; } if (event.ctrlKey && event.shiftKey && event.key.toLowerCase()==='h') { event.preventDefault(); if (typeof toggleFieldHelp==='function') toggleFieldHelp(); return; } if (event.ctrlKey && event.key.toLowerCase()==='s') { event.preventDefault(); if (typeof saveSession==='function') saveSession(); setStatus('JSON saved to browser autosave.'); return; } if (event.key==='Escape') { const status=document.getElementById('status'); if (status) status.textContent=''; } }); setStatus('Keyboard shortcuts enabled.'); }
 async function checkBackendHealth() { try { const r=await fetch('/api/health'); const data=await r.json(); const ok=Boolean(r.ok && data && data.ok===true); const panel=document.getElementById('backend_health_status'); if (panel) panel.textContent=ok?'Backend health: OK.':'Backend health: FAIL.'; updateBetaReadiness('backend_health', ok); setStatus(ok?'Backend health: OK.':'Backend health: FAIL.'); } catch (err) { const panel=document.getElementById('backend_health_status'); if (panel) panel.textContent='Backend health: FAIL.'; updateBetaReadiness('backend_health', false); setStatus('Backend health: FAIL.'); } }
 function setDiagnosticStatus(key, status) { diagnosticsState[key]=status; }
 function updateDiagnosticsTimestamp() { const panel=document.getElementById('ui_diagnostics_timestamp'); if (panel) panel.textContent='Last diagnostic run: ' + new Date().toISOString(); }
@@ -1905,7 +1941,7 @@ async function runCase() {
   } catch (err) { setStatus('Network/error during run.'); }
 }
 renderGuidedWorkflow();
-renderBetaReadiness();
+renderBetaReadiness(); renderRcStatus(); setupKeyboardShortcuts();
 renderUiDiagnostics();
 renderHelpPanel();
 restoreSession();

@@ -202,3 +202,6 @@ Important: this is a local beta tool. Results require engineering review.
 ## If something goes wrong
 - Use **Issue Report Helper** to copy issue report text.
 - Use **Support Bundle** to download support_bundle.json for debugging.
+
+## Recommended beta path
+Use launcher + Run Demo Workflow + Local UI RC Status as the primary path. See `docs/local_ui_beta_feature_map.md` and `docs/local_ui_beta_known_issues.md`.
