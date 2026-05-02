@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+from io import BytesIO
 import re
 import shutil
 import subprocess
+import zipfile
 
 import pytest
 
@@ -218,6 +220,27 @@ def test_render_index_html_contains_expected_controls() -> None:
         "clearRunComparison",
         "copyRunComparisonJson",
         "downloadRunComparisonJson",
+        "Project Archive Export",
+        "Refresh Archive Manifest",
+        "Download Project Archive",
+        "Copy Archive Manifest JSON",
+        "Download Archive Manifest JSON",
+        "Project archives are generated locally from the repository projects/ directory.",
+        "Archive export is for backup/sharing only and does not prove engineering correctness.",
+        "Archive manifest refreshed.",
+        "Project archive download started.",
+        "No archive manifest available. Refresh archive manifest first.",
+        "project_name",
+        "generated_at",
+        "included_files",
+        "archive_format_version",
+        "refreshArchiveManifest",
+        "renderArchiveManifest",
+        "downloadProjectArchive",
+        "copyArchiveManifestJson",
+        "downloadArchiveManifestJson",
+        "getArchiveProjectName",
+        "setArchiveStatus",
         "getSelectedBaselineRunId",
         "getSelectedComparisonRunIds",
         "buildProjectRunComparison",
@@ -719,6 +742,35 @@ def test_project_workspace_routes(tmp_path) -> None:
 
     assert ui.handle_request("GET", "/api/projects/../bad/runs").status_code == 400
     assert ui.handle_request("GET", "/api/projects/qa_project/runs/../bad/summary").status_code == 400
+
+
+def test_project_archive_manifest_and_zip_routes(tmp_path) -> None:
+    ui = CraneRunwayLocalWebUi(projects_root=tmp_path / "projects")
+    ui.handle_request("POST", "/api/projects/create", body=json.dumps({"project_name": "qa_project", "template_id": "ipn-with-cover"}).encode())
+    ui.handle_request("POST", "/api/projects/qa_project/run-history")
+    manifest_resp = ui.handle_request("GET", "/api/projects/qa_project/archive-manifest")
+    assert manifest_resp.status_code == 200
+    manifest = json.loads(manifest_resp.body)
+    assert manifest["project_name"] == "qa_project"
+    assert "archive_manifest.json" in manifest["included_files"]
+    assert "input_case.json" in manifest["included_files"]
+
+    archive_resp = ui.handle_request("GET", "/api/projects/qa_project/archive")
+    assert archive_resp.status_code == 200
+    assert archive_resp.content_type == "application/zip"
+    assert "qa_project_archive.zip" in archive_resp.headers.get("Content-Disposition", "")
+    with zipfile.ZipFile(BytesIO(archive_resp.body_bytes()), "r") as archive_zip:
+        names = archive_zip.namelist()
+        assert "input_case.json" in names
+        assert "archive_manifest.json" in names
+        assert all(not name.startswith("/") for name in names)
+        archive_manifest = json.loads(archive_zip.read("archive_manifest.json").decode("utf-8"))
+        assert archive_manifest["archive_format_version"] == "1.0"
+
+    assert ui.handle_request("GET", "/api/projects/qa project/archive").status_code == 400
+    assert ui.handle_request("GET", "/api/projects/../bad/archive").status_code == 400
+    missing_resp = ui.handle_request("GET", "/api/projects/missing_project/archive")
+    assert missing_resp.status_code == 404
 
 
 def test_inline_script_defines_critical_ui_functions() -> None:

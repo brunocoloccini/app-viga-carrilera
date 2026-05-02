@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from io import BytesIO
 import json
 from pathlib import Path
 import re
 from typing import Any
+import zipfile
 
 from .api_service import CraneRunwayApiService
 from .case_templates import (
@@ -47,6 +49,12 @@ class LocalWebUiResponse:
 
 INVALID_PROJECT_NAME_ERROR = "Invalid project name. Use only letters, numbers, dash, and underscore."
 INVALID_RUN_ID_ERROR = "Invalid run ID. Use only letters, numbers, dash, and underscore."
+ARCHIVE_NOTES = [
+    "Local beta project archive.",
+    "Results require engineering review.",
+    "Generic checks only; no official CIRSOC/CISC/AISC compliance checks.",
+    "No fatigue, torsional/warping stress, or LTB checks are performed.",
+]
 
 
 class CraneRunwayLocalWebUi:
@@ -225,6 +233,19 @@ th { background: #f9fafb; }
     <button onclick=\"downloadHtmlReport()\">Download HTML Report</button>
     <button onclick=\"downloadAllPackageFiles()\">Download All Package Files</button>
   </div>
+</div>
+<div class=\"panel\" style=\"margin-top: 1rem;\">
+  <h3>Project Archive Export</h3>
+  <p style=\"margin-top:0.2rem;color:#4b5563;\">Project archives are generated locally from the repository projects/ directory.</p>
+  <p style=\"margin-top:0.2rem;color:#92400e;\">Archive export is for backup/sharing only and does not prove engineering correctness.</p>
+  <div class=\"toolbar\" style=\"margin-top:0;\">
+    <button onclick=\"refreshArchiveManifest()\">Refresh Archive Manifest</button>
+    <button onclick=\"downloadProjectArchive()\">Download Project Archive</button>
+    <button onclick=\"copyArchiveManifestJson()\">Copy Archive Manifest JSON</button>
+    <button onclick=\"downloadArchiveManifestJson()\">Download Archive Manifest JSON</button>
+  </div>
+  <div id=\"archive_export_status\" style=\"margin-top:0.35rem;color:#374151;\">Select a project first.</div>
+  <pre id=\"archive_manifest_output\">Refresh archive manifest to view archive details.</pre>
 </div>
 <div class="panel collapsible-panel" id="panel-common-inputs" data-panel-key="common-inputs" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Common Inputs</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
@@ -1485,6 +1506,71 @@ async function runProject() {
   if (data.report_html) { latestHtmlReport = data.report_html; document.getElementById('html_output').srcdoc = latestHtmlReport; }
   setProjectWorkspaceStatus('Project run complete.');
 }
+function setArchiveStatus(message) {
+  document.getElementById('archive_export_status').textContent = message;
+}
+function getArchiveProjectName() {
+  return getSelectedProjectName();
+}
+function renderArchiveManifest(manifest) {
+  const includedCount = Array.isArray(manifest.included_files) ? manifest.included_files.length : 0;
+  document.getElementById('archive_manifest_output').textContent = JSON.stringify({
+    project_name: manifest.project_name,
+    generated_at: manifest.generated_at,
+    archive_format_version: manifest.archive_format_version,
+    included_files: manifest.included_files || [],
+    included_files_count: includedCount,
+    notes: manifest.notes || [],
+  }, null, 2);
+}
+async function refreshArchiveManifest() {
+  const projectName = getArchiveProjectName();
+  if (!projectName) {
+    setArchiveStatus('Select a project first.');
+    return;
+  }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/archive-manifest');
+  const data = await r.json();
+  if (!r.ok) {
+    setArchiveStatus(data.error || 'Could not refresh archive manifest.');
+    return;
+  }
+  window.lastArchiveManifest = data;
+  renderArchiveManifest(data);
+  setArchiveStatus('Archive manifest refreshed.');
+}
+async function downloadProjectArchive() {
+  const projectName = getArchiveProjectName();
+  if (!projectName) {
+    setArchiveStatus('Select a project first.');
+    return;
+  }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/archive');
+  if (!r.ok) {
+    const data = await r.json();
+    setArchiveStatus(data.error || 'Could not download project archive.');
+    return;
+  }
+  const blob = await r.blob();
+  downloadBlob(blob, projectName + '_archive.zip');
+  setArchiveStatus('Project archive download started.');
+}
+async function copyArchiveManifestJson() {
+  if (!window.lastArchiveManifest) {
+    setArchiveStatus('No archive manifest available. Refresh archive manifest first.');
+    return;
+  }
+  await copyText(JSON.stringify(window.lastArchiveManifest, null, 2));
+  setArchiveStatus('Archive manifest JSON copied.');
+}
+function downloadArchiveManifestJson() {
+  if (!window.lastArchiveManifest) {
+    setArchiveStatus('No archive manifest available. Refresh archive manifest first.');
+    return;
+  }
+  downloadText('archive_manifest.json', JSON.stringify(window.lastArchiveManifest, null, 2));
+  setArchiveStatus('Archive manifest JSON downloaded.');
+}
 function showProjectOutputsInfo() {
   const projectName = getSelectedProjectName();
   if (!validateProjectNameClient(projectName)) { setProjectWorkspaceStatus('Invalid project name. Use only letters, numbers, dash, and underscore.'); return; }
@@ -1909,6 +1995,59 @@ if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clear
             return self._json_response(404, {"error": "Run HTML report was not found."})
         return self._json_response(200, {"run_id": run_id, "html_report": html_path.read_text(encoding="utf-8")})
 
+    def _build_project_archive_manifest(self, project_name: str) -> dict[str, Any]:
+        project_dir = self._project_dir(project_name)
+        if not project_dir.is_dir():
+            raise FileNotFoundError("Project was not found.")
+        included_files: list[str] = []
+        for relative_path in [Path("input_case.json"), Path("README.md")]:
+            if (project_dir / relative_path).is_file():
+                included_files.append(relative_path.as_posix())
+        outputs_dir = project_dir / "outputs"
+        if outputs_dir.is_dir():
+            for item in sorted(outputs_dir.rglob("*")):
+                if item.is_file():
+                    included_files.append(item.relative_to(project_dir).as_posix())
+        included_files.append("archive_manifest.json")
+        return {
+            "project_name": project_name,
+            "generated_at": datetime.now(UTC).isoformat(),
+            "generated_by": "CraneRunwayLocalWebUi",
+            "archive_format_version": "1.0",
+            "included_files": included_files,
+            "notes": ARCHIVE_NOTES,
+        }
+
+    def handle_project_archive_manifest_request(self, project_name: str) -> LocalWebUiResponse:
+        try:
+            manifest = self._build_project_archive_manifest(project_name)
+        except FileNotFoundError:
+            return self._json_response(404, {"error": "Project was not found."})
+        return self._json_response(200, manifest)
+
+    def handle_project_archive_request(self, project_name: str) -> LocalWebUiResponse:
+        try:
+            manifest = self._build_project_archive_manifest(project_name)
+        except FileNotFoundError:
+            return self._json_response(404, {"error": "Project was not found."})
+        project_dir = self._project_dir(project_name)
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, mode="w", compression=zipfile.ZIP_DEFLATED) as archive_zip:
+            for relative in manifest["included_files"]:
+                if relative == "archive_manifest.json":
+                    archive_zip.writestr("archive_manifest.json", f"{json.dumps(manifest, indent=2)}\n")
+                    continue
+                entry_path = Path(relative)
+                if entry_path.is_absolute():
+                    continue
+                archive_zip.write(project_dir / entry_path, arcname=entry_path.as_posix())
+        return LocalWebUiResponse(
+            200,
+            "application/zip",
+            zip_buffer.getvalue(),
+            headers={"Content-Disposition": f'attachment; filename="{project_name}_archive.zip"'},
+        )
+
     def handle_request(self, method: str, path: str, body: bytes | None = None) -> LocalWebUiResponse:
         try:
             if method == "GET" and path == "/":
@@ -1928,6 +2067,12 @@ if (clearWheelTableButton) clearWheelTableButton.addEventListener('click', clear
             if method == "GET" and path.startswith("/api/projects/") and path.endswith("/runs"):
                 project_name = path.removeprefix("/api/projects/").removesuffix("/runs")
                 return self.handle_project_runs_list_request(project_name)
+            if method == "GET" and path.startswith("/api/projects/") and path.endswith("/archive-manifest"):
+                project_name = path.removeprefix("/api/projects/").removesuffix("/archive-manifest")
+                return self.handle_project_archive_manifest_request(project_name)
+            if method == "GET" and path.startswith("/api/projects/") and path.endswith("/archive"):
+                project_name = path.removeprefix("/api/projects/").removesuffix("/archive")
+                return self.handle_project_archive_request(project_name)
             if method == "GET" and path.startswith("/api/projects/") and path.endswith("/summary") and "/runs/" in path:
                 parts = path.split("/")
                 if len(parts) < 7:

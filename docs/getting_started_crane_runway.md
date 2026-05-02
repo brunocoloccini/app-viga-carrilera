@@ -188,3 +188,11 @@ Important: this is a local beta tool. Results require engineering review.
 5. Select one or more **Comparison Runs**.
 6. Click **Compare Selected Runs** to render rows, deltas, and PASS/FAIL indicators.
 7. Click **Download Run Comparison JSON** to save `project_run_comparison.json`.
+
+
+## Project archive backup workflow (V1-083)
+1. Create/open project.
+2. Save/run project.
+3. Refresh archive manifest.
+4. Download project archive.
+5. Store archive outside repo if desired.

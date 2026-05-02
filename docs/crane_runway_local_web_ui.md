@@ -594,3 +594,34 @@ The Local UI now includes a **Project Workspace** panel for local project-file w
 - Delta fields are browser-side arithmetic vs the selected baseline run (`delta_max_vertical_moment_Nmm`, `delta_max_vertical_shear_abs_N`, `delta_max_vertical_deflection_mm`, `delta_max_biaxial_stress_MPa`).
 - Copy/download exports `project_run_comparison.json` with project name, baseline, compared runs, generated timestamp, rows, and notes.
 - Limitations: uses existing `summary.json` values only; not a structural optimization engine; not official CIRSOC/CISC/AISC verification; engineering review required.
+
+## Project Archive Export panel (V1-083)
+
+The local UI includes a **Project Archive Export** panel for project-level backup/sharing.
+
+Actions:
+- **Refresh Archive Manifest**: requests `/api/projects/<project_name>/archive-manifest` and renders `project_name`, `generated_at`, `archive_format_version`, `included_files`, and notes.
+- **Download Project Archive**: downloads `<project_name>_archive.zip` from `/api/projects/<project_name>/archive`.
+- **Copy Archive Manifest JSON**: copies the last loaded `archive_manifest.json` payload.
+- **Download Archive Manifest JSON**: downloads the last loaded manifest as `archive_manifest.json`.
+
+Archive ZIP content (when present in project):
+- `input_case.json`
+- `README.md`
+- `outputs/**`
+- generated `archive_manifest.json`
+
+Security constraints (local-only):
+- Project names are sanitized and invalid names are rejected.
+- Path traversal (`..`, `/`, `\`, spaces, empty names) is rejected.
+- Archive entries are relative paths only.
+- Reads are restricted to the selected project under repository `projects/`.
+
+Limitations:
+- backup/share helper only;
+- no cloud sync;
+- no authentication;
+- no database;
+- no public deployment;
+- no official CIRSOC/CISC/AISC checks;
+- engineering review required.
