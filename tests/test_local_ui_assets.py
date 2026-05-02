@@ -71,3 +71,11 @@ def test_v1093_contract_and_js_tokens() -> None:
     assert "startCaseWizard" in c["required_functions"]
     assert "craneRunway.caseWizardState" in c["required_storage_keys"]
     for token in ["startCaseWizard","nextWizardStep","validateWizardStep","computeCaseReadiness","updateCaseReadiness"]: assert token in js
+
+def test_v1094_contract_and_js_tokens() -> None:
+    c=render_local_ui_frontend_contract(); js=render_local_ui_js()
+    for token in ["Visual Workflow Map","What should I do now?","Status Legend"]: assert token in c["required_panels"]
+    for token in ["start-setup","set-simple-mode"]: assert token in c["required_actions"]
+    assert "craneRunway.uiMode" in c["required_storage_keys"]
+    for token in ["renderVisualWorkflowMap","computeNextUserAction"]: assert token in c["required_functions"]
+    for token in ["renderVisualWorkflowMap","updateVisualWorkflowMap","handleWorkflowCardAction","setUiMode","applyUiMode","handleTopAction","computeNextUserAction","updateNextUserAction"]: assert token in js

@@ -13,3 +13,4 @@ Does **not** check browser rendering correctness, engineering correctness, or of
 - `PYTHONPATH=src python scripts/check_local_ui_frontend_contract.py --output out/frontend_contract_report.json`
 
 - V1-093 adds Beginner Dashboard, Case Wizard, Case Readiness, Wizard Change Summary and wizard actions/functions/storage key craneRunway.caseWizardState.
+\n## V1-094 Update\n- Local UI visual workflow builder, simplified landing flow, and user-facing polish pack.\n- First-time users should stay in Simple Mode and follow Visual Workflow Map; Advanced JSON is optional.\n- Added Top action bar, What should I do now?, and Status Legend.\n

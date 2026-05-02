@@ -100,3 +100,4 @@ PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py
 Added frontend contract endpoint, self-test panel, and CLI contract checker.
 
 - First-time users should start with Beginner Dashboard and Case Wizard in the local UI.
+\n## V1-094 Update\n- Local UI visual workflow builder, simplified landing flow, and user-facing polish pack.\n- First-time users should stay in Simple Mode and follow Visual Workflow Map; Advanced JSON is optional.\n- Added Top action bar, What should I do now?, and Status Legend.\n

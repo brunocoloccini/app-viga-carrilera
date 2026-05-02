@@ -58,3 +58,4 @@ Added frontend contract endpoint, self-test panel, and CLI contract checker.
 - Home: Beginner Dashboard, Wizard Change Summary.
 - Home/Form-first workflow: Case Wizard.
 - Home/Review: Case Readiness.
+\n## V1-094 Update\n- Local UI visual workflow builder, simplified landing flow, and user-facing polish pack.\n- First-time users should stay in Simple Mode and follow Visual Workflow Map; Advanced JSON is optional.\n- Added Top action bar, What should I do now?, and Status Legend.\n

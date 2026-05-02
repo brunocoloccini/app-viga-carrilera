@@ -80,3 +80,8 @@ def test_local_ui_frontend_contract_smoke_tokens() -> None:
 def test_v1093_smoke_tokens() -> None:
     html = CraneRunwayLocalWebUi().render_index_html()
     for t in ["Beginner Dashboard","Case Wizard","Case Readiness","Start Case Wizard","Ready to validate","Open Advanced JSON"]: assert t in html
+
+def test_v1094_smoke_tokens() -> None:
+    html = CraneRunwayLocalWebUi().render_index_html()
+    for t in ["Visual Workflow Map","Simple Mode","Expert Mode","What should I do now?","New Demo Case","Validate & Run","View Results"]:
+        assert t in html
