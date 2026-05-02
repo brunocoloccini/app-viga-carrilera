@@ -224,3 +224,9 @@ Expected:
 2. Run `PYTHONPATH=src python scripts/create_local_ui_demo_project.py --overwrite --run`.
 3. Open demo project in UI Project Workspace.
 4. Verify `projects/demo_local_ui_beta/outputs` contains report artifacts.
+
+## N) Welcome/help/demo checks
+1. Confirm **Welcome to the Local UI Beta** panel is visible.
+2. Click **Dismiss Welcome** and confirm banner hides and status updates.
+3. Confirm **Documentation Portal** panel topic buttons render help and copy summary.
+4. Confirm **Guided Demo** panel start/next/reset/copy actions update status messages.
