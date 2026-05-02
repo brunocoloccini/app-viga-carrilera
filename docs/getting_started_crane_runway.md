@@ -179,3 +179,12 @@ Important: this is a local beta tool. Results require engineering review.
 3. Run **Run Project As History Snapshot**.
 4. Refresh and review run history.
 5. Load a previous run summary/report.
+
+## Project Run Comparison workflow (V1-082)
+1. Create or open a local project in **Project Workspace**.
+2. Run the project as a history snapshot multiple times.
+3. In **Project Run Comparison**, click **Refresh Runs For Comparison**.
+4. Choose one **Baseline Run**.
+5. Select one or more **Comparison Runs**.
+6. Click **Compare Selected Runs** to render rows, deltas, and PASS/FAIL indicators.
+7. Click **Download Run Comparison JSON** to save `project_run_comparison.json`.

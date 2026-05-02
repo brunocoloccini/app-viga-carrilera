@@ -187,3 +187,12 @@ Expected:
 - [ ] Load run HTML report and verify HTML preview updates.
 - [ ] Copy/download run summary/report artifacts.
 - [ ] Manually verify invalid project/run names are rejected.
+
+## I) Project run comparison workflow (V1-082)
+1. Create/open a project in **Project Workspace**.
+2. Run at least two **Run Project As History Snapshot** executions.
+3. Open **Project Run Comparison** and click **Refresh Runs For Comparison**.
+4. Choose a baseline run.
+5. Select the second run as comparison and click **Compare Selected Runs**.
+6. Confirm delta columns render (moment, shear, deflection, stress).
+7. Click **Copy Run Comparison JSON** and **Download Run Comparison JSON**.

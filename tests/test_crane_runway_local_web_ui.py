@@ -173,6 +173,14 @@ def test_render_index_html_contains_expected_controls() -> None:
         "runProject",
         "showProjectOutputsInfo",
         "Project Run History",
+        "Project Run Comparison",
+        "Refresh Runs For Comparison",
+        "Baseline Run",
+        "Comparison Runs",
+        "Compare Selected Runs",
+        "Clear Run Comparison",
+        "Copy Run Comparison JSON",
+        "Download Run Comparison JSON",
         "Refresh Run History",
         "Run Project As History Snapshot",
         "Load Run Summary",
@@ -184,6 +192,13 @@ def test_render_index_html_contains_expected_controls() -> None:
         "Created At",
         "Actions",
         "Select a project first.",
+        "No project runs available.",
+        "Project run comparison complete.",
+        "Select a baseline run.",
+        "Select at least one comparison run.",
+        "Project run comparison cleared.",
+        "No project run comparison available. Compare runs first.",
+        "Run comparison uses existing summary.json values only.",
         "Project history run complete.",
         "Run summary loaded.",
         "Run HTML report loaded.",
@@ -196,6 +211,19 @@ def test_render_index_html_contains_expected_controls() -> None:
         "copyRunSummaryJson",
         "downloadRunSummaryJson",
         "downloadRunHtmlReport",
+        "refreshRunsForComparison",
+        "renderRunComparisonSelectors",
+        "compareSelectedRuns",
+        "renderProjectRunComparison",
+        "clearRunComparison",
+        "copyRunComparisonJson",
+        "downloadRunComparisonJson",
+        "getSelectedBaselineRunId",
+        "getSelectedComparisonRunIds",
+        "buildProjectRunComparison",
+        "computeSummaryDelta",
+        "formatComparisonDelta",
+        "setProjectRunComparisonStatus",
         "getSelectedRunId",
         "setRunHistoryStatus",
         "getSelectedProjectName",
@@ -528,6 +556,19 @@ def test_render_index_html_contains_expected_controls() -> None:
         "renderResultInterpretation",
         "copyInterpretation",
         "Scenario Comparison",
+        "delta_max_vertical_moment_Nmm",
+        "delta_max_vertical_shear_abs_N",
+        "delta_max_vertical_deflection_mm",
+        "delta_max_biaxial_stress_MPa",
+        "serviceability_passed",
+        "stress_criteria_passed",
+        "overall_passed",
+        "Baseline",
+        "Compared runs",
+        "Overall PASS count",
+        "Overall FAIL count",
+        "Largest deflection",
+        "Largest biaxial stress",
         "Scenario Name",
         "Save Current Scenario",
         "Refresh Scenario List",
@@ -667,6 +708,11 @@ def test_project_workspace_routes(tmp_path) -> None:
 
     summary_resp = ui.handle_request("GET", f"/api/projects/qa_project/runs/{run_id}/summary")
     assert summary_resp.status_code == 200
+    history_resp_2 = ui.handle_request("POST", "/api/projects/qa_project/run-history")
+    assert history_resp_2.status_code == 200
+    run_id_2 = json.loads(history_resp_2.body)["run_id"]
+    summary_resp_2 = ui.handle_request("GET", f"/api/projects/qa_project/runs/{run_id_2}/summary")
+    assert summary_resp_2.status_code == 200
 
     html_resp = ui.handle_request("GET", f"/api/projects/qa_project/runs/{run_id}/report-html")
     assert html_resp.status_code == 200
