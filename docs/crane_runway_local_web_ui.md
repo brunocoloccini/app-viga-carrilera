@@ -586,3 +586,11 @@ The Local UI now includes a **Project Workspace** panel for local project-file w
 - Added **Project Run History** panel with refresh, snapshot run, load summary/report, and copy/download run artifacts.
 - History snapshots are saved under `projects/<project_name>/outputs/runs/<run_id>` with timestamp run IDs (`YYYYMMDD_HHMMSS`), and `outputs/latest` is updated.
 - Local-only workflow; no DB, no multi-user locking, no public deployment support, no official CIRSOC/CISC/AISC checks; engineering review required.
+
+## V1-082 Project Run Comparison
+- Added **Project Run Comparison** panel for comparing multiple historical runs inside the same local project.
+- Controls: **Refresh Runs For Comparison**, **Baseline Run**, **Comparison Runs**, **Compare Selected Runs**, **Clear Run Comparison**, **Copy Run Comparison JSON**, and **Download Run Comparison JSON**.
+- Comparison table fields: run id, case/summary id, section/load model/span, moments/shears/deflection/stress, delta fields, and pass/fail booleans (`serviceability_passed`, `stress_criteria_passed`, `overall_passed`).
+- Delta fields are browser-side arithmetic vs the selected baseline run (`delta_max_vertical_moment_Nmm`, `delta_max_vertical_shear_abs_N`, `delta_max_vertical_deflection_mm`, `delta_max_biaxial_stress_MPa`).
+- Copy/download exports `project_run_comparison.json` with project name, baseline, compared runs, generated timestamp, rows, and notes.
+- Limitations: uses existing `summary.json` values only; not a structural optimization engine; not official CIRSOC/CISC/AISC verification; engineering review required.

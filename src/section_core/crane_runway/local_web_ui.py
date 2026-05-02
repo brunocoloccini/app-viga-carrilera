@@ -176,6 +176,24 @@ th { background: #f9fafb; }
   <table><thead><tr><th>Run ID</th><th>Created At</th><th>Summary</th><th>HTML Report</th><th>Actions</th></tr></thead><tbody id=\"run_history_body\"></tbody></table>
 </div>
 <div class=\"panel\" style=\"margin-top: 1rem;\">
+  <h3>Project Run Comparison</h3>
+  <p style=\"margin-top:0.2rem;color:#4b5563;\">Run comparison uses existing summary.json values only.</p>
+  <div class=\"toolbar\" style=\"margin-top:0;\">
+    <button onclick=\"refreshRunsForComparison()\">Refresh Runs For Comparison</button>
+    <button onclick=\"compareSelectedRuns()\">Compare Selected Runs</button>
+    <button onclick=\"clearRunComparison()\">Clear Run Comparison</button>
+    <button onclick=\"copyRunComparisonJson()\">Copy Run Comparison JSON</button>
+    <button onclick=\"downloadRunComparisonJson()\">Download Run Comparison JSON</button>
+  </div>
+  <table><tbody>
+    <tr><td>Baseline Run</td><td id=\"run_comparison_baseline_selector\"></td></tr>
+    <tr><td>Comparison Runs</td><td id=\"run_comparison_comparison_selector\"></td></tr>
+  </tbody></table>
+  <div id=\"run_comparison_status\" style=\"margin-top:0.35rem;color:#374151;\">Select a project first.</div>
+  <div id=\"run_comparison_summary\" style=\"margin-top:0.35rem;color:#374151;\"></div>
+  <div id=\"run_comparison_table\" style=\"margin-top:0.35rem;\"></div>
+</div>
+<div class=\"panel\" style=\"margin-top: 1rem;\">
   <h3>Import JSON File</h3>
   <div class=\"toolbar\" style=\"margin-top:0;\">
     <input id=\"import_json_file\" type=\"file\" accept=\".json,application/json\"/>
@@ -1476,6 +1494,8 @@ function showProjectOutputsInfo() {
 let selectedRunId = '';
 let latestRunSummary = null;
 let latestRunHtmlReport = '';
+let runComparisonRuns = [];
+let lastProjectRunComparison = null;
 function setRunHistoryStatus(message) {
   const el = document.getElementById('run_history_status');
   if (el) el.textContent = message;
@@ -1539,6 +1559,121 @@ async function loadRunHtmlReport() {
 async function copyRunSummaryJson() { if (!latestRunSummary) { setRunHistoryStatus('No run artifact selected.'); return; } await copyText(prettyJson(latestRunSummary), 'Run summary copied.', 'Could not copy run summary.'); }
 function downloadRunSummaryJson() { if (!latestRunSummary) { setRunHistoryStatus('No run artifact selected.'); return; } downloadText('run_summary.json', prettyJson(latestRunSummary), 'application/json;charset=utf-8'); }
 function downloadRunHtmlReport() { if (!latestRunHtmlReport) { setRunHistoryStatus('No run artifact selected.'); return; } downloadText('run_report.html', latestRunHtmlReport, 'text/html;charset=utf-8'); }
+function setProjectRunComparisonStatus(message) {
+  const el = document.getElementById('run_comparison_status');
+  if (el) el.textContent = message;
+}
+function renderRunComparisonSelectors() {
+  const baselineContainer = document.getElementById('run_comparison_baseline_selector');
+  const comparisonContainer = document.getElementById('run_comparison_comparison_selector');
+  if (!baselineContainer || !comparisonContainer) return;
+  if (!runComparisonRuns.length) {
+    baselineContainer.innerHTML = '<span>N/A</span>';
+    comparisonContainer.innerHTML = '<span>N/A</span>';
+    return;
+  }
+  const baselineOptions = runComparisonRuns.map((run) => '<option value="' + escapeHtml(run.run_id) + '">' + escapeHtml(run.run_id) + '</option>').join('');
+  baselineContainer.innerHTML = '<select id="run_comparison_baseline"><option value="">Select baseline run</option>' + baselineOptions + '</select>';
+  comparisonContainer.innerHTML = runComparisonRuns.map((run) => '<label style="display:inline-flex;align-items:center;gap:0.35rem;margin-right:0.75rem;"><input type="checkbox" data-comparison-run-id="' + escapeHtml(run.run_id) + '"/><span>' + escapeHtml(run.run_id) + '</span></label>').join('');
+}
+function getSelectedBaselineRunId() {
+  const el = document.getElementById('run_comparison_baseline');
+  return el ? String(el.value || '').trim() : '';
+}
+function getSelectedComparisonRunIds() {
+  const ids = [];
+  document.querySelectorAll('[data-comparison-run-id]').forEach((input) => { if (input.checked) ids.push(String(input.getAttribute('data-comparison-run-id') || '').trim()); });
+  return ids.filter((id) => id.length > 0);
+}
+async function refreshRunsForComparison() {
+  const projectName = getSelectedProjectName();
+  if (!validateProjectNameClient(projectName)) { setProjectRunComparisonStatus('Select a project first.'); return; }
+  const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/runs');
+  const data = await r.json();
+  if (!r.ok) { setProjectRunComparisonStatus(data.error || 'Could not refresh runs for comparison.'); return; }
+  runComparisonRuns = data.runs || [];
+  renderRunComparisonSelectors();
+  if (!runComparisonRuns.length) { setProjectRunComparisonStatus('No project runs available.'); return; }
+  setProjectRunComparisonStatus('Run list refreshed for comparison.');
+}
+function computeSummaryDelta(baselineValue, comparedValue) {
+  if (typeof baselineValue !== 'number' || typeof comparedValue !== 'number') return null;
+  return comparedValue - baselineValue;
+}
+function formatComparisonDelta(value) {
+  if (value === null || value === undefined || Number.isNaN(value)) return 'N/A';
+  if (value === 0) return '0';
+  return value.toFixed(3);
+}
+function buildProjectRunComparison(projectName, baselineRunId, comparedRunIds, summaryByRunId) {
+  const baseline = summaryByRunId[baselineRunId] || {};
+  const allRunIds = [baselineRunId].concat(comparedRunIds);
+  const rows = allRunIds.map((runId, idx) => {
+    const summary = summaryByRunId[runId] || {};
+    const getId = summary.case_id || summary.summary_id || 'N/A';
+    const moment = summary.max_vertical_moment_Nmm;
+    const shear = summary.max_vertical_shear_abs_N;
+    const deflection = summary.max_vertical_deflection_mm;
+    const stress = summary.max_biaxial_stress_MPa;
+    return {
+      run_id: runId,
+      baseline: idx === 0,
+      case_id_or_summary_id: getId,
+      section_id: summary.section_id ?? 'N/A',
+      load_model_id: summary.load_model_id ?? 'N/A',
+      span_internal_mm: summary.span_internal_mm ?? 'N/A',
+      max_vertical_moment_Nmm: moment ?? 'N/A',
+      delta_max_vertical_moment_Nmm: idx === 0 ? 0 : computeSummaryDelta(baseline.max_vertical_moment_Nmm, moment),
+      max_vertical_shear_abs_N: shear ?? 'N/A',
+      delta_max_vertical_shear_abs_N: idx === 0 ? 0 : computeSummaryDelta(baseline.max_vertical_shear_abs_N, shear),
+      max_vertical_deflection_mm: deflection ?? 'N/A',
+      delta_max_vertical_deflection_mm: idx === 0 ? 0 : computeSummaryDelta(baseline.max_vertical_deflection_mm, deflection),
+      max_biaxial_stress_MPa: stress ?? 'N/A',
+      delta_max_biaxial_stress_MPa: idx === 0 ? 0 : computeSummaryDelta(baseline.max_biaxial_stress_MPa, stress),
+      serviceability_passed: summary.serviceability_passed,
+      stress_criteria_passed: summary.stress_criteria_passed,
+      overall_passed: summary.overall_passed,
+    };
+  });
+  return {project_name: projectName, baseline_run_id: baselineRunId, compared_run_ids: comparedRunIds, generated_at: new Date().toISOString(), rows, notes: ['Comparison uses existing summary.json values only.', 'This is not an engineering design-code check.']};
+}
+function renderProjectRunComparison(comparison) {
+  const tableHost = document.getElementById('run_comparison_table');
+  const summaryHost = document.getElementById('run_comparison_summary');
+  if (!tableHost || !summaryHost) return;
+  if (!comparison || !Array.isArray(comparison.rows) || !comparison.rows.length) { tableHost.innerHTML = ''; summaryHost.textContent = ''; return; }
+  const rows = comparison.rows;
+  const passCount = rows.filter((r) => r.overall_passed === true).length;
+  const failCount = rows.filter((r) => r.overall_passed === false).length;
+  const maxDeflection = rows.reduce((acc, row) => (typeof row.max_vertical_deflection_mm === 'number' && row.max_vertical_deflection_mm > acc ? row.max_vertical_deflection_mm : acc), Number.NEGATIVE_INFINITY);
+  const maxStress = rows.reduce((acc, row) => (typeof row.max_biaxial_stress_MPa === 'number' && row.max_biaxial_stress_MPa > acc ? row.max_biaxial_stress_MPa : acc), Number.NEGATIVE_INFINITY);
+  summaryHost.innerHTML = 'Baseline: <strong>' + escapeHtml(comparison.baseline_run_id) + '</strong> | Compared runs: <strong>' + String(comparison.compared_run_ids.length) + '</strong> | Overall PASS count: <strong>' + String(passCount) + '</strong> | Overall FAIL count: <strong>' + String(failCount) + '</strong> | Largest deflection: <strong>' + (Number.isFinite(maxDeflection) ? String(maxDeflection) : 'N/A') + '</strong> | Largest biaxial stress: <strong>' + (Number.isFinite(maxStress) ? String(maxStress) : 'N/A') + '</strong>';
+  let html = '<table><thead><tr><th>Run ID</th><th>case_id / summary_id</th><th>section_id</th><th>load_model_id</th><th>span_internal_mm</th><th>max_vertical_moment_Nmm</th><th>delta_max_vertical_moment_Nmm</th><th>max_vertical_shear_abs_N</th><th>delta_max_vertical_shear_abs_N</th><th>max_vertical_deflection_mm</th><th>delta_max_vertical_deflection_mm</th><th>max_biaxial_stress_MPa</th><th>delta_max_biaxial_stress_MPa</th><th>serviceability_passed</th><th>stress_criteria_passed</th><th>overall_passed</th></tr></thead><tbody>';
+  rows.forEach((row) => { html += '<tr><td>' + escapeHtml(row.run_id + (row.baseline ? ' (baseline)' : '')) + '</td><td>' + escapeHtml(String(row.case_id_or_summary_id)) + '</td><td>' + escapeHtml(String(row.section_id)) + '</td><td>' + escapeHtml(String(row.load_model_id)) + '</td><td>' + escapeHtml(String(row.span_internal_mm)) + '</td><td>' + escapeHtml(String(row.max_vertical_moment_Nmm)) + '</td><td>' + escapeHtml(formatComparisonDelta(row.delta_max_vertical_moment_Nmm)) + '</td><td>' + escapeHtml(String(row.max_vertical_shear_abs_N)) + '</td><td>' + escapeHtml(formatComparisonDelta(row.delta_max_vertical_shear_abs_N)) + '</td><td>' + escapeHtml(String(row.max_vertical_deflection_mm)) + '</td><td>' + escapeHtml(formatComparisonDelta(row.delta_max_vertical_deflection_mm)) + '</td><td>' + escapeHtml(String(row.max_biaxial_stress_MPa)) + '</td><td>' + escapeHtml(formatComparisonDelta(row.delta_max_biaxial_stress_MPa)) + '</td><td>' + formatPassFailNa(row.serviceability_passed) + '</td><td>' + formatPassFailNa(row.stress_criteria_passed) + '</td><td>' + formatPassFailNa(row.overall_passed) + '</td></tr>'; });
+  tableHost.innerHTML = html + '</tbody></table>';
+}
+async function compareSelectedRuns() {
+  const projectName = getSelectedProjectName();
+  if (!validateProjectNameClient(projectName)) { setProjectRunComparisonStatus('Select a project first.'); return; }
+  const baselineRunId = getSelectedBaselineRunId();
+  if (!baselineRunId) { setProjectRunComparisonStatus('Select a baseline run.'); return; }
+  const comparedRunIds = getSelectedComparisonRunIds().filter((runId) => runId !== baselineRunId);
+  if (!comparedRunIds.length) { setProjectRunComparisonStatus('Select at least one comparison run.'); return; }
+  const summaryByRunId = {};
+  const loadIds = [baselineRunId].concat(comparedRunIds);
+  for (const runId of loadIds) {
+    const r = await fetch('/api/projects/' + encodeURIComponent(projectName) + '/runs/' + encodeURIComponent(runId) + '/summary');
+    const data = await r.json();
+    if (!r.ok) { setProjectRunComparisonStatus(data.error || ('Could not load summary for run ' + runId + '.')); return; }
+    summaryByRunId[runId] = data;
+  }
+  lastProjectRunComparison = buildProjectRunComparison(projectName, baselineRunId, comparedRunIds, summaryByRunId);
+  renderProjectRunComparison(lastProjectRunComparison);
+  setProjectRunComparisonStatus('Project run comparison complete.');
+}
+function clearRunComparison() { lastProjectRunComparison = null; renderProjectRunComparison(null); setProjectRunComparisonStatus('Project run comparison cleared.'); }
+async function copyRunComparisonJson() { if (!lastProjectRunComparison) { setProjectRunComparisonStatus('No project run comparison available. Compare runs first.'); return; } await copyText(prettyJson(lastProjectRunComparison), 'Project run comparison copied.', 'Could not copy run comparison JSON.'); }
+function downloadRunComparisonJson() { if (!lastProjectRunComparison) { setProjectRunComparisonStatus('No project run comparison available. Compare runs first.'); return; } downloadText('project_run_comparison.json', prettyJson(lastProjectRunComparison), 'application/json;charset=utf-8'); }
 async function loadTemplate() {
   try {
     const id = document.getElementById('template').value;
