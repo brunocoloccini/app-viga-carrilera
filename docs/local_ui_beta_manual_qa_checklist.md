@@ -196,3 +196,12 @@ Expected:
 5. Select the second run as comparison and click **Compare Selected Runs**.
 6. Confirm delta columns render (moment, shear, deflection, stress).
 7. Click **Copy Run Comparison JSON** and **Download Run Comparison JSON**.
+
+
+## V1-083 Project archive export QA
+- Create/open project.
+- Run project once.
+- Refresh archive manifest.
+- Download archive.
+- Confirm archive contains `input_case.json` and `archive_manifest.json`.
+- Confirm invalid project name/path traversal is rejected (manual API check if needed).
