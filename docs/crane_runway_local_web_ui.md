@@ -635,3 +635,17 @@ Use Support Bundle panel to preview, download, or copy support_bundle.json. See 
 
 ## Issue Report Helper
 Generate/copy a markdown issue report scaffold with current case/diagnostics.
+
+## Local UI RC Status
+Use the **Local UI RC Status** panel to review health check, UI diagnostics, RC acceptance check, manual QA checklist, support bundle, project archive export, known limitations, and engineering review status.
+
+## Keyboard Shortcuts
+- Ctrl+Enter validate
+- Ctrl+Shift+Enter run
+- Ctrl+S autosave
+- Ctrl+Shift+F format
+- Ctrl+Shift+H toggle help
+
+Accessibility support is basic and will be improved in future versions.
+
+See also: `docs/local_ui_beta_feature_map.md`, `docs/local_ui_beta_rc_release_notes.md`, `docs/local_ui_beta_known_issues.md`.

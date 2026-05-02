@@ -36,3 +36,5 @@ PYTHONPATH=src python scripts/run_local_ui_rc_check.py
 - Not an official CIRSOC/CISC/AISC compliance check.
 - No fatigue/torsion/warping/LTB checks.
 - Engineering review remains required.
+
+See `docs/local_ui_beta_rc_release_notes.md` and `docs/local_ui_beta_feature_map.md` for RC scope and feature mapping.

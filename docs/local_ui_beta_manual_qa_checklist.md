@@ -211,3 +211,9 @@ Expected:
 - Download support bundle JSON.
 - Generate issue report text.
 - Copy issue report text.
+
+- Check Local UI RC Status panel.
+- Use keyboard shortcuts Ctrl+Enter and Ctrl+Shift+Enter.
+- Mark Manual QA Completed.
+- Reset RC Checklist Status.
+- Verify known issues doc is referenced.

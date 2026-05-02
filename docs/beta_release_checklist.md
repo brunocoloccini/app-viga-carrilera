@@ -47,3 +47,11 @@
 
 - [ ] Support bundle guide reviewed and shared (`docs/local_ui_support_bundle.md`).
 - [ ] Beta handoff package prepared (`docs/local_ui_beta_handoff.md`).
+
+## Final RC checklist
+- health check pass
+- RC acceptance pass
+- manual QA complete
+- support bundle generated
+- known issues reviewed
+- release notes reviewed

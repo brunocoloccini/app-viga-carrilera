@@ -133,3 +133,7 @@ Runs local UI release-candidate acceptance checks across server startup, core en
 - `PYTHONPATH=src python scripts/collect_local_ui_support_bundle.py --output out/support_bundle.json`
 - `PYTHONPATH=src python scripts/collect_local_ui_support_bundle.py --project mi_viga --output out/mi_viga_support_bundle.json`
 - `PYTHONPATH=src python scripts/collect_local_ui_support_bundle.py --case-path projects/mi_viga/input_case.json --output out/case_support_bundle.json`
+
+## RC release-candidate commands
+- `PYTHONPATH=src python scripts/run_beta_health_check.py --skip-pytest`
+- `PYTHONPATH=src python scripts/run_local_ui_rc_check.py --skip-archive`

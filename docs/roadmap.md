@@ -229,3 +229,6 @@ Planned modules:
 - V1-084: Local UI release-candidate acceptance pack.
 
 - **V1-085**: Local UI support bundle, about/version, and beta handoff pack.
+
+## V1-086
+Local UI beta release-candidate consolidation pack.

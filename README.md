@@ -71,3 +71,11 @@ PYTHONPATH=src python scripts/run_crane_runway_case_matrix.py
 
 - Sample data in this repository must be independently verified before any engineering use.
 - Current criteria checks are generic software checks only and are **not** official CIRSOC/CISC/AISC compliance checks.
+
+## Local UI internal beta
+- Getting started: `docs/getting_started_crane_runway.md`
+- Local UI guide: `docs/crane_runway_local_web_ui.md`
+- Feature map: `docs/local_ui_beta_feature_map.md`
+- RC release notes: `docs/local_ui_beta_rc_release_notes.md`
+- Known issues: `docs/local_ui_beta_known_issues.md`
+- Manual QA checklist: `docs/local_ui_beta_manual_qa_checklist.md`
