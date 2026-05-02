@@ -66,3 +66,9 @@
 - Suggested action: Follow documentation guidance and run diagnostics/RC checks.
 
 \n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n
+
+
+- Browser may cache local CSS/JS during development.
+  - Hard refresh the browser.
+  - Restart the local UI server.
+  - Clear saved session if required.
