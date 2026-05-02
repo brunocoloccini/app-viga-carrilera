@@ -94,3 +94,20 @@ PYTHONPATH=src python scripts/serve_crane_runway_ui.py [--host 127.0.0.1] [--por
 ```
 
 - `PYTHONPATH=src python scripts/check_local_ui_smoke.py --url http://127.0.0.1:8765`
+
+
+## Local UI launcher
+
+```bash
+PYTHONPATH=src python scripts/launch_crane_runway_ui.py
+```
+
+Options:
+
+- `--host` (default `127.0.0.1`)
+- `--port` (default `8765`)
+- `--no-open`
+- `--skip-preflight`
+- `--check-only`
+- `--run-smoke-after-start`
+- `--timeout`

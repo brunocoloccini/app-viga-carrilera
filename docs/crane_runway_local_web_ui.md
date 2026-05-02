@@ -549,3 +549,23 @@ Limitations:
 - Diagnostics run lightweight endpoint checks for `/api/health`, `/api/templates`, `/api/template/ipn-with-cover`, `/api/validate`, and `/api/run`.
 - Diagnostics indicate UI/server connectivity only and do not prove engineering correctness.
 - Use the beta health check, manual QA checklist, and engineering review before relying on outputs.
+
+
+## One-command launcher
+
+Recommended quick start:
+
+```bash
+PYTHONPATH=src python scripts/launch_crane_runway_ui.py
+```
+
+Useful options:
+
+- `--no-open`
+- `--host`
+- `--port`
+- `--check-only`
+- `--skip-preflight`
+- `--run-smoke-after-start`
+
+The launcher runs preflight checks first, then starts the local-only server and prints the URL. Use `Ctrl+C` to stop the server.

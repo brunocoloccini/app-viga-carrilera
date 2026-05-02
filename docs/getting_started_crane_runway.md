@@ -69,11 +69,19 @@ After you initialize a project, use the dedicated user editing guide for practic
 
 ## Use the local web UI
 
-Run:
-- `PYTHONPATH=src python scripts/serve_crane_runway_ui.py`
-- `PYTHONPATH=src python scripts/serve_crane_runway_ui.py --open`
+Recommended first command:
 
-Then open `http://127.0.0.1:8765`.
+```bash
+PYTHONPATH=src python scripts/launch_crane_runway_ui.py
+```
+
+Fallback server command:
+
+```bash
+PYTHONPATH=src python scripts/serve_crane_runway_ui.py --host 127.0.0.1 --port 8765
+```
+
+Then open `http://127.0.0.1:8765` if your browser does not open automatically.
 
 Suggested quick flow:
 

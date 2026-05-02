@@ -212,3 +212,6 @@ Planned modules:
 - **V1-077**: Local UI navigation and collapsible panels pack.
 
 - **V1-078**: Local UI beta release-candidate hardening pack (Local UI Diagnostics panel, smoke-check script, and beta-status clarity updates).
+
+
+- V1-079: Local UI one-command launcher and preflight pack.
