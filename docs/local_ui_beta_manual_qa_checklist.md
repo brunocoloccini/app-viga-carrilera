@@ -217,3 +217,10 @@ Expected:
 - Mark Manual QA Completed.
 - Reset RC Checklist Status.
 - Verify known issues doc is referenced.
+
+## K) Distribution/onboarding QA add-on
+
+1. Run `PYTHONPATH=src python scripts/print_local_ui_beta_info.py`.
+2. Run `PYTHONPATH=src python scripts/create_local_ui_demo_project.py --overwrite --run`.
+3. Open demo project in UI Project Workspace.
+4. Verify `projects/demo_local_ui_beta/outputs` contains report artifacts.
