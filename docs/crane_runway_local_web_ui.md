@@ -675,3 +675,4 @@ Limitations remain unchanged:
 - local beta UI only
 - no official code checks
 - engineering review required
+\n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n

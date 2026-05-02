@@ -65,3 +65,4 @@
 - Likely cause: Local UI beta limitation.
 - Suggested action: Follow documentation guidance and run diagnostics/RC checks.
 
+\n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n

@@ -229,3 +229,4 @@ Use launcher + Run Demo Workflow + Local UI RC Status as the primary path. See `
 7. Go to **Validate & Run**.
 8. Go to **Results**.
 9. Use **Export** or **Project** tabs as needed.
+\n\n## V1-090 Form-first workflow update\nUI now supports a form-first workflow (Project → Beam & Section → Material → Crane Wheels → Criteria → Rail / Eccentricity → Preview → Validate → Run → Results → Export). Advanced JSON remains available in the Advanced tab.\n
