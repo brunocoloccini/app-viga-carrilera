@@ -205,3 +205,9 @@ Expected:
 - Download archive.
 - Confirm archive contains `input_case.json` and `archive_manifest.json`.
 - Confirm invalid project name/path traversal is rejected (manual API check if needed).
+
+- Refresh About Info.
+- Refresh support bundle preview.
+- Download support bundle JSON.
+- Generate issue report text.
+- Copy issue report text.

@@ -128,3 +128,8 @@ PYTHONPATH=src python scripts/run_local_ui_rc_check.py [--host 127.0.0.1] [--por
 ```
 
 Runs local UI release-candidate acceptance checks across server startup, core endpoints, template run, project workflow, history, archive export, and JavaScript syntax checks.
+
+## collect_local_ui_support_bundle.py
+- `PYTHONPATH=src python scripts/collect_local_ui_support_bundle.py --output out/support_bundle.json`
+- `PYTHONPATH=src python scripts/collect_local_ui_support_bundle.py --project mi_viga --output out/mi_viga_support_bundle.json`
+- `PYTHONPATH=src python scripts/collect_local_ui_support_bundle.py --case-path projects/mi_viga/input_case.json --output out/case_support_bundle.json`

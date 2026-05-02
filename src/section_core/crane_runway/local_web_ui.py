@@ -247,6 +247,43 @@ th { background: #f9fafb; }
   <div id=\"archive_export_status\" style=\"margin-top:0.35rem;color:#374151;\">Select a project first.</div>
   <pre id=\"archive_manifest_output\">Refresh archive manifest to view archive details.</pre>
 </div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>About / Beta Status</h3>
+  <table><tbody>
+    <tr><td>App</td><td>App Viga Carrilera</td></tr>
+    <tr><td>Module</td><td>Crane Runway Local UI</td></tr>
+    <tr><td>Beta status</td><td>Internal beta</td></tr>
+    <tr><td>Schema version</td><td>Schema version: 1.0</td></tr>
+    <tr><td>Calculation scope</td><td>generic crane runway elastic demand workflow</td></tr>
+    <tr><td>Compliance scope</td><td>not official CIRSOC/CISC/AISC compliance checks</td></tr>
+    <tr><td>Data warning</td><td>sample data requires independent verification</td></tr>
+    <tr><td>Review warning</td><td>engineering review required</td></tr>
+  </tbody></table>
+  <div class="toolbar" style="margin-top:0;">
+    <button onclick="refreshAboutInfo()">Refresh About Info</button>
+    <button onclick="copyAboutInfo()">Copy About Info</button>
+  </div>
+  <pre id="about_info_output">Refresh About Info to view diagnostics.</pre>
+</div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Support Bundle</h3>
+  <p style="margin-top:0.2rem;color:#92400e;">Support bundles may include the current JSON case, validation response, run response, warnings, and browser diagnostics. Review before sharing.</p>
+  <div class="toolbar" style="margin-top:0;">
+    <button onclick="refreshSupportBundlePreview()">Refresh Support Bundle Preview</button>
+    <button onclick="downloadSupportBundleJson()">Download Support Bundle JSON</button>
+    <button onclick="copySupportBundleJson()">Copy Support Bundle JSON</button>
+    <button onclick="clearSupportBundlePreview()">Clear Support Bundle Preview</button>
+  </div>
+  <div id="support_bundle_preview"></div>
+</div>
+<div class="panel" style="margin-top: 1rem;">
+  <h3>Issue Report Helper</h3>
+  <div class="toolbar" style="margin-top:0;">
+    <button onclick="generateIssueReportText()">Generate Issue Report Text</button>
+    <button onclick="copyIssueReportText()">Copy Issue Report Text</button>
+  </div>
+  <pre id="issue_report_output">Generate Issue Report Text to prepare a handoff note.</pre>
+</div>
 <div class="panel collapsible-panel" id="panel-common-inputs" data-panel-key="common-inputs" style="margin-top: 1rem;">
   <div class="panel-header"><h3>Common Inputs</h3><button class="small-btn" data-panel-toggle>Collapse</button></div><div class="panel-body">
   <p style="margin-top:0.2rem;color:#4b5563;">Use this form for frequent edits. Advanced fields remain editable in JSON.</p>
@@ -455,6 +492,9 @@ th { background: #f9fafb; }
 let latestHtmlReport = '';
 let lastValidationResponse = null;
 let lastRunResponse = null;
+let lastAboutInfo = null;
+let lastSupportBundle = null;
+let lastIssueReportText = "";
 let lastRawResponse = null;
 let lastScenarioComparisonResults = null;
 const scenarioStorageKey = 'craneRunway.scenarios';
@@ -549,6 +589,63 @@ function markWorkflowStepNeedsAttention(stepId) { updateWorkflowStep(stepId, 'Ne
 function resetGuidedWorkflow() { for (const step of workflowSteps) workflowState[step.id]='Pending'; renderGuidedWorkflow(); const demo=document.getElementById('demo_workflow_status'); if (demo) demo.textContent='Ready for demo workflow.'; }
 function renderBetaReadiness() { const panel=document.getElementById('beta_readiness_output'); if (!panel) return; const rows=[['UI JavaScript loaded', betaReadinessState.ui_js_loaded===true?'PASS':'FAIL'],['Backend health', betaReadinessState.backend_health===true?'PASS':(betaReadinessState.backend_health===false?'FAIL':'N/A')],['JSON loaded', betaReadinessState.json_loaded===true?'PASS':(betaReadinessState.json_loaded===false?'FAIL':'N/A')],['Validation status', betaReadinessState.validation_status===true?'PASS':(betaReadinessState.validation_status===false?'FAIL':'N/A')],['Run status', betaReadinessState.run_status===true?'PASS':(betaReadinessState.run_status===false?'FAIL':'N/A')],['Autosave available', betaReadinessState.autosave_available===true?'PASS':'FAIL']]; let html='<table><thead><tr><th>Check</th><th>Status</th></tr></thead><tbody>'; for (const row of rows) { const cls=row[1]==='PASS'?'status-pass':(row[1]==='FAIL'?'status-fail':'status-na'); html += '<tr><td>'+escapeHtml(row[0])+'</td><td class="'+cls+'">'+row[1]+'</td></tr>'; } panel.innerHTML=html+'</tbody></table>'; }
 function updateBetaReadiness(key, value) { betaReadinessState[key]=value; renderBetaReadiness(); }
+
+function getCurrentCaseSummaryFromJsonText(){
+  try { const data = JSON.parse(getCurrentCaseJsonText()); return {parse_ok:true,data,summary:{case_id:data?.meta?.case_id||'',base_shape_id:data?.section?.base_shape_id||'',material_id:data?.material?.id||'',wheel_count:Array.isArray(data?.loads?.wheels)?data.loads.wheels.length:0}}; }
+  catch (err) { return {parse_ok:false, parse_error:String(err&&err.message?err.message:err)}; }
+}
+function buildAboutInfo(){
+  const parsed=getCurrentCaseSummaryFromJsonText();
+  const info={generated_at:new Date().toISOString(),app_name:'App Viga Carrilera',ui_name:'Crane Runway Local UI',beta_status:'Internal beta',schema_version:'1.0',available_templates:Array.isArray(window.availableTemplates)?window.availableTemplates:null,browser_user_agent:navigator.userAgent,local_storage_available:autosaveAvailable,current_project:getSelectedProjectName(),current_case_id:parsed.parse_ok?parsed.summary.case_id:null,current_base_shape_id:parsed.parse_ok?parsed.summary.base_shape_id:null,current_material_id:parsed.parse_ok?parsed.summary.material_id:null,notes:['Internal beta.','Results require engineering review.','Generic checks only; no official CIRSOC/CISC/AISC compliance checks.','Sample data must be independently verified.']};
+  return info;
+}
+function renderAboutInfo(info){ const pre=document.getElementById('about_info_output'); if(pre) pre.textContent=prettyJson(info); }
+function refreshAboutInfo(){ lastAboutInfo=buildAboutInfo(); renderAboutInfo(lastAboutInfo); setStatus('About info refreshed.'); }
+async function copyAboutInfo(){ if(!lastAboutInfo){ refreshAboutInfo(); } await copyText(prettyJson(lastAboutInfo),'About info copied.','Could not copy about info.'); }
+function buildSupportBundle(){ const parsed=getCurrentCaseSummaryFromJsonText(); const keys=[]; if(autosaveAvailable){ for(let i=0;i<localStorage.length;i+=1){ keys.push(localStorage.key(i)); } }
+  const bundle={bundle_version:'1.0',generated_at:new Date().toISOString(),generated_by:'CraneRunwayLocalWebUi',about:lastAboutInfo||buildAboutInfo(),current_case_json:getCurrentCaseJsonText(),current_case_parse_ok:Boolean(parsed.parse_ok),current_case_summary:parsed.parse_ok?parsed.summary:null,last_validation_response:lastValidationResponse,last_run_response:lastRunResponse,last_case_quality_warnings:getCaseQualityRows(),last_project_run_comparison:lastProjectRunComparison,last_scenario_comparison:lastScenarioComparisonResults,selected_project:getSelectedProjectName(),selected_run_id:getSelectedRunId(),local_storage_keys_present:keys.filter((k)=>Boolean(k)),browser_user_agent:navigator.userAgent,notes:['Support bundle for beta debugging.','Review before sharing.','Results require engineering review.','Not an official design-code compliance record.']};
+  if(!parsed.parse_ok){ bundle.parse_error=parsed.parse_error; }
+  return bundle;
+}
+function renderSupportBundlePreview(bundle){ const el=document.getElementById('support_bundle_preview'); if(!el) return; const s=bundle.current_case_summary||{}; const rows=[['bundle_version',bundle.bundle_version],['generated_at',bundle.generated_at],['current_case_parse_ok',String(bundle.current_case_parse_ok)],['case_id',s.case_id||''],['base_shape_id',s.base_shape_id||''],['material_id',s.material_id||''],['wheel_count',String(s.wheel_count??'')],['selected_project',bundle.selected_project||''],['has_validation_response',String(Boolean(bundle.last_validation_response))],['has_run_response',String(Boolean(bundle.last_run_response))],['has_case_quality_warnings',String(Array.isArray(bundle.last_case_quality_warnings)&&bundle.last_case_quality_warnings.length>0)]]; el.innerHTML='<table><tbody>'+rows.map((r)=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</tbody></table>'; }
+function refreshSupportBundlePreview(){ lastSupportBundle=buildSupportBundle(); renderSupportBundlePreview(lastSupportBundle); setStatus('Support bundle preview refreshed.'); }
+function downloadSupportBundleJson(){ if(!lastSupportBundle){ setStatus('No support bundle available. Refresh support bundle preview first.'); return; } downloadText('support_bundle.json',prettyJson(lastSupportBundle),'application/json;charset=utf-8'); setStatus('Support bundle JSON downloaded.'); }
+async function copySupportBundleJson(){ if(!lastSupportBundle){ setStatus('No support bundle available. Refresh support bundle preview first.'); return; } await copyText(prettyJson(lastSupportBundle),'Support bundle JSON copied.','Could not copy support bundle JSON.'); }
+function clearSupportBundlePreview(){ lastSupportBundle=null; const el=document.getElementById('support_bundle_preview'); if(el) el.innerHTML=''; setStatus('Support bundle preview cleared.'); }
+function renderIssueReportText(text){ const pre=document.getElementById('issue_report_output'); if(pre) pre.textContent=text; }
+function generateIssueReportText(){ const b=lastSupportBundle||buildSupportBundle(); const s=b.current_case_summary||{}; const validationStatus=lastValidationResponse?String(lastValidationResponse.valid):'not run'; const runStatus=lastRunResponse?String(lastRunResponse.success):'not run'; const health=document.getElementById('backend_health_status'); const healthText=health?health.textContent:'unknown'; lastIssueReportText=`# Local UI Issue Report
+
+## Summary
+<user fills in>
+
+## What I clicked
+<user fills in>
+
+## Expected behavior
+<user fills in>
+
+## Actual behavior
+<user fills in>
+
+## Current case
+- case_id: ${s.case_id||''}
+- base_shape_id: ${s.base_shape_id||''}
+- material_id: ${s.material_id||''}
+- wheel_count: ${String(s.wheel_count??'')}
+
+## Diagnostics
+- backend health: ${healthText}
+- validation status: ${validationStatus}
+- run status: ${runStatus}
+- UI beta status: Internal beta
+
+## Attached support bundle
+Attach support_bundle.json if available.
+
+## Scope reminders
+This is an internal beta tool. Results require engineering review and are not official CIRSOC/CISC/AISC compliance checks.`; renderIssueReportText(lastIssueReportText); setStatus('Issue report text generated.'); }
+async function copyIssueReportText(){ if(!lastIssueReportText){ generateIssueReportText(); } await copyText(lastIssueReportText,'Issue report text copied.','Could not copy issue report text.'); }
+
 async function checkBackendHealth() { try { const r=await fetch('/api/health'); const data=await r.json(); const ok=Boolean(r.ok && data && data.ok===true); const panel=document.getElementById('backend_health_status'); if (panel) panel.textContent=ok?'Backend health: OK.':'Backend health: FAIL.'; updateBetaReadiness('backend_health', ok); setStatus(ok?'Backend health: OK.':'Backend health: FAIL.'); } catch (err) { const panel=document.getElementById('backend_health_status'); if (panel) panel.textContent='Backend health: FAIL.'; updateBetaReadiness('backend_health', false); setStatus('Backend health: FAIL.'); } }
 function setDiagnosticStatus(key, status) { diagnosticsState[key]=status; }
 function updateDiagnosticsTimestamp() { const panel=document.getElementById('ui_diagnostics_timestamp'); if (panel) panel.textContent='Last diagnostic run: ' + new Date().toISOString(); }

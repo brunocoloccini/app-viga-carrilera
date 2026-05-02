@@ -626,3 +626,12 @@ Limitations:
 - no public deployment;
 - no official CIRSOC/CISC/AISC checks;
 - engineering review required.
+
+## About / Beta Status
+Includes app/module/beta/schema/scope warnings and copyable about diagnostics.
+
+## Support Bundle
+Use Support Bundle panel to preview, download, or copy support_bundle.json. See [Local UI Support Bundle](local_ui_support_bundle.md).
+
+## Issue Report Helper
+Generate/copy a markdown issue report scaffold with current case/diagnostics.

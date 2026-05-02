@@ -44,3 +44,6 @@
 - **Test count:**
 - **Notable changes:**
 - **Known limitations:**
+
+- [ ] Support bundle guide reviewed and shared (`docs/local_ui_support_bundle.md`).
+- [ ] Beta handoff package prepared (`docs/local_ui_beta_handoff.md`).
