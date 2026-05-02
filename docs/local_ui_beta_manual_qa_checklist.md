@@ -253,3 +253,10 @@ Expected:
 
 ## V1-092 Frontend Contract
 Added frontend contract endpoint, self-test panel, and CLI contract checker.
+
+- Start Case Wizard.
+- Complete Start, Beam, Material, Wheels, Criteria, Rail, Review, Calculate, Results, Export.
+- Verify Case Readiness changes.
+- Verify Wizard Change Summary updates.
+- Use Open Advanced JSON.
+- Verify generated JSON validates and runs.

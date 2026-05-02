@@ -11,3 +11,5 @@ Does **not** check browser rendering correctness, engineering correctness, or of
 - `PYTHONPATH=src python scripts/check_local_ui_frontend_contract.py`
 - `PYTHONPATH=src python scripts/check_local_ui_frontend_contract.py --json`
 - `PYTHONPATH=src python scripts/check_local_ui_frontend_contract.py --output out/frontend_contract_report.json`
+
+- V1-093 adds Beginner Dashboard, Case Wizard, Case Readiness, Wizard Change Summary and wizard actions/functions/storage key craneRunway.caseWizardState.

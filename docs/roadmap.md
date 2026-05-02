@@ -245,3 +245,5 @@ Local UI beta release-candidate consolidation pack.
 
 ## V1-092 Frontend Contract
 Added frontend contract endpoint, self-test panel, and CLI contract checker.
+
+- V1-093 milestone: Local UI focused case wizard and beginner dashboard pack.
