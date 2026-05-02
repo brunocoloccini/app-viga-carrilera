@@ -225,3 +225,5 @@ Planned modules:
 - V1-082: Local UI project run comparison pack.
 
 - V1-083: Local UI project archive export pack.
+
+- V1-084: Local UI release-candidate acceptance pack.

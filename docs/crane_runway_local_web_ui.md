@@ -7,6 +7,7 @@ Local browser UI for crane runway beta workflows. It is a developer convenience 
 
 - `PYTHONPATH=src python scripts/serve_crane_runway_ui.py`
 - `PYTHONPATH=src python scripts/serve_crane_runway_ui.py --open`
+- Release-candidate acceptance: `docs/local_ui_release_candidate_acceptance.md`.
 
 Default URL: `http://127.0.0.1:8765`
 

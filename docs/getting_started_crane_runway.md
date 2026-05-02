@@ -190,6 +190,8 @@ Important: this is a local beta tool. Results require engineering review.
 7. Click **Download Run Comparison JSON** to save `project_run_comparison.json`.
 
 
+- Developer RC acceptance check: `PYTHONPATH=src python scripts/run_local_ui_rc_check.py --skip-archive`.
+
 ## Project archive backup workflow (V1-083)
 1. Create/open project.
 2. Save/run project.

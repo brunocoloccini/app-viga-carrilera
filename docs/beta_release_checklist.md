@@ -30,6 +30,7 @@
 ## Pre-release verification
 
 - `PYTHONPATH=src python scripts/run_beta_health_check.py` passes.
+- `PYTHONPATH=src python scripts/run_local_ui_rc_check.py --skip-archive` passes before manual QA.
 - `pytest -q` passes.
 - Scenario matrix CLI runs successfully.
 - Golden regression tests pass.
