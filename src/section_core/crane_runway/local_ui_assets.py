@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 def render_local_ui_version_info() -> str:
-    return "Local UI beta version V1-094 (V1-086 lineage) · schema version 1.0"
+    return "Local UI beta version V1-096 (V1-086 lineage) · schema version 1.0"
 
 def render_local_ui_frontend_contract() -> dict[str, object]:
     return {
         "contract_version": "1.0",
-        "ui_version": "V1-094",
+        "ui_version": "V1-096",
         "required_tabs": ["Home","Project","Setup","Loads","Review","Calculate","Results","Export","Support","Advanced"],
         "required_panels": ["Beginner Dashboard","Case Wizard","Case Readiness","Wizard Change Summary","Welcome to the Local UI Beta","Documentation Portal","Guided Demo","Form-First Workflow","Project Workspace","Project Run History","Project Run Comparison","Project Archive Export","Quick Selectors / Presets","Beam & Section","Material","Criteria","Crane Load Factors","Rail / Eccentricity","Wheel Table Editor","Visual Preview","Case Quality Warnings","Validation","Result Cards","Result Interpretation","HTML Report","Package Export","Support Bundle","Issue Report Helper","Local UI Diagnostics","Advanced JSON","Raw Response","Visual Workflow Map","What should I do now?","Status Legend"],
         "required_actions": ["start-case-wizard","previous-wizard-step","next-wizard-step","save-wizard-step","reset-case-wizard","finish-case-wizard","load-wizard-template","open-advanced-json","load-template","import-json-file","validate-case","run-case","validate-and-run","apply-all-forms","refresh-visual-preview","refresh-case-quality","create-project","open-project","save-project-case","run-project","refresh-run-history","run-project-history-snapshot","refresh-archive-manifest","run-ui-diagnostics","refresh-support-bundle","copy-issue-report","switch-tab-home","switch-tab-project","switch-tab-setup","switch-tab-loads","switch-tab-review","switch-tab-calculate","switch-tab-results","switch-tab-export","switch-tab-support","switch-tab-advanced","start-setup","edit-case-setup","edit-loads","review-case","validate-case-from-workflow","run-case-from-workflow","view-results","export-outputs","new-demo-case","top-open-project","top-validate-run","top-view-results","top-export","set-simple-mode","set-expert-mode"],
