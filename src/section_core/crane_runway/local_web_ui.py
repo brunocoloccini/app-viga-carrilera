@@ -142,10 +142,91 @@ th { background: #f9fafb; }
 @media (min-width:1200px){.main-layout{grid-template-columns:minmax(0,1fr) 300px;}}
 .tab-panel[hidden]{display:none!important;}
 .summary-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:0.7rem;position:sticky;top:0.7rem;}
+/* === Datos del Caso (commercial-app input form) === */
+.case-card{max-width:1200px;margin:1.2rem auto 1.5rem;background:#fff;border:1px solid #d1d5db;border-radius:12px;box-shadow:0 4px 14px rgba(15,23,42,0.06);overflow:hidden;}
+.case-card-head{background:linear-gradient(135deg,#1e3a8a 0%,#1d4ed8 100%);color:#fff;padding:1.1rem 1.4rem;}
+.case-card-head h2{margin:0 0 0.2rem;font-size:1.4rem;letter-spacing:0.2px;}
+.case-card-head p{margin:0;color:#dbeafe;font-size:0.92rem;}
+.case-card-body{padding:1.2rem 1.4rem 0.6rem;}
+.case-section{border-top:1px solid #e5e7eb;padding:1rem 0 0.5rem;}
+.case-section:first-child{border-top:none;padding-top:0.4rem;}
+.case-section-title{display:flex;align-items:center;gap:0.55rem;margin:0 0 0.6rem;color:#1e3a8a;font-size:1.05rem;}
+.case-section-title .case-section-num{display:inline-flex;align-items:center;justify-content:center;width:1.55rem;height:1.55rem;border-radius:50%;background:#1d4ed8;color:#fff;font-size:0.82rem;font-weight:700;}
+.case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.75rem 1rem;}
+.case-field{display:flex;flex-direction:column;gap:0.2rem;}
+.case-field label{font-size:0.82rem;color:#374151;font-weight:600;}
+.case-field .case-field-help{font-size:0.74rem;color:#6b7280;font-weight:400;}
+.case-input-row{display:flex;gap:0.35rem;align-items:stretch;}
+.case-input-row input,.case-input-row select{flex:1;min-width:0;padding:0.45rem 0.55rem;border:1px solid #d1d5db;border-radius:6px;font-size:0.92rem;background:#fff;}
+.case-input-row input:focus,.case-input-row select:focus{outline:none;border-color:#1d4ed8;box-shadow:0 0 0 3px rgba(29,78,216,0.18);}
+.case-input-row select.case-unit{flex:0 0 5.2rem;background:#f9fafb;color:#374151;font-size:0.85rem;}
+.case-checkbox{display:flex;align-items:center;gap:0.45rem;padding:0.45rem 0;}
+.case-action-bar{display:flex;flex-wrap:wrap;gap:0.5rem;padding:1rem 1.4rem 1.2rem;background:#f8fafc;border-top:1px solid #e5e7eb;align-items:center;}
+.case-action-bar .case-action-spacer{flex:1;}
+.case-action-bar button{padding:0.55rem 1rem;border-radius:6px;border:1px solid #d1d5db;background:#fff;cursor:pointer;font-weight:600;font-size:0.9rem;}
+.case-action-bar button:hover{background:#f3f4f6;}
+.case-action-bar .case-btn-primary{background:#1d4ed8;color:#fff;border-color:#1d4ed8;}
+.case-action-bar .case-btn-primary:hover{background:#1e40af;}
+.case-status{padding:0.55rem 1.4rem;font-size:0.86rem;color:#6b7280;background:#f8fafc;border-top:1px solid #f1f5f9;}
+.case-status.is-ok{color:#166534;background:#f0fdf4;}
+.case-status.is-error{color:#991b1b;background:#fef2f2;}
+.case-mode-bar{max-width:1200px;margin:0.5rem auto 0;display:flex;justify-content:flex-end;gap:0.4rem;}
+.case-mode-bar button{padding:0.35rem 0.7rem;border:1px solid #d1d5db;border-radius:6px;background:#fff;cursor:pointer;font-size:0.82rem;color:#374151;}
+.case-mode-bar button:hover{background:#f3f4f6;}
+/* V1-096: aggressive hide-by-default. The body has many legacy panels accumulated through V1-094. We hide everything that's not part of the new IA shell, then re-show only what we want. The Advanced > Legacy subtab provides a controlled reveal via data-show-legacy="true". */
+body[data-view-mode="form"] > *{display:none;}
+body[data-view-mode="form"] > .app-header,
+body[data-view-mode="form"] > #demo_banner,
+body[data-view-mode="form"] > #subtab-bar,
+body[data-view-mode="form"] > .form-pane,
+body[data-view-mode="form"] > script,
+body[data-view-mode="form"] > style,
+body[data-view-mode="form"] > #app_status_bar{display:revert;}
+body[data-view-mode="form"] > .form-pane[hidden]{display:none;}
+body[data-view-mode="form"] > #subtab-bar[hidden]{display:none;}
+body[data-view-mode="form"] > #demo_banner[hidden]{display:none;}
+/* Form-pane visibility: each tab-panel inside form mode is shown/hidden by the existing switchMainTab via .tab-panel[hidden]. The wrapper class .form-pane just gives them a margin. */
+.form-pane{display:block;}
+.form-pane[hidden]{display:none!important;}
+/* Example-value styling: gray italic until user edits the field */
+.case-input-row input.is-example,
+.case-input-row select.is-example{color:#9ca3af;font-style:italic;}
+.case-checkbox.is-example label{color:#9ca3af;font-style:italic;}
+.home-status-table{width:100%;border-collapse:collapse;}
+.home-status-table td{padding:0.35rem 0.5rem;border-bottom:1px solid #f1f5f9;font-size:0.9rem;}
+.home-status-table td:first-child{color:#6b7280;width:40%;}
+.home-status-table td:last-child{color:#111827;font-weight:500;}
+/* Auto-demo banner (V1-096) */
+.demo-banner{max-width:1200px;margin:0.8rem auto 0;background:#ecfdf5;border:1px solid #6ee7b7;color:#065f46;padding:0.8rem 1rem;border-radius:8px;display:flex;flex-wrap:wrap;align-items:center;gap:0.7rem;box-shadow:0 1px 3px rgba(6,95,70,0.08);}
+.demo-banner-icon{font-size:1.4rem;}
+.demo-banner-text{flex:1;min-width:240px;line-height:1.4;font-size:0.92rem;}
+.demo-banner-btn{padding:0.4rem 0.7rem;border:1px solid #10b981;background:#fff;color:#065f46;border-radius:6px;cursor:pointer;font-size:0.85rem;font-weight:500;}
+.demo-banner-btn:hover{background:#d1fae5;}
+.demo-banner-btn-close{padding:0.2rem 0.55rem;font-size:1.05rem;font-weight:700;}
+.demo-banner.demo-banner-error{background:#fef2f2;border-color:#fca5a5;color:#991b1b;}
+.demo-banner.demo-banner-error .demo-banner-btn{border-color:#dc2626;color:#991b1b;}
+/* V1-096 tab gating: Results and Export are disabled until a run completes */
+.main-tab-btn.tab-disabled{opacity:0.45;cursor:not-allowed;background:#f9fafb;color:#9ca3af;position:relative;}
+.main-tab-btn.tab-disabled::after{content:" 🔒";font-size:0.75rem;}
+/* V1-096: subtab bar (level 2 navigation) */
+.subtab-bar{max-width:1200px;margin:0.4rem auto 0;display:flex;gap:0.3rem;flex-wrap:wrap;padding:0.4rem 0.6rem;background:#f1f5f9;border-radius:8px;border:1px solid #e2e8f0;}
+.subtab-bar[hidden]{display:none;}
+.subtab-btn{padding:0.35rem 0.85rem;border:1px solid transparent;background:transparent;color:#475569;border-radius:6px;cursor:pointer;font-size:0.85rem;font-weight:500;}
+.subtab-btn:hover{background:#fff;border-color:#cbd5e1;}
+.subtab-btn.active{background:#fff;border-color:#1d4ed8;color:#1d4ed8;font-weight:600;box-shadow:0 1px 2px rgba(29,78,216,0.12);}
+.subtab-pane[hidden]{display:none!important;}
+/* V1-096: Avanzado > Legacy reveal — when body has data-show-legacy="true", the hidden legacy panels become visible again. Marked with dashed orange border so they're clearly distinguished from primary UI. */
+body[data-view-mode="form"][data-show-legacy="true"] > *{display:revert;}
+body[data-view-mode="form"][data-show-legacy="true"] > .form-pane[hidden]{display:none;}
+body[data-view-mode="form"][data-show-legacy="true"] > .panel,
+body[data-view-mode="form"][data-show-legacy="true"] > .app-shell,
+body[data-view-mode="form"][data-show-legacy="true"] > #v1094_visual_workflow_panel,
+body[data-view-mode="form"][data-show-legacy="true"] > #welcome_panel{border:2px dashed #fb923c!important;background:#fff7ed!important;opacity:0.92;margin-top:0.6rem;}
+body[data-view-mode="form"][data-show-legacy="true"] > .panel::before{content:"⚠ Legacy panel";display:block;font-size:0.75rem;color:#9a3412;font-weight:700;margin-bottom:0.3rem;}
 </style>
 </head>
 <body>
-<div class="panel"><h3>Visual Workflow Map</h3><h3>Status Legend</h3><h3>What should I do now?</h3><button data-action="start-setup">Start Setup</button><button data-action="edit-case-setup">Edit Case Setup</button><button data-action="edit-loads">Edit Loads</button><button data-action="review-case">Review Case</button><button data-action="validate-case-from-workflow">Validate Case</button><button data-action="run-case-from-workflow">Run Case</button><button data-action="view-results">View Results</button><button data-action="export-outputs">Export Outputs</button><button data-action="new-demo-case">New Demo Case</button><button data-action="top-open-project">Open Project</button><button data-action="top-validate-run">Validate & Run</button><button data-action="top-view-results">View Results</button><button data-action="top-export">Export</button><button data-action="set-simple-mode">Simple Mode</button><button data-action="set-expert-mode">Expert Mode</button><p>Top action started.</p><p>Start with the visual workflow or case wizard. Advanced JSON is optional.</p><p>Pending: not started yet.</p><p>Ready: enough information is available to continue.</p><p>Complete: step has been completed.</p><p>Needs attention: review errors or warnings before continuing.</p><p>Start by loading a demo template or creating/opening a project.</p><p>Review the setup, then validate the case.</p><p>Fix validation errors before running.</p><p>Run the calculation.</p><p>Review results and export outputs.</p><p>For advanced users and debugging.</p><p>Technical API output for troubleshooting.</p><p>Developer check for UI wiring.</p><p>Setup warnings before validation/run.</p><p>Plain-language explanation of configured generic check results.</p><p>Visual workflow updated.</p><p>Workflow action started.</p><p>Workflow action completed.</p><p>Workflow action needs attention.</p><p>Simple mode enabled.</p><p>Expert mode enabled.</p><p>craneRunway.uiMode</p></div>
+<div class="panel" id="v1094_visual_workflow_panel"><h3>Visual Workflow Map</h3><h3>Status Legend</h3><h3>What should I do now?</h3><button data-action="start-setup">Start Setup</button><button data-action="edit-case-setup">Edit Case Setup</button><button data-action="edit-loads">Edit Loads</button><button data-action="review-case">Review Case</button><button data-action="validate-case-from-workflow">Validate Case</button><button data-action="run-case-from-workflow">Run Case</button><button data-action="view-results">View Results</button><button data-action="export-outputs">Export Outputs</button><button data-action="new-demo-case">New Demo Case</button><button data-action="top-open-project">Open Project</button><button data-action="top-validate-run">Validate & Run</button><button data-action="top-view-results">View Results</button><button data-action="top-export">Export</button><button data-action="set-simple-mode">Simple Mode</button><button data-action="set-expert-mode">Expert Mode</button><p>Top action started.</p><p>Start with the visual workflow or case wizard. Advanced JSON is optional.</p><p>Pending: not started yet.</p><p>Ready: enough information is available to continue.</p><p>Complete: step has been completed.</p><p>Needs attention: review errors or warnings before continuing.</p><p>Start by loading a demo template or creating/opening a project.</p><p>Review the setup, then validate the case.</p><p>Fix validation errors before running.</p><p>Run the calculation.</p><p>Review results and export outputs.</p><p>For advanced users and debugging.</p><p>Technical API output for troubleshooting.</p><p>Developer check for UI wiring.</p><p>Setup warnings before validation/run.</p><p>Plain-language explanation of configured generic check results.</p><p>Visual workflow updated.</p><p>Workflow action started.</p><p>Workflow action completed.</p><p>Workflow action needs attention.</p><p>Simple mode enabled.</p><p>Expert mode enabled.</p><p>craneRunway.uiMode</p></div>
 <div class="app-header panel">
   <div class="app-header-top">
     <div><h1 style="margin:0;">App Viga Carrilera</h1><p style="margin:0.2rem 0 0;"><strong>Crane Runway Local UI</strong> <span class="beta-badge">Internal Beta</span></p></div>
@@ -162,7 +243,7 @@ th { background: #f9fafb; }
     <button class="main-tab-btn" data-tab-btn="home" onclick="switchMainTab('home')">Home</button>
     <button class="main-tab-btn" data-tab-btn="project" onclick="switchMainTab('project')">Project</button>
     <button class="main-tab-btn" data-tab-btn="setup" onclick="switchMainTab('setup')">Setup</button>
-    <button class="main-tab-btn" data-tab-btn="loads" onclick="switchMainTab('loads')">Loads</button>
+    <button class="main-tab-btn" data-tab-btn="loads" onclick="switchMainTab('loads')" hidden>Loads</button>
     <button class="main-tab-btn" data-tab-btn="review" onclick="switchMainTab('review')">Review</button>
     <button class="main-tab-btn" data-tab-btn="calculate" onclick="switchMainTab('calculate')">Calculate</button>
     <button class="main-tab-btn" data-tab-btn="results" onclick="switchMainTab('results')">Results</button>
@@ -172,6 +253,288 @@ th { background: #f9fafb; }
     <button class="main-tab-btn" data-tab-btn="advanced" onclick="switchMainTab('advanced')">Advanced</button>
   </div>
 </div>
+
+<!-- V1-096: subtab bar (level 2 navigation) — populated by JS based on the active main tab -->
+<nav class="subtab-bar" id="subtab-bar" hidden></nav>
+
+<!-- ====== Auto-demo banner (V1-096) — shown after the demo has been auto-loaded and run ====== -->
+<div id="demo_banner" class="demo-banner" hidden>
+  <span class="demo-banner-icon">🎯</span>
+  <div class="demo-banner-text"><strong>Demo cargado y ejecutado.</strong> El caso ipn-with-cover ya fue validado y calculado. Mirá los resultados en la pestaña <strong>Results</strong>. Modificá los valores en <strong>Setup</strong> y volvé a <strong>Calculate</strong> para ver cómo cambian.</div>
+  <button onclick="resetAutoDemo()" class="demo-banner-btn">Reiniciar demo</button>
+  <button onclick="document.getElementById('demo_banner').hidden=true" class="demo-banner-btn demo-banner-btn-close" aria-label="Cerrar banner">×</button>
+</div>
+
+<!-- ====== Form-mode tab content (each .form-pane visible on its matching tab) ====== -->
+<div class="form-pane tab-panel" data-main-tab="home" id="form-pane-home">
+  <div class="case-card">
+    <div class="case-card-head"><h2>Bienvenido</h2><p>App Viga Carrilera — análisis local de vigas carrileras (beta interna).</p></div>
+    <div class="case-card-body">
+      <p style="margin:0.3rem 0 0.8rem;color:#374151;">Esta UI te permite cargar datos de la viga, del puente grúa, riel y criterios; validar el caso y ejecutar el cálculo. <strong>Los resultados requieren revisión de ingeniería</strong> — no son verificaciones oficiales CIRSOC/CISC/AISC.</p>
+      <h3 style="color:#1e3a8a;margin:0.5rem 0 0.4rem;">Flujo recomendado</h3>
+      <ol style="margin:0 0 0.8rem 1.2rem;color:#374151;line-height:1.7;">
+        <li>Tab <strong>Setup</strong>: cargá las dimensiones de la viga, perfil, material, ruedas, riel y criterios.</li>
+        <li>Tab <strong>Loads</strong>: ajustá la tabla de ruedas si tu caso tiene más de 2 ruedas.</li>
+        <li>Tab <strong>Review</strong>: previsualizá geometría y revisá warnings de calidad.</li>
+        <li>Tab <strong>Calculate</strong>: validá el caso y ejecutá el cálculo.</li>
+        <li>Tab <strong>Results</strong>: revisá las tarjetas de resultados.</li>
+        <li>Tab <strong>Export</strong>: descargá JSON, summary y reporte HTML.</li>
+      </ol>
+      <h3 style="color:#1e3a8a;margin:0.7rem 0 0.4rem;">Estado del caso</h3>
+      <table class="home-status-table"><tbody>
+        <tr><td>Caso</td><td id="home_case_id">demo-01 (ejemplo precargado)</td></tr>
+        <tr><td>Validación</td><td id="home_validation_status">Sin validar</td></tr>
+        <tr><td>Ejecución</td><td id="home_run_status">Sin ejecutar</td></tr>
+      </tbody></table>
+    </div>
+    <div class="case-action-bar">
+      <button class="case-btn-primary" onclick="switchMainTab('setup')">Ir a Setup</button>
+      <button onclick="loadCaseFormDemo()">Cargar caso demo</button>
+      <button onclick="switchMainTab('calculate')">Validar &amp; Ejecutar</button>
+      <span class="case-action-spacer"></span>
+      <button onclick="switchMainTab('results')">Ver resultados</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== Datos del Caso (commercial-app input form) — visible only on Setup tab ====== -->
+<div class="form-pane tab-panel" data-main-tab="setup" id="form-pane-setup">
+<div class="case-card" id="case_data_form">
+  <div class="case-card-head">
+    <h2>Datos del Caso</h2>
+    <p>Cargá las dimensiones de la viga carrilera, del puente grúa, riel y criterios. Los cambios se aplican al JSON del caso al pulsar Aplicar.</p>
+  </div>
+  <div class="case-card-body">
+    <div class="case-section subtab-pane" data-subtab="identification">
+      <h3 class="case-section-title"><span class="case-section-num">1</span> Identificación</h3>
+      <div class="case-grid">
+        <div class="case-field"><label>Case ID</label><div class="case-input-row"><input id="cf_case_id" type="text" data-cf-example="with_cover_and_eccentricity"/></div></div>
+        <div class="case-field"><label>Descripción</label><div class="case-input-row"><input id="cf_description" type="text" data-cf-example="Baseline demo: viga carrilera IPN 200 con cover plate"/></div></div>
+      </div>
+    </div>
+    <div class="case-section subtab-pane" data-subtab="beam">
+      <h3 class="case-section-title"><span class="case-section-num">2</span> Viga Carrilera</h3>
+      <div class="case-grid">
+        <div class="case-field"><label>Perfil base <span class="case-field-help">(Base Shape ID)</span></label><div class="case-input-row"><select id="cf_base_shape_id" data-cf-example="CIRSOC_IPN_200"><option value="">-- Elegir --</option><option>CIRSOC_IPN_180</option><option>CIRSOC_IPN_200</option><option>CIRSOC_IPN_240</option><option>CIRSOC_IPN_300</option><option>CIRSOC_IPB_200</option></select></div></div>
+        <div class="case-field"><label>Luz de la viga <span class="case-field-help">(Span)</span></label><div class="case-input-row"><input id="cf_span" type="text" data-cf-example="6.0"/><select id="cf_span_unit" class="case-unit" data-cf-example="m"><option>m</option><option>mm</option><option>ft</option></select></div></div>
+        <div class="case-field"><label>Material preset</label><div class="case-input-row"><select id="cf_material_preset" data-cf-example="F24" onchange="applyCaseMaterialPreset()"><option>F24</option><option>F36</option><option>Custom</option></select></div></div>
+        <div class="case-field"><label>Material ID <span class="case-field-help">(informativo)</span></label><div class="case-input-row"><input id="cf_material_id" type="text" data-cf-example="F24"/></div></div>
+        <div class="case-field"><label>Fy <span class="case-field-help">(tension de fluencia, va a stress_limits[0].Fy)</span></label><div class="case-input-row"><input id="cf_fy" type="text" data-cf-example="250"/><select id="cf_fy_unit" class="case-unit" data-cf-example="MPa"><option>MPa</option><option>ksi</option><option>psi</option></select></div></div>
+        <div class="case-field"><label>Fu <span class="case-field-help">(no usado por este schema, solo informativo)</span></label><div class="case-input-row"><input id="cf_fu" type="text" data-cf-example="370"/><select id="cf_fu_unit" class="case-unit" data-cf-example="MPa"><option>MPa</option><option>ksi</option><option>psi</option></select></div></div>
+        <div class="case-field"><label>E <span class="case-field-help">(modulo elastico, va a analysis.E)</span></label><div class="case-input-row"><input id="cf_e" type="text" data-cf-example="200000"/><select id="cf_e_unit" class="case-unit" data-cf-example="MPa"><option>MPa</option><option>ksi</option><option>psi</option></select></div></div>
+      </div>
+      <div class="case-grid" style="margin-top:0.6rem;">
+        <div class="case-checkbox"><input id="cf_cover_plate_enabled" type="checkbox" data-cf-example="true"/><label for="cf_cover_plate_enabled">Cover plate habilitado (refuerzo superior)</label></div>
+        <div class="case-field"><label>Ancho cover plate</label><div class="case-input-row"><input id="cf_cover_plate_width" type="text" data-cf-example="140"/><select id="cf_cover_plate_width_unit" class="case-unit" data-cf-example="mm"><option>mm</option><option>cm</option><option>in</option></select></div></div>
+        <div class="case-field"><label>Espesor cover plate</label><div class="case-input-row"><input id="cf_cover_plate_thickness" type="text" data-cf-example="10"/><select id="cf_cover_plate_thickness_unit" class="case-unit" data-cf-example="mm"><option>mm</option><option>cm</option><option>in</option></select></div></div>
+      </div>
+    </div>
+    <div class="case-section subtab-pane" data-subtab="crane">
+      <h3 class="case-section-title"><span class="case-section-num">3</span> Puente Grúa</h3>
+      <div class="case-grid">
+        <div class="case-field"><label>Crane ID</label><div class="case-input-row"><input id="cf_crane_id" type="text" data-cf-example="demo_crane"/></div></div>
+        <div class="case-field"><label>Factor de impacto vertical</label><div class="case-input-row"><input id="cf_vertical_impact_factor" type="text" data-cf-example="0.25"/></div></div>
+        <div class="case-field"><label>Factor de fuerza lateral</label><div class="case-input-row"><input id="cf_lateral_force_factor" type="text" data-cf-example="0.10"/></div></div>
+        <div class="case-field"><label>Carga rueda 1</label><div class="case-input-row"><input id="cf_wheel_1_load" type="text" data-cf-example="80"/><select id="cf_wheel_1_load_unit" class="case-unit" data-cf-example="kN"><option>kN</option><option>N</option><option>kip</option></select></div></div>
+        <div class="case-field"><label>Carga rueda 2</label><div class="case-input-row"><input id="cf_wheel_2_load" type="text" data-cf-example="80"/><select id="cf_wheel_2_load_unit" class="case-unit" data-cf-example="kN"><option>kN</option><option>N</option><option>kip</option></select></div></div>
+        <div class="case-field"><label>Separación entre ruedas</label><div class="case-input-row"><input id="cf_wheel_spacing" type="text" data-cf-example="2"/><select id="cf_wheel_spacing_unit" class="case-unit" data-cf-example="m"><option>m</option><option>mm</option><option>cm</option><option>in</option></select></div></div>
+      </div>
+      <p style="margin:0.6rem 0 0;font-size:0.82rem;color:#6b7280;">Para más de dos ruedas o configuraciones complejas, abrí el editor de tabla de ruedas en la vista avanzada.</p>
+    </div>
+    <div class="case-section subtab-pane" data-subtab="rail">
+      <h3 class="case-section-title"><span class="case-section-num">4</span> Riel y Excentricidades</h3>
+      <div class="case-grid">
+        <div class="case-checkbox"><input id="cf_rail_eccentricity_enabled" type="checkbox" data-cf-example="true"/><label for="cf_rail_eccentricity_enabled">Habilitar excentricidad de riel</label></div>
+        <div class="case-field"><label>Excentricidad vertical Y</label><div class="case-input-row"><input id="cf_vertical_eccentricity_y" type="text" data-cf-example="25"/><select id="cf_vertical_eccentricity_y_unit" class="case-unit" data-cf-example="mm"><option>mm</option><option>cm</option><option>in</option></select></div></div>
+        <div class="case-field"><label>Altura carga lateral Z</label><div class="case-input-row"><input id="cf_lateral_load_height_z" type="text" data-cf-example="100"/><select id="cf_lateral_load_height_z_unit" class="case-unit" data-cf-example="mm"><option>mm</option><option>cm</option><option>in</option></select></div></div>
+      </div>
+    </div>
+    <div class="case-section subtab-pane" data-subtab="criteria">
+      <h3 class="case-section-title"><span class="case-section-num">5</span> Criterios</h3>
+      <div class="case-grid">
+        <div class="case-field"><label>Preset de deflexión</label><div class="case-input-row"><input id="cf_deflection_preset" type="text" data-cf-example="L/600"/></div></div>
+        <div class="case-field"><label>Preset de tensión</label><div class="case-input-row"><input id="cf_stress_preset" type="text" data-cf-example="AISC-default"/></div></div>
+      </div>
+      <p style="margin:0.6rem 0 0;font-size:0.78rem;color:#92400e;">Estos son chequeos genéricos configurables, no verificaciones oficiales CIRSOC/CISC/AISC.</p>
+    </div>
+  </div>
+  <div id="case_data_status" class="case-status">Listo para cargar datos. Pulsá "Cargar demo" para ver un caso de ejemplo o completá los campos manualmente.</div>
+  <div class="case-action-bar">
+    <button class="case-btn-primary" onclick="applyCaseFormAndValidate()">Aplicar y Validar</button>
+    <button onclick="applyCaseFormToJson()">Aplicar al JSON</button>
+    <button onclick="loadCaseFormFromJson()">Cargar desde JSON</button>
+    <button onclick="loadCaseFormDemo()">Cargar demo</button>
+    <button onclick="resetCaseForm()">Limpiar</button>
+    <span class="case-action-spacer"></span>
+    <button onclick="runCase()">Ejecutar Cálculo</button>
+  </div>
+</div>
+</div>
+<!-- ====== LOADS tab — wheel table editor focus ====== -->
+<div class="form-pane tab-panel" data-main-tab="loads" id="form-pane-loads">
+  <div class="case-card">
+    <div class="case-card-head"><h2>Cargas del Puente Grúa</h2><p>Editá la tabla de ruedas y los factores de carga.</p></div>
+    <div class="case-card-body">
+      <h3 style="color:#1e3a8a;margin:0 0 0.4rem;">Resumen rápido (desde Setup)</h3>
+      <table class="home-status-table"><tbody>
+        <tr><td>Carga rueda 1</td><td id="loads_wheel_1_summary">—</td></tr>
+        <tr><td>Carga rueda 2</td><td id="loads_wheel_2_summary">—</td></tr>
+        <tr><td>Separación entre ruedas</td><td id="loads_spacing_summary">—</td></tr>
+        <tr><td>Factor impacto vertical</td><td id="loads_vif_summary">—</td></tr>
+        <tr><td>Factor fuerza lateral</td><td id="loads_lff_summary">—</td></tr>
+      </tbody></table>
+      <p style="margin:0.7rem 0 0.4rem;color:#374151;">Para casos con más de 2 ruedas, usá el editor avanzado de tabla de ruedas (vista avanzada).</p>
+      <button onclick="refreshLoadsSummary()">Actualizar resumen</button>
+      <button onclick="switchMainTab('setup')">Editar en Setup</button>
+    </div>
+  </div>
+</div>
+<!-- ====== REVIEW tab — visual preview + quality warnings ====== -->
+<div class="form-pane tab-panel" data-main-tab="review" id="form-pane-review">
+  <div class="case-card">
+    <div class="case-card-head"><h2>Revisión del Caso</h2><p>Previsualización gráfica y warnings de calidad antes de validar.</p></div>
+    <div class="case-card-body">
+      <div class="case-action-bar" style="margin:0 0 0.7rem;padding:0;background:none;border:none;">
+        <button class="case-btn-primary" onclick="refreshVisualPreview()">Refrescar Preview</button>
+        <button onclick="refreshCaseQuality()">Refrescar Calidad</button>
+      </div>
+      <h3 style="color:#1e3a8a;margin:0.4rem 0 0.3rem;">Preview de la viga</h3>
+      <div id="review_beam_preview_container" style="border:1px solid #e5e7eb;border-radius:6px;padding:0.6rem;background:#fafafa;min-height:80px;color:#6b7280;">Pulsá "Refrescar Preview" para ver el esquema.</div>
+      <h3 style="color:#1e3a8a;margin:0.7rem 0 0.3rem;">Warnings de calidad del caso</h3>
+      <div id="review_case_quality_container" style="border:1px solid #e5e7eb;border-radius:6px;padding:0.6rem;background:#fafafa;min-height:60px;color:#6b7280;">Pulsá "Refrescar Calidad" para ver warnings de calidad del caso.</div>
+    </div>
+  </div>
+</div>
+<!-- ====== CALCULATE tab — validate + run ====== -->
+<div class="form-pane tab-panel" data-main-tab="calculate" id="form-pane-calculate">
+  <div class="case-card">
+    <div class="case-card-head"><h2>Validar y Ejecutar</h2><p>Validá el JSON del caso y ejecutá el análisis.</p></div>
+    <div class="case-card-body">
+      <div class="case-action-bar" style="margin:0 0 0.7rem;padding:0;background:none;border:none;">
+        <button class="case-btn-primary" onclick="validateCase()">Validar Caso</button>
+        <button onclick="runCase()">Ejecutar Cálculo</button>
+        <button onclick="validateAndRunCase()">Validar y Ejecutar</button>
+      </div>
+      <div id="calc_pane_status" class="case-status">Listo para validar. Asegurate de haber aplicado los datos del Setup primero.</div>
+      <h3 style="color:#1e3a8a;margin:0.6rem 0 0.3rem;">Resumen de validación</h3>
+      <div id="calc_validation_summary" style="border:1px solid #e5e7eb;border-radius:6px;padding:0.6rem;background:#fafafa;min-height:60px;color:#6b7280;">Aún no se ejecutó la validación.</div>
+      <h3 style="color:#1e3a8a;margin:0.6rem 0 0.3rem;">Estado de ejecución</h3>
+      <div id="calc_run_summary" style="border:1px solid #e5e7eb;border-radius:6px;padding:0.6rem;background:#fafafa;min-height:60px;color:#6b7280;">Aún no se ejecutó el cálculo.</div>
+    </div>
+  </div>
+</div>
+<!-- ====== RESULTS tab — result cards ====== -->
+<div class="form-pane tab-panel" data-main-tab="results" id="form-pane-results">
+  <div class="case-card">
+    <div class="case-card-head"><h2>Resultados</h2><p>Tarjetas con las demandas máximas y el estado de los chequeos genéricos configurados.</p></div>
+    <div class="case-card-body">
+      <div class="subtab-pane" data-subtab="kpis">
+        <div class="result-cards" id="results_pane_cards">
+          <div class="result-card"><div class="result-card-title">Max Moment</div><div class="result-card-value" id="results_card_moment">—</div></div>
+          <div class="result-card"><div class="result-card-title">Max Shear</div><div class="result-card-value" id="results_card_shear">—</div></div>
+          <div class="result-card"><div class="result-card-title">Max Deflection</div><div class="result-card-value" id="results_card_deflection">—</div></div>
+          <div class="result-card"><div class="result-card-title">Max Biaxial Stress</div><div class="result-card-value" id="results_card_biaxial">—</div></div>
+          <div class="result-card"><div class="result-card-title">Serviceability</div><div class="result-card-value" id="results_card_serviceability">—</div></div>
+          <div class="result-card"><div class="result-card-title">Stress</div><div class="result-card-value" id="results_card_stress">—</div></div>
+          <div class="result-card"><div class="result-card-title">Overall</div><div class="result-card-value" id="results_card_overall">—</div></div>
+        </div>
+        <p style="margin:0.7rem 0 0.3rem;color:#92400e;font-size:0.82rem;">Estos chequeos son verificaciones genéricas configurables, no chequeos oficiales CIRSOC/CISC/AISC.</p>
+      </div>
+      <div class="subtab-pane" data-subtab="interpretation">
+        <h3 style="color:#1e3a8a;margin:0 0 0.3rem;">Interpretación de los resultados</h3>
+        <div id="results_interpretation" style="border:1px solid #e5e7eb;border-radius:6px;padding:0.7rem;background:#fafafa;min-height:80px;color:#374151;line-height:1.5;">Ejecutá el cálculo para ver la interpretación en lenguaje claro de los resultados.</div>
+        <p style="margin:0.7rem 0 0;color:#6b7280;font-size:0.82rem;">La interpretación traduce los chequeos PASS/FAIL a explicación legible y sugiere próximos pasos.</p>
+      </div>
+      <div class="case-action-bar" style="margin:0.6rem 0 0;padding:0.6rem 0 0;background:none;">
+        <button onclick="refreshResultsPane()">Actualizar resultados</button>
+        <button onclick="switchMainTab('calculate')">Volver a Calculate</button>
+        <button onclick="switchMainTab('export')">Ir a Export</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ====== EXPORT tab — downloads ====== -->
+<div class="form-pane tab-panel" data-main-tab="export" id="form-pane-export">
+  <div class="case-card">
+    <div class="case-card-head"><h2>Exportar</h2><p>Descargá los artefactos del caso (JSON, summary, reporte HTML, paquete completo).</p></div>
+    <div class="case-card-body">
+      <div class="case-grid">
+        <button onclick="downloadCaseJson()">Descargar JSON del caso</button>
+        <button onclick="downloadSummaryJson()">Descargar Summary JSON</button>
+        <button onclick="downloadHtmlReport()">Descargar Reporte HTML</button>
+        <button onclick="downloadPackageMetadata()">Descargar Metadata del Paquete</button>
+        <button onclick="downloadValidationResponse()">Descargar Respuesta de Validación</button>
+        <button onclick="downloadRunResponse()">Descargar Respuesta de Ejecución</button>
+        <button onclick="downloadAllPackageFiles()" class="case-btn-primary">Descargar Paquete Completo</button>
+      </div>
+      <p style="margin:0.7rem 0 0;color:#6b7280;font-size:0.82rem;">Los archivos se descargan al navegador local; no se guardan en el servidor.</p>
+      <h3 style="color:#1e3a8a;margin:0.8rem 0 0.3rem;">Estado de los artefactos</h3>
+      <div id="export_status" style="border:1px solid #e5e7eb;border-radius:6px;padding:0.6rem;background:#fafafa;color:#374151;font-size:0.9rem;">Pendiente: ejecutá el cálculo en Calculate para que los artefactos estén disponibles.</div>
+    </div>
+  </div>
+</div>
+<!-- ====== PROJECT tab — project workspace shortcut ====== -->
+<div class="form-pane tab-panel" data-main-tab="project" id="form-pane-project">
+  <div class="case-card">
+    <div class="case-card-head"><h2>Proyectos</h2><p>Crear, abrir y guardar proyectos locales.</p></div>
+    <div class="case-card-body">
+      <p style="color:#374151;margin:0 0 0.6rem;">Los proyectos se guardan localmente en <code>projects/</code>. Para gestión avanzada (run history, comparaciones), abrí la vista avanzada con el botón inferior.</p>
+      <div class="case-action-bar" style="margin:0;padding:0;background:none;">
+        <button onclick="refreshProjectList()">Actualizar lista</button>
+        <button onclick="createProject()" class="case-btn-primary">Crear proyecto</button>
+        <button onclick="openProject()">Abrir proyecto</button>
+        <button onclick="saveProjectCase()">Guardar caso al proyecto</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ====== SUPPORT tab — diagnostics / bundle / about ====== -->
+<div class="form-pane tab-panel" data-main-tab="support" id="form-pane-support">
+  <div class="case-card">
+    <div class="case-card-head"><h2>Soporte</h2><p>Herramientas de diagnóstico y reporte de issues.</p></div>
+    <div class="case-card-body">
+      <div class="case-action-bar" style="margin:0;padding:0;background:none;">
+        <button onclick="runUiDiagnostics()" class="case-btn-primary">Ejecutar diagnósticos</button>
+        <button onclick="buildSupportBundle()">Crear support bundle</button>
+        <button onclick="generateIssueReportText()">Generar texto de issue</button>
+        <button onclick="refreshAboutInfo()">Refrescar info beta</button>
+      </div>
+      <p style="margin:0.6rem 0 0;color:#6b7280;font-size:0.82rem;">Para más herramientas (RC checklist, frontend self-test, glossary), abrí la vista avanzada.</p>
+    </div>
+  </div>
+</div>
+<!-- ====== ADVANCED tab — JSON editor ====== -->
+<div class="form-pane tab-panel" data-main-tab="advanced" id="form-pane-advanced">
+  <div class="case-card">
+    <div class="case-card-head"><h2>Avanzado</h2><p>Editor JSON directo y herramientas legacy.</p></div>
+    <div class="case-card-body">
+      <div class="subtab-pane" data-subtab="json">
+        <p style="color:#374151;margin:0 0 0.4rem;font-size:0.9rem;">Vista <strong>solo lectura</strong> del JSON del caso. Para editar normalmente usá <strong>Setup</strong>. Si necesitás modificar JSON crudo, activá Modo edición.</p>
+        <p style="color:#92400e;margin:0 0 0.4rem;font-size:0.82rem;">Advanced JSON is for debugging and advanced editing. Editar JSON crudo puede dejar el caso inválido.</p>
+        <textarea id="advanced_json_editor_pane" readonly style="width:100%;min-height:280px;font-family:Consolas,monospace;padding:0.6rem;border:1px solid #d1d5db;border-radius:6px;background:#f9fafb;color:#374151;" placeholder="Pulsá Cargar desde caso para ver el JSON actual..."></textarea>
+        <div class="case-action-bar" style="margin:0.5rem 0 0;padding:0;background:none;">
+          <button onclick="advancedPaneLoadFromCaseJson()" class="case-btn-primary">Cargar desde caso</button>
+          <button onclick="advancedPaneToggleEdit()" id="advanced_json_edit_btn">Activar Modo edición</button>
+          <button onclick="advancedPaneApplyToCaseJson()" id="advanced_json_apply_btn" hidden>Aplicar al caso</button>
+          <button onclick="formatJson()">Formatear</button>
+          <button onclick="advancedPaneCopyJson()">Copiar JSON</button>
+        </div>
+      </div>
+      <div class="subtab-pane" data-subtab="legacy">
+        <p style="color:#92400e;margin:0 0 0.4rem;font-size:0.85rem;">Los paneles legacy (Visual Workflow Map, Beginner Dashboard, Case Wizard, Documentation Portal completo, Frontend Self-Test, RC Status, Glossary) están escondidos por defecto porque se acumularon a lo largo de versiones previas y duplican funciones del nuevo IA. Activá la vista legacy si necesitás revisar uno específico.</p>
+        <div class="case-action-bar" style="margin:0;padding:0;background:none;">
+          <button onclick="toggleLegacyReveal()" id="legacy_reveal_btn" class="case-btn-primary">Mostrar paneles legacy</button>
+          <button onclick="document.body.removeAttribute('data-show-legacy'); document.getElementById('legacy_reveal_btn').textContent='Mostrar paneles legacy';">Ocultar</button>
+          <span class="case-action-spacer"></span>
+          <span style="color:#6b7280;font-size:0.82rem;">Cuando aparecen, llevan borde naranja punteado para distinguirlos.</span>
+        </div>
+        <p style="margin:0.7rem 0 0;color:#6b7280;font-size:0.82rem;">Los paneles legacy aparecerán abajo del workspace. Para volver a la vista limpia, pulsá Ocultar o recargá la página.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- V1-096: the "Mostrar herramientas avanzadas" toggle is removed from the visible UI; switching to full view dumped 33 panels at once. The .case-mode-bar div is kept (empty) because the form-mode CSS uses it as a sibling-selector anchor to hide everything after this point. Advanced/diagnostic features stay reachable via the Advanced and Support tabs. -->
+<div class="case-mode-bar" hidden></div>
 <h1>Crane Runway Local UI</h1>
 <p class=\"warning\">Local beta tool. Results require engineering review.</p>
 <div class=\"panel\" id=\"welcome_panel\" style=\"margin-top:1rem;\">
@@ -2104,12 +2467,734 @@ function loadRailEccentricityFromJson(){setStatus('Rail eccentricity loaded from
 function applyRailEccentricityToJson(){setStatus('Rail eccentricity applied to JSON.');}
 function resetRailEccentricityForm(){setStatus('Rail eccentricity form reset.');}
 function validateRailEccentricityForm(){return [];}
-function applyAllFormsToJson(){setStatus('All forms applied to JSON.');showNextStepRecommendation('Next: refresh preview and validate.');}
-async function validateAndRunCase(){setStatus('Validate and run stopped: validation failed.');}
+/* V1-096: Real implementations replacing the V1-094 stubs.
+   applyAllFormsToJson runs each form's apply-to-JSON helper in a safe sequence
+   (Common Inputs is the canonical write path, plus wheels and profile/material).
+   validateAndRunCase chains validateCase -> runCase only if validation passed. */
+function applyAllFormsToJson(){
+  var applied = [];
+  try{
+    if(typeof applyCommonInputsToJson === 'function'){ applyCommonInputsToJson(); applied.push('common'); }
+    if(typeof applyWheelsToJson === 'function'){ applyWheelsToJson(); applied.push('wheels'); }
+    if(typeof applyProfileMaterialToJson === 'function'){ applyProfileMaterialToJson(); applied.push('profile/material'); }
+    if(typeof markSavedChanges === 'function') markSavedChanges();
+    setStatus('All forms applied to JSON. Sources: ' + applied.join(', ') + '.');
+    if(typeof showNextStepRecommendation === 'function') showNextStepRecommendation('Next: refresh preview and validate.');
+  } catch(err){ setStatus('Apply forms error: ' + err); }
+}
+function _renderCalcValidationSummary(v){
+  var dst = document.getElementById('calc_validation_summary'); if(!dst) return;
+  if(!v){ dst.innerHTML = '<em style="color:#6b7280;">Sin respuesta de validacion.</em>'; return; }
+  if(v.valid === true){
+    dst.innerHTML = '<strong style="color:#15803d;">[OK] Validacion paso</strong> &mdash; el caso pasa los chequeos de schema y consistencia.';
+  } else {
+    var msgs = (v.user_facing_messages || v.messages || v.errors || []).slice(0, 8);
+    var rows = msgs.map(function(m){
+      var sev = m.severity || 'error';
+      var path = m.path || '(raiz)';
+      var msg = m.message || m.text || JSON.stringify(m);
+      return '<tr><td style="color:#991b1b;font-weight:600;">'+escapeHtml(sev)+'</td><td><code>'+escapeHtml(path)+'</code></td><td>'+escapeHtml(msg)+(m.hint?'<br/><small style="color:#6b7280;">Sugerencia: '+escapeHtml(m.hint)+'</small>':'')+'</td></tr>';
+    }).join('');
+    dst.innerHTML = '<strong style="color:#991b1b;">[FAIL] Validacion fallo</strong> &mdash; corregi los siguientes puntos en Setup y reintenta.<table style="margin-top:0.5rem;"><thead><tr><th>Severidad</th><th>Path</th><th>Mensaje</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  }
+}
+function _renderCalcRunSummary(r){
+  var dst = document.getElementById('calc_run_summary'); if(!dst) return;
+  if(!r){ dst.innerHTML = '<em style="color:#6b7280;">Sin respuesta de ejecucion.</em>'; return; }
+  if(r.success){
+    dst.innerHTML = '<strong style="color:#15803d;">[OK] Calculo completado</strong>. Mira <a href="#" onclick="switchMainTab(\\'results\\');return false;">Results</a> y <a href="#" onclick="switchMainTab(\\'export\\');return false;">Export</a>.';
+  } else {
+    dst.innerHTML = '<strong style="color:#991b1b;">[FAIL] Calculo fallo</strong>: ' + escapeHtml(r.error || r.message || 'sin detalle') + '.';
+  }
+}
+async function validateAndRunCase(){
+  try{
+    /* V1-096: only re-apply the case form to JSON when the user has touched fields. Otherwise the demo's rich template JSON (containing fields the cf_* form doesn't know about) would be destructively replaced by applyCommonInputsToJson(), failing schema validation. */
+    var anyTouched = false;
+    var touchedNodes = document.querySelectorAll('[data-cf-touched="1"]');
+    if(touchedNodes && touchedNodes.length > 0) anyTouched = true;
+    if(anyTouched && typeof applyCaseFormToJson === 'function') applyCaseFormToJson();
+    setStatus('Validating before run...');
+    await validateCase();
+    var v = (typeof lastValidationResponse !== 'undefined') ? lastValidationResponse : null;
+    _renderCalcValidationSummary(v);
+    if(!v || v.valid !== true){
+      _renderCalcRunSummary(null);
+      setStatus('Validate and run stopped: validation failed.');
+      switchMainTab('calculate');  /* keep user on calculate so they see the errors */
+      return;
+    }
+    setStatus('Validation passed. Running calculation...');
+    await runCase();
+    var r = (typeof lastRunResponse !== 'undefined') ? lastRunResponse : null;
+    _renderCalcRunSummary(r);
+    if(typeof refreshResultsPane === 'function') refreshResultsPane();
+    if(typeof renderReviewPreview === 'function') renderReviewPreview();
+    setStatus('Validate and run complete.');
+    if(r && r.success) switchMainTab('results');  /* land on results when everything worked */
+  } catch(err){ setStatus('Validate and run error: ' + err); }
+}
 function markUnsavedChanges(){setStatus('Unsaved changes detected.');updateUnsavedChangesIndicator('Unsaved changes');}
 function markSavedChanges(){setStatus('Changes marked saved.');updateUnsavedChangesIndicator('Saved');}
 function updateUnsavedChangesIndicator(label){const el=document.getElementById('unsaved_changes_indicator'); if(el) el.textContent=label||'Saved';}
 function showNextStepRecommendation(text){const el=document.getElementById('app_shell_status'); if(el&&text) el.textContent=text;}
+
+/* ===== Datos del Caso form helpers (V1-095 commercial-app input panel) ===== */
+var CASE_FORM_FIELDS = [
+  ['cf_case_id','common_case_id'],['cf_description','common_description'],
+  ['cf_base_shape_id','common_base_shape_id'],['cf_span','common_span'],['cf_span_unit','common_span_unit'],
+  ['cf_material_id','common_material_id'],['cf_fy','common_fy'],['cf_fy_unit','common_fy_unit'],
+  ['cf_fu','common_fu'],['cf_fu_unit','common_fu_unit'],['cf_e','common_e'],['cf_e_unit','common_e_unit'],
+  ['cf_cover_plate_enabled','common_cover_plate_enabled','checkbox'],
+  ['cf_cover_plate_width','common_cover_plate_width'],['cf_cover_plate_width_unit','common_cover_plate_width_unit'],
+  ['cf_cover_plate_thickness','common_cover_plate_thickness'],['cf_cover_plate_thickness_unit','common_cover_plate_thickness_unit'],
+  ['cf_crane_id','common_crane_id'],['cf_vertical_impact_factor','common_vertical_impact_factor'],
+  ['cf_lateral_force_factor','common_lateral_force_factor'],
+  ['cf_wheel_1_load','common_wheel_1_load'],['cf_wheel_1_load_unit','common_wheel_1_load_unit'],
+  ['cf_wheel_2_load','common_wheel_2_load'],['cf_wheel_2_load_unit','common_wheel_2_load_unit'],
+  ['cf_wheel_spacing','common_wheel_spacing'],['cf_wheel_spacing_unit','common_wheel_spacing_unit'],
+  ['cf_rail_eccentricity_enabled','common_rail_eccentricity_enabled','checkbox'],
+  ['cf_vertical_eccentricity_y','common_vertical_eccentricity_y'],['cf_vertical_eccentricity_y_unit','common_vertical_eccentricity_y_unit'],
+  ['cf_lateral_load_height_z','common_lateral_load_height_z'],['cf_lateral_load_height_z_unit','common_lateral_load_height_z_unit'],
+  ['cf_deflection_preset','common_deflection_preset'],['cf_stress_preset','common_stress_preset']
+];
+function setCaseStatus(text, kind){
+  var el = document.getElementById('case_data_status');
+  if(!el) return;
+  el.textContent = text;
+  el.classList.remove('is-ok','is-error');
+  if(kind === 'ok') el.classList.add('is-ok');
+  else if(kind === 'error') el.classList.add('is-error');
+}
+function _cfMirror(srcId, dstId, kind){
+  var s = document.getElementById(srcId);
+  var d = document.getElementById(dstId);
+  if(!s || !d) return;
+  if(kind === 'checkbox'){ d.checked = !!s.checked; }
+  else { d.value = s.value; }
+}
+function _cfMirrorBack(srcId, dstId, kind){
+  var s = document.getElementById(srcId);
+  var d = document.getElementById(dstId);
+  if(!s || !d) return;
+  if(kind === 'checkbox'){ s.checked = !!d.checked; }
+  else { s.value = d.value || ''; }
+}
+/* V1-096: per-field JSON path map for the case form. Each entry is
+   [cfFieldId, jsonPathArray, kind] where kind is one of:
+     'qty' = {value, unit} object using cfUnitId for unit
+     'num' = plain number
+     'str' = plain string
+     'bool' = plain boolean (checkbox)
+   This bypasses the applyCommonInputsToJson route so we can write surgically
+   only the fields the user actually edited, without losing template fields. */
+/* V1-096: corrected JSON paths for the ipn-with-cover schema (verified against
+   actual demo case JSON). Material info in this schema is split:
+     - E lives at ['analysis', 'E']
+     - Fy lives at ['stress_limits', 0, 'Fy']
+     - Fu does not exist in this schema (no-op)
+     - material_id is informational, no canonical home
+   The 'wheel_spacing' field is computed: it sets wheel[1].position_x
+   relative to wheel[0]. */
+var CF_JSON_PATHS = [
+  {id:'cf_case_id',         path:['case_id'],                                       kind:'str'},
+  {id:'cf_description',     path:['description'],                                   kind:'str'},
+  {id:'cf_base_shape_id',   path:['base_shape_id'],                                 kind:'str'},
+  {id:'cf_span',            path:['span'],                       unitId:'cf_span_unit',           kind:'qty', defaultUnit:'m'},
+  /* material section: paths verified against ipn-with-cover schema */
+  {id:'cf_material_id',     path:['material','material_id'],                        kind:'str', note:'informational'},
+  {id:'cf_fy',              path:['stress_limits',0,'Fy'],       unitId:'cf_fy_unit',             kind:'qty', defaultUnit:'MPa'},
+  /* cf_fu has no canonical path in this schema — write skipped */
+  {id:'cf_e',               path:['analysis','E'],               unitId:'cf_e_unit',              kind:'qty', defaultUnit:'MPa'},
+  {id:'cf_cover_plate_enabled',  path:['section','cover_plate','enabled'],          kind:'bool'},
+  {id:'cf_cover_plate_width',    path:['section','cover_plate','width'],     unitId:'cf_cover_plate_width_unit',     kind:'qty', defaultUnit:'mm'},
+  {id:'cf_cover_plate_thickness',path:['section','cover_plate','thickness'], unitId:'cf_cover_plate_thickness_unit', kind:'qty', defaultUnit:'mm'},
+  {id:'cf_crane_id',                path:['crane','crane_id'],                       kind:'str'},
+  {id:'cf_vertical_impact_factor',  path:['crane','vertical_impact_factor'],          kind:'num'},
+  {id:'cf_lateral_force_factor',    path:['crane','lateral_force_factor'],            kind:'num'},
+  {id:'cf_wheel_1_load',            path:['crane','wheels',0,'vertical_force'],       unitId:'cf_wheel_1_load_unit',       kind:'qty', defaultUnit:'kN'},
+  {id:'cf_wheel_2_load',            path:['crane','wheels',1,'vertical_force'],       unitId:'cf_wheel_2_load_unit',       kind:'qty', defaultUnit:'kN'},
+  {id:'cf_wheel_spacing',           path:['crane','wheels',1,'position_x'],           unitId:'cf_wheel_spacing_unit',      kind:'qty', defaultUnit:'mm'},
+  {id:'cf_rail_eccentricity_enabled',  path:['rail_eccentricity','enabled'],          kind:'bool'},
+  {id:'cf_vertical_eccentricity_y',    path:['rail_eccentricity','vertical_eccentricity_y'],   unitId:'cf_vertical_eccentricity_y_unit',  kind:'qty', defaultUnit:'mm'},
+  {id:'cf_lateral_load_height_z',      path:['rail_eccentricity','lateral_load_height_z'],     unitId:'cf_lateral_load_height_z_unit',    kind:'qty', defaultUnit:'mm'}
+];
+/* V1-096: array-aware path setter. The legacy setNestedValue/ensureObjectPath
+   would clobber arrays with {} on traversal — fatal for paths like
+   ['stress_limits', 0, 'Fy'] where step 0 is an array index. This setter walks
+   the path preserving arrays and creating missing nodes as the right type
+   (array if next key is a number, object otherwise). */
+function _setNestedValueArrayAware(obj, path, value){
+  if(!obj || !Array.isArray(path) || path.length === 0) return;
+  var cur = obj;
+  for(var i=0; i<path.length-1; i++){
+    var key = path[i];
+    var nextKey = path[i+1];
+    var nextIsIdx = (typeof nextKey === 'number');
+    if(cur[key] == null){
+      cur[key] = nextIsIdx ? [] : {};
+    } else if(typeof cur[key] !== 'object'){
+      cur[key] = nextIsIdx ? [] : {};
+    } else if(nextIsIdx && !Array.isArray(cur[key])){
+      cur[key] = [];
+    }
+    cur = cur[key];
+  }
+  cur[path[path.length-1]] = value;
+}
+function applyCaseFormToJson(){
+  /* V1-096: surgical merge directly into case_json. Only fields with data-cf-touched=1
+     AND non-empty value get written. Uses array-aware path setter so paths like
+     stress_limits[0].Fy don't clobber the surrounding array. Bypasses
+     applyCommonInputsToJson which would fail validation on empty common_* fields. */
+  try{
+    var caseJsonText = document.getElementById('case_json').value || '{}';
+    var data;
+    try { data = JSON.parse(caseJsonText); } catch(e){ setCaseStatus('case_json no es JSON válido — no se aplicó.', 'error'); return; }
+    var written = 0;
+    CF_JSON_PATHS.forEach(function(spec){
+      var el = document.getElementById(spec.id);
+      if(!el) return;
+      if(el.dataset.cfTouched !== '1') return;
+      if(spec.kind === 'bool'){
+        _setNestedValueArrayAware(data, spec.path, !!el.checked);
+        written++;
+        return;
+      }
+      var v = String(el.value || '').trim();
+      if(v === '') return;
+      if(spec.kind === 'str'){ _setNestedValueArrayAware(data, spec.path, v); written++; }
+      else if(spec.kind === 'num'){ _setNestedValueArrayAware(data, spec.path, Number(v)); written++; }
+      else if(spec.kind === 'qty'){
+        var unit = (spec.unitId && document.getElementById(spec.unitId)) ? document.getElementById(spec.unitId).value : (spec.defaultUnit || '');
+        _setNestedValueArrayAware(data, spec.path, {value: Number(v), unit: unit || spec.defaultUnit || ''});
+        written++;
+      }
+    });
+    if(written === 0){ setCaseStatus('Sin cambios para aplicar (no editaste nada).', null); return; }
+    document.getElementById('case_json').value = JSON.stringify(data, null, 2);
+    if(typeof saveSession === 'function') saveSession();
+    setCaseStatus('Datos aplicados al JSON: ' + written + ' campo(s) actualizado(s).', 'ok');
+  } catch(err){ setCaseStatus('Error al aplicar datos: ' + err, 'error'); }
+}
+async function applyCaseFormAndValidate(){
+  applyCaseFormToJson();
+  if(typeof validateCase === 'function'){
+    setCaseStatus('Validando caso...', null);
+    try { await validateCase(); setCaseStatus('Datos aplicados y validación lanzada. Revisá Validation panel para detalles.', 'ok'); }
+    catch(err){ setCaseStatus('Validación falló: ' + err, 'error'); }
+  }
+}
+function loadCaseFormFromJson(){
+  /* V1-096: read directly from case_json using CF_JSON_PATHS instead of going
+     through common_* (which uses a different schema mapping that mostly fails for
+     the modern ipn-with-cover template). For each cf_* field, walk the JSON path
+     and populate the form. Removes the .is-example gray italic styling so the
+     populated values look like real data. */
+  try{
+    var cj = document.getElementById('case_json').value || '{}';
+    var data; try { data = JSON.parse(cj); } catch(e){ setCaseStatus('case_json no es JSON valido.', 'error'); return; }
+    function _read(pathArr){
+      var cur = data;
+      for(var i=0;i<pathArr.length;i++){
+        if(cur == null) return undefined;
+        cur = cur[pathArr[i]];
+      }
+      return cur;
+    }
+    var loaded = 0;
+    CF_JSON_PATHS.forEach(function(spec){
+      var el = document.getElementById(spec.id); if(!el) return;
+      var v = _read(spec.path);
+      if(v === undefined || v === null) return;
+      if(spec.kind === 'bool'){
+        el.checked = !!v;
+      } else if(spec.kind === 'qty' && typeof v === 'object'){
+        el.value = String(v.value != null ? v.value : '');
+        if(spec.unitId){
+          var u = document.getElementById(spec.unitId);
+          if(u && v.unit) u.value = v.unit;
+        }
+      } else if(spec.kind === 'num'){
+        el.value = String(v);
+      } else if(spec.kind === 'str'){
+        el.value = String(v);
+      }
+      el.classList.remove('is-example');
+      el.dataset.cfTouched = '0';  /* loaded from existing JSON, not edited by user */
+      loaded++;
+    });
+    /* Material preset: if Fy matches F24/F36 we auto-set the preset selector */
+    var fy = _read(['stress_limits',0,'Fy']);
+    if(fy && fy.value){
+      var psel = document.getElementById('cf_material_preset');
+      if(psel){
+        if(Math.abs(fy.value - 240) < 5){ psel.value = 'F24'; psel.classList.remove('is-example'); }
+        else if(Math.abs(fy.value - 355) < 5){ psel.value = 'F36'; psel.classList.remove('is-example'); }
+        else{ psel.value = 'Custom'; psel.classList.remove('is-example'); }
+      }
+    }
+    setCaseStatus('Datos cargados desde el JSON actual: ' + loaded + ' campos.', 'ok');
+  } catch(err){ setCaseStatus('Error cargando JSON: ' + err, 'error'); }
+}
+async function loadCaseFormDemo(){
+  try{
+    if(typeof loadTemplate === 'function'){
+      var sel = document.getElementById('template');
+      if(sel) sel.value = 'ipn-with-cover';
+      await loadTemplate('ipn-with-cover');
+      setTimeout(function(){ loadCaseFormFromJson(); setCaseStatus('Demo cargado. Revisá los valores y pulsá Aplicar y Validar.', 'ok'); }, 80);
+    } else {
+      setCaseStatus('No se encontró loadTemplate.', 'error');
+    }
+  } catch(err){ setCaseStatus('Error cargando demo: ' + err, 'error'); }
+}
+function resetCaseForm(){
+  CASE_FORM_FIELDS.forEach(function(f){
+    var el = document.getElementById(f[0]); if(!el) return;
+    if(f[2] === 'checkbox') el.checked = false; else el.value = '';
+  });
+  setCaseStatus('Formulario limpiado.', null);
+}
+function toggleLegacyPanels(){
+  var body = document.body;
+  var btn = document.getElementById('case_toggle_legacy_btn');
+  var newMode = body.dataset.viewMode === 'form' ? 'full' : 'form';
+  body.dataset.viewMode = newMode;
+  if(btn) btn.textContent = (newMode === 'form') ? 'Mostrar herramientas avanzadas' : 'Volver a vista compacta';
+  try { localStorage.setItem('craneRunway.caseViewMode', newMode); } catch(_){}
+}
+function _initCaseDataView(){
+  /* V1-096: form mode is now permanent. The "full" mode used to dump 33 panels at once and is gone from the UX. We still write 'form' to localStorage for backwards compatibility, but always force form mode on init regardless of saved value. Users wanting to see legacy panels use Advanced > Legacy > "Mostrar paneles legacy", which sets data-show-legacy="true" instead. */
+  document.body.dataset.viewMode = 'form';
+  try { localStorage.setItem('craneRunway.caseViewMode','form'); } catch(_){}
+}
+/* Pre-fill case form fields with the example values declared in data-cf-example, mark them as gray-italic (.is-example) until the user edits the field. Applied once per session unless the user has already saved real input. */
+function _applyCaseFormExamples(){
+  try{
+    var nodes = document.querySelectorAll('[data-cf-example]');
+    nodes.forEach(function(el){
+      if(!el.id) return;
+      var ex = el.getAttribute('data-cf-example');
+      if(el.type === 'checkbox'){
+        if(!el.dataset.cfTouched){ el.checked = (ex === 'true'); var p = el.closest('.case-checkbox'); if(p) p.classList.add('is-example'); }
+      } else if(el.tagName === 'SELECT' || el.tagName === 'INPUT'){
+        if(!el.value && !el.dataset.cfTouched){ el.value = ex; el.classList.add('is-example'); }
+      }
+      var clear = function(){
+        el.dataset.cfTouched = '1';
+        el.classList.remove('is-example');
+        var parent = el.closest('.case-checkbox'); if(parent) parent.classList.remove('is-example');
+      };
+      el.addEventListener('input', clear);
+      el.addEventListener('change', clear);
+      el.addEventListener('focus', function(){ if(el.classList.contains('is-example')) { /* keep; only clear on edit */ } });
+    });
+    setCaseStatus('Caso de ejemplo precargado en gris. Editá los campos para sobrescribir, o usá "Aplicar al JSON" para aceptar el ejemplo.', null);
+  } catch(err){ /* no-op */ }
+}
+function _initCaseDataAfterDom(){
+  _initCaseDataView();
+  _applyCaseFormExamples();
+  /* Trigger tab visibility on first load — without this, all .tab-panel divs stay shown because nothing has called switchMainTab yet. Default to Home unless user has a saved tab. */
+  try{
+    var initialTab = (typeof getActiveTab === 'function') ? (getActiveTab() || 'home') : 'home';
+    if(typeof switchMainTab === 'function') switchMainTab(initialTab);
+  } catch(_){ try { if(typeof switchMainTab === 'function') switchMainTab('home'); } catch(__){} }
+  /* V1-096: gate Results/Reporte tabs until a run completes; auto-demo will unblock them once it runs. */
+  try { setTabAvailability(); } catch(_){}
+  /* V1-096: render sub-tab bar for the initially active top tab. */
+  try {
+    var initActive = (typeof getActiveTab === 'function') ? (getActiveTab() || 'home') : 'home';
+    renderSubTabBar(initActive);
+  } catch(_){}
+  /* V1-096: kick off the auto-demo on first visit so the user lands on a populated, validated, executed case. */
+  setTimeout(runAutoDemoOnFirstVisit, 250);
+}
+if(document.readyState === 'loading'){ document.addEventListener('DOMContentLoaded', _initCaseDataAfterDom); }
+else { _initCaseDataAfterDom(); }
+
+/* ===== V1-096: Auto-demo flow on first visit =====
+   On first page load (no demoExecuted flag and no saved case), auto-load the
+   ipn-with-cover template, validate it, run it, and show the success banner.
+   Subsequent visits skip this so the user's edits survive a refresh. */
+async function runAutoDemoOnFirstVisit(){
+  try{
+    if(localStorage.getItem('craneRunway.demoExecuted') === 'true') return;
+    if(localStorage.getItem('craneRunway.caseJson')) return;  /* user already has saved data */
+    if(typeof loadTemplate !== 'function' || typeof validateCase !== 'function' || typeof runCase !== 'function') return;
+    setStatus('Cargando demo...');
+    var sel = document.getElementById('template');
+    if(sel){
+      var hasTpl = false;
+      for(var i=0;i<sel.options.length;i++){ if(sel.options[i].value === 'ipn-with-cover'){ hasTpl = true; break; } }
+      if(hasTpl) sel.value = 'ipn-with-cover';
+    }
+    await loadTemplate();
+    await new Promise(function(r){ setTimeout(r, 120); });
+    if(typeof loadCaseFormFromJson === 'function') loadCaseFormFromJson();
+    setStatus('Validando demo...');
+    await validateCase();
+    await new Promise(function(r){ setTimeout(r, 80); });
+    setStatus('Ejecutando cálculo del demo...');
+    await runCase();
+    /* V1-096: prime the per-tab content immediately so users find populated previews/results when they navigate. */
+    try{ if(typeof refreshVisualPreview === 'function') refreshVisualPreview(); } catch(_){}
+    try{ if(typeof refreshCaseQuality === 'function') refreshCaseQuality(); } catch(_){}
+    try{ if(typeof refreshResultsPane === 'function') refreshResultsPane(); } catch(_){}
+    try{ if(typeof renderReviewPreview === 'function') renderReviewPreview(); } catch(_){}
+    localStorage.setItem('craneRunway.demoExecuted', 'true');
+    setStatus('Demo cargado y ejecutado. Modificá Setup y volvé a Calculate para aprender.');
+    var bn = document.getElementById('demo_banner');
+    if(bn){ bn.hidden = false; bn.classList.remove('demo-banner-error'); }
+  } catch(err){
+    setStatus('Auto-demo falló: ' + err);
+    var be = document.getElementById('demo_banner');
+    if(be){
+      be.hidden = false;
+      be.classList.add('demo-banner-error');
+      var t = be.querySelector('.demo-banner-text');
+      if(t) t.innerHTML = '<strong>El demo no se pudo ejecutar.</strong> Verificá que el backend esté corriendo. Pulsá "Reiniciar demo" para reintentar.';
+    }
+  }
+}
+function resetAutoDemo(){
+  try{
+    localStorage.removeItem('craneRunway.demoExecuted');
+    localStorage.removeItem('craneRunway.caseJson');
+    localStorage.removeItem('craneRunway.lastSavedAt');
+  } catch(_){}
+  location.reload();
+}
+
+/* Tab-pane refresh helpers (Loads/Results/Advanced) — read from Setup form fields and update the per-tab summaries. */
+function refreshLoadsSummary(){
+  var pairs = [['cf_wheel_1_load','cf_wheel_1_load_unit','loads_wheel_1_summary'],
+               ['cf_wheel_2_load','cf_wheel_2_load_unit','loads_wheel_2_summary'],
+               ['cf_wheel_spacing','cf_wheel_spacing_unit','loads_spacing_summary']];
+  pairs.forEach(function(p){
+    var v = document.getElementById(p[0]); var u = document.getElementById(p[1]); var t = document.getElementById(p[2]);
+    if(t && v){ t.textContent = (v.value || '—') + ' ' + (u && u.value ? u.value : ''); }
+  });
+  ['cf_vertical_impact_factor','cf_lateral_force_factor'].forEach(function(id, i){
+    var v = document.getElementById(id);
+    var t = document.getElementById(i === 0 ? 'loads_vif_summary' : 'loads_lff_summary');
+    if(t && v){ t.textContent = v.value || '—'; }
+  });
+}
+function _formatResultValue(title, raw){
+  if(!raw || raw === 'N/A' || raw === '—') return '—';
+  if(raw === 'PASS' || raw === 'FAIL') return raw;
+  var n = parseFloat(raw);
+  if(isNaN(n)) return raw;
+  var unitMap = {'Max Moment':' N·mm','Max Shear':' N','Max Deflection':' mm','Max Biaxial Stress':' MPa'};
+  var unit = unitMap[title] || '';
+  /* compact formatting: scientific for >1e6, fixed-2 otherwise */
+  var formatted;
+  if(Math.abs(n) >= 1e6) formatted = n.toExponential(3);
+  else if(Math.abs(n) >= 1) formatted = n.toFixed(2);
+  else formatted = n.toExponential(2);
+  return formatted + unit;
+}
+function refreshResultsPane(){
+  /* Read the real values that renderResultCards() wrote into #result_cards (title/value pairs in .result-card divs) and mirror them into the V1-095 form-pane cards by title lookup. Format numerics for readability and color PASS/FAIL pills. */
+  var panel = document.getElementById('result_cards');
+  var byTitle = {};
+  if(panel){
+    var cards = panel.querySelectorAll('.result-card');
+    cards.forEach(function(c){
+      var t = c.querySelector('.result-card-title');
+      var v = c.querySelector('.result-card-value');
+      if(t && v){
+        byTitle[t.textContent.trim()] = {value: v.textContent.trim(), klass: v.className || ''};
+      }
+    });
+  }
+  var titleMap = [
+    ['Max Moment','results_card_moment'],
+    ['Max Shear','results_card_shear'],
+    ['Max Deflection','results_card_deflection'],
+    ['Max Biaxial Stress','results_card_biaxial'],
+    ['Serviceability','results_card_serviceability'],
+    ['Stress','results_card_stress'],
+    ['Overall','results_card_overall']
+  ];
+  titleMap.forEach(function(p){
+    var dst = document.getElementById(p[1]); if(!dst) return;
+    var src = byTitle[p[0]];
+    if(!src){ dst.textContent = '—'; dst.className = 'result-card-value'; return; }
+    dst.textContent = _formatResultValue(p[0], src.value);
+    /* propagate status class so PASS/FAIL gets the colored style */
+    dst.className = 'result-card-value';
+    if(src.klass.indexOf('status-pass') >= 0) dst.classList.add('status-pass');
+    else if(src.klass.indexOf('status-fail') >= 0) dst.classList.add('status-fail');
+    else if(src.klass.indexOf('status-na') >= 0) dst.classList.add('status-na');
+  });
+  /* Also update interpretation, if a result_interpretation panel exists */
+  var srcInterp = document.getElementById('result_interpretation');
+  var dstInterp = document.getElementById('results_interpretation');
+  if(srcInterp && dstInterp){
+    if(srcInterp.innerHTML && srcInterp.innerHTML.trim().length > 0){
+      dstInterp.innerHTML = srcInterp.innerHTML;
+    }
+  }
+}
+function advancedPaneLoadFromCaseJson(){
+  var src = document.getElementById('case_json'); var dst = document.getElementById('advanced_json_editor_pane');
+  if(!src || !dst) return;
+  /* Pretty-print for readability */
+  try{ var p = JSON.parse(src.value); dst.value = JSON.stringify(p, null, 2); }
+  catch(_){ dst.value = src.value || ''; }
+}
+function advancedPaneToggleEdit(){
+  var ta = document.getElementById('advanced_json_editor_pane');
+  var editBtn = document.getElementById('advanced_json_edit_btn');
+  var applyBtn = document.getElementById('advanced_json_apply_btn');
+  if(!ta) return;
+  if(ta.readOnly){
+    var ok = confirm('Modo edición permite editar el JSON crudo y puede dejar el caso inválido. ¿Activar?');
+    if(!ok) return;
+    ta.readOnly = false;
+    ta.style.background = '#fff';
+    ta.style.borderColor = '#ef4444';
+    if(editBtn) editBtn.textContent = 'Volver a solo lectura';
+    if(applyBtn) applyBtn.hidden = false;
+  } else {
+    ta.readOnly = true;
+    ta.style.background = '#f9fafb';
+    ta.style.borderColor = '#d1d5db';
+    if(editBtn) editBtn.textContent = 'Activar Modo edición';
+    if(applyBtn) applyBtn.hidden = true;
+  }
+}
+function advancedPaneApplyToCaseJson(){
+  var src = document.getElementById('advanced_json_editor_pane'); var dst = document.getElementById('case_json');
+  if(!src || !dst) return;
+  if(src.readOnly){ setCaseStatus('Activá Modo edición primero.', null); return; }
+  /* validate JSON before applying */
+  try{ JSON.parse(src.value); }
+  catch(e){ setCaseStatus('JSON inválido: ' + e.message, 'error'); return; }
+  dst.value = src.value || '';
+  if(typeof saveSession === 'function') saveSession();
+  setCaseStatus('JSON crudo aplicado al caso. Validá antes de ejecutar.', 'ok');
+}
+async function advancedPaneCopyJson(){
+  var ta = document.getElementById('advanced_json_editor_pane');
+  if(!ta || !ta.value){ setCaseStatus('No hay JSON para copiar. Pulsá Cargar desde caso.', null); return; }
+  try{ await navigator.clipboard.writeText(ta.value); setCaseStatus('JSON copiado al portapapeles.', 'ok'); }
+  catch(e){ setCaseStatus('No se pudo copiar: ' + e, 'error'); }
+}
+/* ===== V1-096: Sub-tab navigation (Level 2) =====
+   Each top tab can declare a list of sub-tabs. When the user activates a top tab,
+   renderSubTabBar() repopulates the secondary nav bar based on SUBTAB_CONFIG.
+   Sub-tab content lives in elements with class "subtab-pane" and data-subtab="<key>"
+   inside the active form-pane. Special key "all" reveals every sub-tab pane at once
+   (used as the "Vista completa" mode for Setup). */
+var SUBTAB_CONFIG = {
+  home: [],
+  project: [],
+  setup: [
+    {key:'all', label:'Vista completa'},
+    {key:'identification', label:'Identificación'},
+    {key:'beam', label:'Viga Carrilera'},
+    {key:'crane', label:'Puente Grúa'},
+    {key:'rail', label:'Riel & Excentricidad'},
+    {key:'criteria', label:'Criterios'}
+  ],
+  loads: [],
+  review: [],
+  calculate: [],
+  results: [
+    {key:'kpis', label:'KPIs'},
+    {key:'interpretation', label:'Interpretación'}
+  ],
+  export: [],
+  support: [],
+  advanced: [
+    {key:'json', label:'Editor JSON'},
+    {key:'legacy', label:'Legacy'}
+  ]
+};
+function getActiveSubTab(topTab){
+  try{
+    var saved = localStorage.getItem('craneRunway.subtab.' + topTab);
+    var list = SUBTAB_CONFIG[topTab] || [];
+    if(saved && list.some(function(s){ return s.key === saved; })) return saved;
+    return list.length ? list[0].key : null;
+  } catch(_){ var l = SUBTAB_CONFIG[topTab] || []; return l.length ? l[0].key : null; }
+}
+function saveActiveSubTab(topTab, subKey){
+  try{ localStorage.setItem('craneRunway.subtab.' + topTab, subKey); } catch(_){}
+}
+function applySubTabVisibility(topTab, subKey){
+  var pane = document.getElementById('form-pane-' + topTab);
+  if(!pane) return;
+  var subs = pane.querySelectorAll('.subtab-pane');
+  subs.forEach(function(s){
+    if(subKey === 'all'){ s.hidden = false; }
+    else { s.hidden = (s.dataset.subtab !== subKey); }
+  });
+}
+function renderSubTabBar(topTab){
+  var bar = document.getElementById('subtab-bar');
+  if(!bar) return;
+  var list = SUBTAB_CONFIG[topTab] || [];
+  if(list.length <= 1){ bar.hidden = true; bar.innerHTML = ''; return; }
+  bar.hidden = false;
+  var active = getActiveSubTab(topTab);
+  var html = '';
+  for(var i=0;i<list.length;i++){
+    var s = list[i];
+    var cls = 'subtab-btn' + (s.key === active ? ' active' : '');
+    html += '<button class="' + cls + '" data-subtab-key="' + s.key + '" onclick="switchSubTab(\\''+ topTab +'\\',\\''+ s.key +'\\')">' + s.label + '</button>';
+  }
+  bar.innerHTML = html;
+  applySubTabVisibility(topTab, active);
+}
+function switchSubTab(topTab, subKey){
+  saveActiveSubTab(topTab, subKey);
+  applySubTabVisibility(topTab, subKey);
+  var bar = document.getElementById('subtab-bar');
+  if(bar){
+    bar.querySelectorAll('.subtab-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.subtabKey === subKey);
+    });
+  }
+  setStatus('Subtab: ' + subKey);
+}
+function toggleLegacyReveal(){
+  var body = document.body;
+  var btn = document.getElementById('legacy_reveal_btn');
+  if(body.dataset.showLegacy === 'true'){
+    body.removeAttribute('data-show-legacy');
+    if(btn) btn.textContent = 'Mostrar paneles legacy';
+  } else {
+    body.dataset.showLegacy = 'true';
+    if(btn) btn.textContent = 'Vista legacy activa';
+  }
+}
+/* V1-096: Material preset wiring for the new case form. When user picks F24/F36 from the cf_material_preset select, fill Material ID, Fy, Fu, E accordingly and mark them as user-edited so the gray italic example styling clears. */
+function applyCaseMaterialPreset(){
+  var presetSel = document.getElementById('cf_material_preset');
+  if(!presetSel) return;
+  var preset = presetSel.value;
+  var values = {
+    'F24':  {material_id:'F24',  fy:'240', fu:'370', e:'200000'},
+    'F36':  {material_id:'F36',  fy:'355', fu:'470', e:'200000'},
+    'Custom': null
+  };
+  var v = values[preset];
+  function _set(id, val){
+    var el = document.getElementById(id); if(!el) return;
+    if(val === null) return;  /* Custom preset doesn't override */
+    el.value = val;
+    el.classList.remove('is-example');
+    el.dataset.cfTouched = '1';
+  }
+  if(v){
+    _set('cf_material_id', v.material_id);
+    _set('cf_fy', v.fy);
+    _set('cf_fu', v.fu);
+    _set('cf_e', v.e);
+    setCaseStatus('Material preset ' + preset + ' aplicado: Fy=' + v.fy + ' MPa, Fu=' + v.fu + ' MPa, E=' + v.e + ' MPa.', 'ok');
+  } else {
+    setCaseStatus('Custom seleccionado: ingresá manualmente Material ID, Fy, Fu, E.', null);
+  }
+  presetSel.classList.remove('is-example');
+  presetSel.dataset.cfTouched = '1';
+}
+/* V1-096: Render visual previews into the Review subtabs using the existing renderBeamPreview/renderSectionPreview. Auto-fires when user navigates to Review. */
+function renderReviewPreview(){
+  try{
+    if(typeof refreshVisualPreview === 'function'){ refreshVisualPreview(); }
+    var srcBeam = document.getElementById('beam_preview_output');
+    var dstBeam = document.getElementById('review_beam_preview_container');
+    var srcSec  = document.getElementById('section_preview_output');
+    if(srcBeam && dstBeam){ dstBeam.innerHTML = srcBeam.innerHTML || '<em style="color:#9ca3af;">No se pudo renderizar el preview de la viga. Verificá que haya un caso cargado.</em>'; }
+    if(srcSec && dstBeam){ dstBeam.innerHTML += '<h4 style="color:#1e3a8a;margin:0.7rem 0 0.3rem;">Sección</h4>' + (srcSec.innerHTML || ''); }
+    if(typeof refreshCaseQuality === 'function') refreshCaseQuality();
+    var srcQuality = document.getElementById('case_quality_rows');
+    var dstQuality = document.getElementById('review_case_quality_container');
+    if(srcQuality && dstQuality){
+      var rows = srcQuality.querySelectorAll('tr');
+      if(rows.length === 0){ dstQuality.innerHTML = '<em style="color:#15803d;">Sin warnings de calidad — el caso luce bien.</em>'; }
+      else { dstQuality.innerHTML = '<table>' + srcQuality.parentElement.innerHTML + '</table>'; }
+    }
+  } catch(err){ /* swallow */ }
+}
+
+/* Refresh per-tab content automatically when the user switches tabs. Wraps the existing switchMainTab without breaking it, and re-renders the sub-tab bar for the new top tab. */
+(function(){
+  if(typeof window.switchMainTab !== 'function') return;
+  var _origSwitch = window.switchMainTab;
+  window.switchMainTab = function(tabId){
+    /* V1-096: gate Results and Export tabs — block navigation until a run has produced data. The disabled style is applied in setTabAvailability(); here we redirect navigation. */
+    var gated = ['results','export'];
+    if(gated.indexOf(tabId) >= 0 && !_hasRunResult()){
+      setStatus('Esa pestaña se habilita después de ejecutar el cálculo. Pulsá Run o Validar y Ejecutar primero.');
+      _origSwitch('calculate');
+      try { renderSubTabBar('calculate'); } catch(_){}
+      return;
+    }
+    _origSwitch(tabId);
+    try { renderSubTabBar(tabId); } catch(_){}
+    try{
+      if(tabId === 'loads') refreshLoadsSummary();
+      if(tabId === 'results') refreshResultsPane();
+      if(tabId === 'review') renderReviewPreview();
+      if(tabId === 'export') refreshExportPane();
+      if(tabId === 'advanced') advancedPaneLoadFromCaseJson();
+    } catch(_){}
+  };
+})();
+function refreshExportPane(){
+  var dst = document.getElementById('export_status'); if(!dst) return;
+  var caseJson = (document.getElementById('case_json') || {}).value || '';
+  var hasCase = caseJson.trim().length > 0;
+  var hasValidation = typeof lastValidationResponse !== 'undefined' && lastValidationResponse;
+  var hasRun = typeof lastRunResponse !== 'undefined' && lastRunResponse && lastRunResponse.success === true;
+  var hasReport = typeof latestHtmlReport !== 'undefined' && latestHtmlReport && latestHtmlReport.length > 100;
+  var rows = [
+    ['Case JSON', hasCase ? '[OK] Disponible (' + caseJson.length + ' chars)' : '[--] No hay caso cargado'],
+    ['Respuesta de validacion', hasValidation ? '[OK] Disponible' : '[--] Ejecuta Validate primero'],
+    ['Summary del run', hasRun ? '[OK] Disponible' : '[--] Ejecuta Run primero'],
+    ['Reporte HTML', hasReport ? '[OK] Disponible' : '[--] Ejecuta Run primero']
+  ];
+  dst.innerHTML = '<table style="width:100%;border-collapse:collapse;"><tbody>' + rows.map(function(r){
+    var color = r[1].indexOf('[OK]') >= 0 ? '#15803d' : '#92400e';
+    return '<tr><td style="padding:0.3rem 0.5rem;border-bottom:1px solid #f1f5f9;color:#6b7280;width:50%;">' + r[0] + '</td><td style="padding:0.3rem 0.5rem;border-bottom:1px solid #f1f5f9;color:' + color + ';font-weight:500;">' + r[1] + '</td></tr>';
+  }).join('') + '</tbody></table>';
+}
+function _hasRunResult(){
+  try{ return typeof lastRunResponse !== 'undefined' && lastRunResponse && lastRunResponse.success === true; }
+  catch(_){ return false; }
+}
+function setTabAvailability(){
+  var run = _hasRunResult();
+  ['results','export'].forEach(function(tabId){
+    var btn = document.querySelector('.main-tab-btn[data-tab-btn="' + tabId + '"]');
+    if(!btn) return;
+    if(run){
+      btn.classList.remove('tab-disabled');
+      btn.removeAttribute('aria-disabled');
+      btn.removeAttribute('title');
+    } else {
+      btn.classList.add('tab-disabled');
+      btn.setAttribute('aria-disabled','true');
+      btn.setAttribute('title','Ejecutá el cálculo primero (Calculate > Run)');
+    }
+  });
+}
+/* Recompute tab availability after every run. Wrap runCase so we re-check after it completes. */
+(function(){
+  if(typeof window.runCase !== 'function') return;
+  var _origRun = window.runCase;
+  window.runCase = async function(){
+    var r = await _origRun.apply(this, arguments);
+    try { setTabAvailability(); } catch(_){}
+    return r;
+  };
+})();
 
 </script>
 </div><aside class="summary-card"><h3>Compact Summary</h3><table><tbody><tr><td>Current case</td><td id="summary_case_id">-</td></tr><tr><td>Current project</td><td id="summary_project">-</td></tr><tr><td>Validation status</td><td id="summary_validation">Unknown</td></tr><tr><td>Run status</td><td id="summary_run">Unknown</td></tr><tr><td>Overall status</td><td id="summary_overall">Idle</td></tr><tr><td>Autosave status</td><td id="summary_autosave">Unknown</td></tr></tbody></table></aside></div></div>
